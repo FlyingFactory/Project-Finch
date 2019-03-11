@@ -7,6 +7,9 @@ namespace CombatView {
     public class Soldier : ActionUnit {
 
         public bool persistent;
-        public int mobility = 6;
+
+        new public void Start() {
+            base.Start();
+        }
     }
 }

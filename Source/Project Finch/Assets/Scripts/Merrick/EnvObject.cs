@@ -6,6 +6,8 @@ namespace CombatView {
 
     public class EnvObject : FieldObject {
 
-
+        new public void Start() {
+            base.Start();
+        }
     }
 }

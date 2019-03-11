@@ -8,5 +8,14 @@ namespace CombatView {
 
         public int numActions = 2;
         public int actionsPerTurn = 2;
+        public int mobility = 6;
+
+        new public void Start() {
+            base.Start();
+        }
+
+        public void OrderMove(Tile t) {
+            //TODO
+        }
     }
 }

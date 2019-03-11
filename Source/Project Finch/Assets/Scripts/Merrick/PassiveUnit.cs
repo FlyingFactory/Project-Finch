@@ -7,5 +7,9 @@ namespace CombatView {
     public class PassiveUnit : Unit {
 
 
+
+        new public void Start() {
+            base.Start();
+        }
     }
 }

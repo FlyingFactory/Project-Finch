@@ -43,5 +43,9 @@ namespace CombatView {
         public void DestroySelf() {
             Destroy(gameObject);
         }
+
+        new public void Start() {
+            base.Start();
+        }
     }
 }
