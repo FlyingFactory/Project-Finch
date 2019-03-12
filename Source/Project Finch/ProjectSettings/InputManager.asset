@@ -7,7 +7,7 @@ InputManager:
   m_Axes:
   - serializedVersion: 3
     m_Name: select
-    descriptiveName: Mouse click or screen tap, for buttons, selection etc.
+    descriptiveName: Left click
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: mouse 0
@@ -22,34 +22,18 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: mouse x
-    descriptiveName: 
+    m_Name: select2
+    descriptiveName: Right click
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: mouse 1
     altNegativeButton: 
     altPositiveButton: 
-    gravity: 0
-    dead: 0
-    sensitivity: 0
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
     snap: 0
     invert: 0
-    type: 1
+    type: 0
     axis: 0
-    joyNum: 0
-  - serializedVersion: 3
-    m_Name: mouse y
-    descriptiveName: 
-    descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
-    altNegativeButton: 
-    altPositiveButton: 
-    gravity: 0
-    dead: 0
-    sensitivity: 0
-    snap: 0
-    invert: 0
-    type: 1
-    axis: 1
     joyNum: 0

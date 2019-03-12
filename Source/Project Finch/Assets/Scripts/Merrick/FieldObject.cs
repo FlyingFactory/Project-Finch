@@ -6,7 +6,9 @@ namespace CombatView {
 
     public class FieldObject : MonoBehaviour {
 
-        public bool takesMultipleSpaces = false;
+        public bool blocksMovement = true;
+        public bool takesTile = true;
+        public bool takesMultipleTiles = false;
 
         public void Start() {
             
