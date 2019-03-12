@@ -8,6 +8,10 @@ namespace CombatView {
 
         public static MapInfo currentMapInfo = null;
         public List<Tile> Tiles;
+
+        public MapInfo() {
+            currentMapInfo = this;
+        }
     }
 
     public class Tile {
