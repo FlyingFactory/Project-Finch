@@ -19,7 +19,7 @@ namespace CombatView {
         [System.NonSerialized] public int currentPlayer = 0;
         [System.NonSerialized] public int numPlayers = 2;
 
-        private void Start() {
+        private void Awake() {
             if (gameFlowController != null) Destroy(gameFlowController);
             gameFlowController = this;
         }
