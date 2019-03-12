@@ -5,7 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/Valentine/Main Menu.unity
+    guid: 6bf0ee9efca634a4191d2ec88c76a5fa
+  - enabled: 1
+    path: Assets/Scenes/Valentine/Play.unity
+    guid: 241dcb7fd5b6b854f8496829809d270f
+  - enabled: 1
+    path: Assets/Scenes/Valentine/Game Quit.unity
+    guid: f039f74920655eb468022a349615a71a
   m_configObjects: {}
