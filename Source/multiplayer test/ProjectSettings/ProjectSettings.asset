@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 15
-  productGUID: cbf5bbaf3663787409946ed9119b8558
+  productGUID: eb57519188caf1446b91e0a9e49acdde
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Project FInch
+  productName: multiplayer test
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -617,9 +617,9 @@ PlayerSettings:
   facebookXfbml: 0
   facebookFrictionlessRequests: 1
   apiCompatibilityLevel: 6
-  cloudProjectId: 962ac411-ca0c-40b4-8af7-cf28ae587e9a
+  cloudProjectId: 491cbd63-3b4f-4bb8-95ea-27fc90bdcd16
   framebufferDepthMemorylessMode: 0
-  projectName: Project FInch
+  projectName: multiplayer test
   organizationId: taynicholas1212
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0

@@ -6,6 +6,8 @@ namespace CombatView {
 
     public class ActionUnit : Unit {
 
+        public bool Debug = false;
+        public Tile tile;
         public int numActions = 2;
         public int actionsPerTurn = 2;
         public int mobility = 6;
