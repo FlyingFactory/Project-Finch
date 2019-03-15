@@ -7,6 +7,7 @@ namespace CombatView {
     public class MapInfo {
 
         public static MapInfo currentMapInfo = null;
+        public Tile[,] bottomLayer;
         public List<Tile> tiles = new List<Tile>();
 
         public MapInfo() {

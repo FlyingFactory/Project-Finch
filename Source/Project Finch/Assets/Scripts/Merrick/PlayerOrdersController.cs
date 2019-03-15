@@ -48,7 +48,7 @@ namespace CombatView {
                         if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask("Click"))) {
 
                             TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
-                            if (hitTile != null) {
+                            if (hitTile != null && selectedUnit != null) {
                                 bool move = true;
                                 if (selectedUnit.takesTile) {
                                     for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {

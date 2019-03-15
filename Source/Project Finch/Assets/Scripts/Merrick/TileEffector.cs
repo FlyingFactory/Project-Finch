@@ -6,11 +6,10 @@ namespace CombatView {
 
     public class TileEffector : MonoBehaviour {
 
-        public Tile tile;
+        public Tile tile = new Tile();
         public ActionUnit TEST_StartingUnit;
 
         private void Start() {
-            tile = new Tile();
             MapGenerator.RegisterObjectTile(TEST_StartingUnit, tile);
             PlayerOrdersController.playerOrdersController.controllableUnits.Add(TEST_StartingUnit);
         }
@@ -29,7 +28,21 @@ namespace CombatView {
 
         public List<FieldObject> occupyingObjects = new List<FieldObject>();
 
-        public List<Tile> Neighbours = new List<Tile>();
+        public Tile above = null;
+        public Tile top {
+            get {
+                if (above == null) return this;
+                else return above.top;
+            }
+        }
+        public Tile below = null;
+        public Tile bottom {
+            get {
+                if (below == null) return this;
+                else return below.bottom;
+            }
+        }
+        public List<TileAccess> Neighbours = new List<TileAccess>();
 
         public List<CoverType>[] Cover = new List<CoverType>[4];
 
@@ -46,6 +59,26 @@ namespace CombatView {
             this.z = z;
             this.h = h;
         }
+    }
+
+    public struct TileAccess {
+        Tile tile;
+        MovementType access;
+    }
+
+    public enum MovementType {
+        Inaccessible,
+        // Abyss, // flight only
+        Walk,
+        ClimbLedge,
+        DropLedge,
+        ClimbLadder,
+        DropLadder,
+        ClimbRope,
+        DropRope,
+        DropCliff,
+        JumpCliff, // requires upgrade
+        // Teleport,
     }
 
     public enum CoverType {

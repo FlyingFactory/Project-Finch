@@ -7,6 +7,7 @@ namespace CombatView {
     public class Unit : FieldObject {
 
         public Tile tile;
+        public Status status;
         private int _health = 10;
         /// <summary>
         /// Do NOT change this directly unless you want to bypass normal effects.
@@ -33,10 +34,11 @@ namespace CombatView {
         }
 
         /// <summary>
-        /// Executes effects that happen when the unit it "supposed" to ide. Returns true if the unit really died.
+        /// Executes effects that happen when the unit it "supposed" to ide. Updates status if the unit really died.
         /// </summary>
         public bool OnDeath() {
             // effects here
+            status = Status.Dead;
             Invoke("DestroySelf", 0.2f);
             return true;
         }
@@ -47,6 +49,12 @@ namespace CombatView {
 
         new public void Start() {
             base.Start();
+        }
+
+        public enum Status {
+            Alive,
+            Dead,
+            // others
         }
     }
 }
