@@ -11,11 +11,8 @@ namespace CombatView {
 
         private void Start() {
             tile = new Tile();
-            if (TEST_StartingUnit != null) {
-                tile.occupyingObjects.Add(TEST_StartingUnit);
-                PlayerOrdersController.playerOrdersController.controllableUnits.Add(TEST_StartingUnit);
-                TEST_StartingUnit.tile = tile;
-            }
+            MapGenerator.RegisterObjectTile(TEST_StartingUnit, tile);
+            PlayerOrdersController.playerOrdersController.controllableUnits.Add(TEST_StartingUnit);
         }
     }
 
@@ -42,6 +39,12 @@ namespace CombatView {
                 if (r < c) r = c;
             }
             return r;
+        }
+
+        public Tile(int x = 0, int z = 0, int h = 0) {
+            this.x = x;
+            this.z = z;
+            this.h = h;
         }
     }
 

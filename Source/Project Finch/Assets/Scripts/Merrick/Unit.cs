@@ -6,6 +6,7 @@ namespace CombatView {
 
     public class Unit : FieldObject {
 
+        public Tile tile;
         private int _health = 10;
         /// <summary>
         /// Do NOT change this directly unless you want to bypass normal effects.

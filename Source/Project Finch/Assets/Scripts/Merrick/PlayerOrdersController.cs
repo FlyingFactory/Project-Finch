@@ -34,9 +34,7 @@ namespace CombatView {
 
                             if (hitTile != null) {
                                 for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {
-                                    Debug.Log(hitTile.gameObject.name + " clicked");
                                     if (hitTile.tile.occupyingObjects[i] is ActionUnit && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
-                                        Debug.Log(gameObject.name + " selected");
                                         selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
                                         break;
                                     }
