@@ -19,10 +19,11 @@ namespace CombatView {
 
         // --- UI ---
         [SerializeField] private GameObject unitSelectionIndicator;
+        [SerializeField] private GameObject fireUI;
 
 
-    private void Awake() {
-        if (playerOrdersController != null) Destroy(playerOrdersController);
+        private void Awake() {
+            if (playerOrdersController != null) Destroy(playerOrdersController);
             playerOrdersController = this;
         }
 
@@ -77,6 +78,10 @@ namespace CombatView {
                     }
                     break;
             }
+        }
+
+        public void FireButton() {
+            Debug.Log("fire button clicked");
         }
     }
 }
