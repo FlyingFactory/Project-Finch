@@ -6,6 +6,8 @@ namespace CombatView {
 
     public class PlayerOrdersController : MonoBehaviour {
 
+        public const float BASE_AIM = 0.65f;
+
         public enum PlayerControlState {
             UnitSelect,
             ActionSelect,
@@ -15,11 +17,13 @@ namespace CombatView {
         public static PlayerOrdersController playerOrdersController;
         public PlayerControlState playerControlState = PlayerControlState.UnitSelect;
         public List<ActionUnit> controllableUnits = new List<ActionUnit>();
-        public ActionUnit selectedUnit = null;
+        [System.NonSerialized] public ActionUnit selectedUnit = null;
+        [System.NonSerialized] public ActionUnit targetedUnit = null;
 
         // --- UI ---
         [SerializeField] private GameObject unitSelectionIndicator;
         [SerializeField] private GameObject fireUI;
+        [SerializeField] private TMPro.TextMeshProUGUI hitChanceText;
 
 
         private void Awake() {
@@ -39,8 +43,21 @@ namespace CombatView {
 
                             if (hitTile != null) {
                                 for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {
-                                    if (hitTile.tile.occupyingObjects[i] is ActionUnit && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
-                                        selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
+                                    if (hitTile.tile.occupyingObjects[i] is ActionUnit) {
+                                        if (controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
+                                            selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
+                                        }
+                                        else {
+                                            targetedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
+                                            fireUI.SetActive(true);
+                                            playerControlState = PlayerControlState.ActionSelect;
+                                            float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
+                                            float hitChance;
+                                            if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
+                                            else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
+                                            else hitChance = BASE_AIM;
+                                            hitChanceText.text = string.Format("Hit: {0:p}", hitChance);
+                                        }
                                         break;
                                     }
                                 }
@@ -77,11 +94,33 @@ namespace CombatView {
                         unitSelectionIndicator.transform.position = selectedUnit.transform.position;
                     }
                     break;
+
+                case PlayerControlState.ActionSelect:
+
+                    if (Input.GetButtonDown("escape")) {
+                        targetedUnit = null;
+                        fireUI.SetActive(false);
+                        playerControlState = PlayerControlState.UnitSelect;
+                    }
+                    break;
             }
         }
 
         public void FireButton() {
-            Debug.Log("fire button clicked");
+            float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
+            float hitChance;
+            if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
+            else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
+            else hitChance = BASE_AIM;
+            if (Random.Range(0f, 1) < hitChance) {
+                Debug.Log("Hit!");
+            }
+            else {
+                Debug.Log("Missed!");
+            }
+            targetedUnit = null;
+            fireUI.SetActive(false);
+            playerControlState = PlayerControlState.UnitSelect;
         }
     }
 }

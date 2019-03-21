@@ -306,12 +306,12 @@ GameObject:
   m_Component:
   - component: {fileID: 925882575}
   m_Layer: 5
-  m_Name: Center Panel
+  m_Name: Fire Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &925882575
 RectTransform:
   m_ObjectHideFlags: 0
@@ -445,7 +445,7 @@ GameObject:
   - component: {fileID: 1139790157}
   - component: {fileID: 1139790156}
   m_Layer: 5
-  m_Name: TextMeshPro Text
+  m_Name: HitChanceText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -567,11 +567,11 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
@@ -674,6 +674,7 @@ GameObject:
   - component: {fileID: 1547104472}
   - component: {fileID: 1547104471}
   - component: {fileID: 1547104470}
+  - component: {fileID: 1547104473}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -740,7 +741,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1547104471}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1547104473}
+        m_MethodName: Click
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1547104471
@@ -780,6 +792,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1547104468}
   m_CullTransparentMesh: 0
+--- !u!114 &1547104473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1547104468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e803123a118187a4798f79bcb2a12893, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1608539224
 GameObject:
   m_ObjectHideFlags: 0
@@ -812,9 +836,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerControlState: 0
   controllableUnits: []
-  selectedUnit: {fileID: 0}
   unitSelectionIndicator: {fileID: 231859023}
-  fireUI: {fileID: 941298883}
+  fireUI: {fileID: 925882574}
+  hitChanceText: {fileID: 1139790156}
 --- !u!4 &1608539226
 Transform:
   m_ObjectHideFlags: 0

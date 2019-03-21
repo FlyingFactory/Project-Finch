@@ -59,6 +59,10 @@ namespace CombatView {
             this.z = z;
             this.h = h;
         }
+
+        public static float DistanceBetween(Tile a, Tile b) {
+            return Mathf.Sqrt(Mathf.Pow(b.x - a.x, 2) + Mathf.Pow(b.z - a.z, 2));
+        }
     }
 
     public struct TileAccess {
