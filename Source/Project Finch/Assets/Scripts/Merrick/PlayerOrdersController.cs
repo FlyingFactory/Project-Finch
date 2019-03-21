@@ -17,6 +17,10 @@ namespace CombatView {
         public List<ActionUnit> controllableUnits = new List<ActionUnit>();
         public ActionUnit selectedUnit = null;
 
+        // --- UI ---
+        [SerializeField] private GameObject unitSelectionIndicator;
+
+
     private void Awake() {
         if (playerOrdersController != null) Destroy(playerOrdersController);
             playerOrdersController = this;
@@ -66,6 +70,10 @@ namespace CombatView {
                                 }
                             }
                         }
+                    }
+
+                    if (selectedUnit != null && unitSelectionIndicator != null) {
+                        unitSelectionIndicator.transform.position = selectedUnit.transform.position;
                     }
                     break;
             }

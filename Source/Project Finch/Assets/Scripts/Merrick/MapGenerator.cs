@@ -35,10 +35,19 @@ namespace CombatView {
                 }
             }
 
-            for (int i = 0; i < 5; i+=2) {
+            for (int i = 0; i < 5; i += 2) {
                 ActionUnit newUnit = Instantiate(Resources.Load<ActionUnit>("Prefabs/Testing/Unit"));
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[0, i]);
                 PlayerOrdersController.playerOrdersController.controllableUnits.Add(newUnit);
+            }
+
+            for (int i = 0; i < 5; i ++) {
+                int x = Random.Range(0, 32);
+                int z = Random.Range(0, 32);
+                if (MapInfo.currentMapInfo.bottomLayer[x, z].top.occupyingObjects.Count == 0) {
+                    ActionUnit newUnit = Instantiate(Resources.Load<ActionUnit>("Prefabs/Testing/Testdummy"));
+                    RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[x, z].top);
+                }
             }
         }
 
