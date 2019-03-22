@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Valentine/Game Quit.unity
     guid: f039f74920655eb468022a349615a71a
+  - enabled: 1
+    path: Assets/Scenes/Merrick.unity
+    guid: 6e6a8b2aa6e5d9f4fad18807e901ae6c
   m_configObjects: {}
