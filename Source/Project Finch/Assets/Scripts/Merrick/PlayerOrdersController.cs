@@ -18,7 +18,7 @@ namespace CombatView {
         public PlayerControlState playerControlState = PlayerControlState.UnitSelect;
         public List<ActionUnit> controllableUnits = new List<ActionUnit>();
         [System.NonSerialized] public ActionUnit selectedUnit = null;
-        [System.NonSerialized] public ActionUnit targetedUnit = null;
+        [System.NonSerialized] public Unit targetedUnit = null;
 
         // --- UI ---
         [SerializeField] private GameObject unitSelectionIndicator;
@@ -43,12 +43,14 @@ namespace CombatView {
 
                             if (hitTile != null) {
                                 for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {
-                                    if (hitTile.tile.occupyingObjects[i] is ActionUnit) {
-                                        if (controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
+                                    if (hitTile.tile.occupyingObjects[i] is Unit) {
+                                        if (hitTile.tile.occupyingObjects[i] is ActionUnit 
+                                            && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit) 
+                                            && (hitTile.tile.occupyingObjects[i] as Unit).status != Unit.Status.Dead) {
                                             selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
                                         }
                                         else {
-                                            targetedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
+                                            targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
                                             fireUI.SetActive(true);
                                             playerControlState = PlayerControlState.ActionSelect;
                                             float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
@@ -114,6 +116,7 @@ namespace CombatView {
             else hitChance = BASE_AIM;
             if (Random.Range(0f, 1) < hitChance) {
                 Debug.Log("Hit!");
+                targetedUnit.Damage(5); // TODO: fill with real damage calculation
             }
             else {
                 Debug.Log("Missed!");

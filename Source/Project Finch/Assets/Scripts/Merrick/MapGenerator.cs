@@ -45,7 +45,7 @@ namespace CombatView {
                 int x = Random.Range(0, 32);
                 int z = Random.Range(0, 32);
                 if (MapInfo.currentMapInfo.bottomLayer[x, z].top.occupyingObjects.Count == 0) {
-                    ActionUnit newUnit = Instantiate(Resources.Load<ActionUnit>("Prefabs/Testing/Testdummy"));
+                    PassiveUnit newUnit = Instantiate(Resources.Load<PassiveUnit>("Prefabs/Testing/Testdummy"));
                     RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[x, z].top);
                 }
             }

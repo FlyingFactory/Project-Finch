@@ -23,20 +23,20 @@ namespace CombatView {
 
         public int Damage(int amt) {
             // effects here
-            currentHealth = Mathf.Min(currentHealth + amt, maxHealth);
+            currentHealth = Mathf.Max(currentHealth - amt, 0);
             return amt;
         }
 
         public int Heal(int amt) {
             // effects here
-            currentHealth = Mathf.Max(currentHealth - amt, 0);
+            currentHealth = Mathf.Min(currentHealth + amt, maxHealth);
             return amt;
         }
 
         /// <summary>
         /// Executes effects that happen when the unit it "supposed" to ide. Updates status if the unit really died.
         /// </summary>
-        public bool OnDeath() {
+        public virtual bool OnDeath() {
             // effects here
             status = Status.Dead;
             Invoke("DestroySelf", 0.2f);
@@ -44,6 +44,7 @@ namespace CombatView {
         }
 
         public void DestroySelf() {
+            tile.occupyingObjects.Remove(this);
             Destroy(gameObject);
         }
 
