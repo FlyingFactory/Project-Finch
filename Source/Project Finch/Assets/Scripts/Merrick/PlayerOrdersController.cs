@@ -43,10 +43,10 @@ namespace CombatView {
 
                             if (hitTile != null) {
                                 for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {
-                                    if (hitTile.tile.occupyingObjects[i] is Unit) {
-                                        if (hitTile.tile.occupyingObjects[i] is ActionUnit 
-                                            && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit) 
-                                            && (hitTile.tile.occupyingObjects[i] as Unit).status != Unit.Status.Dead) {
+                                    if (hitTile.tile.occupyingObjects[i] is Unit
+                                        && (hitTile.tile.occupyingObjects[i] as Unit).status != Unit.Status.Dead) {
+                                        if (hitTile.tile.occupyingObjects[i] is ActionUnit
+                                            && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
                                             selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
                                         }
                                         else {
@@ -72,7 +72,7 @@ namespace CombatView {
                         if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask("Click"))) {
 
                             TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
-                            if (hitTile != null && selectedUnit != null) {
+                            if (hitTile != null && selectedUnit != null && selectedUnit.numActions > 0) {
                                 bool move = true;
                                 if (selectedUnit.takesTile) {
                                     for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {
@@ -83,6 +83,7 @@ namespace CombatView {
                                     }
                                 }
                                 if (move) {
+                                    selectedUnit.numActions -= 1;
                                     selectedUnit.transform.position = hitTile.transform.position;
                                     selectedUnit.tile.occupyingObjects.Remove(selectedUnit);
                                     selectedUnit.tile = hitTile.tile;
@@ -109,21 +110,25 @@ namespace CombatView {
         }
 
         public void FireButton() {
-            float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
-            float hitChance;
-            if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
-            else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
-            else hitChance = BASE_AIM;
-            if (Random.Range(0f, 1) < hitChance) {
-                Debug.Log("Hit!");
-                targetedUnit.Damage(5); // TODO: fill with real damage calculation
+            if (targetedUnit.status != Unit.Status.Dead
+                && selectedUnit.numActions > 0) {
+                selectedUnit.numActions = 0;
+                float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
+                float hitChance;
+                if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
+                else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
+                else hitChance = BASE_AIM;
+                if (Random.Range(0f, 1) < hitChance) {
+                    Debug.Log("Hit!");
+                    targetedUnit.Damage(5); // TODO: fill with real damage calculation
+                }
+                else {
+                    Debug.Log("Missed!");
+                }
+                targetedUnit = null;
+                fireUI.SetActive(false);
+                playerControlState = PlayerControlState.UnitSelect;
             }
-            else {
-                Debug.Log("Missed!");
-            }
-            targetedUnit = null;
-            fireUI.SetActive(false);
-            playerControlState = PlayerControlState.UnitSelect;
         }
     }
 }
