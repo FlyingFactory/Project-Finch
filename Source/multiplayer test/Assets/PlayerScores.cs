@@ -17,20 +17,23 @@ public class PlayerScores : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //just to generate a random score to simulate game data that needs to be sent online
         player_score = random.Next(0,100);
         scoreText.text = "Score:" + player_score.ToString();
     }
 
+    //function call when submit button is clicked
     public void OnSubmit()
     {
         player_name = nameText.text;
         PostToDatabase();
     }
 
+    //called to post to firebase.
     public void PostToDatabase()
     {
-        User user = new User();
-        RestClient.Post("https://project-finch-database.firebaseio.com/.json", user);
+        User user = new User(); //user is a class that contains player_name and player_score, which will be posted to firebase
+        RestClient.Post("https://project-finch-database.firebaseio.com/.json", user); //link is the firebase i created
     }
 
 }

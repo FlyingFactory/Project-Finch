@@ -5,6 +5,7 @@ using UnityEngine;
 
 [Serializable]
 
+//class to store variables and data that will be sent to firebase with PostToDatabase() function call
 public class User
 {
     public String userName;
