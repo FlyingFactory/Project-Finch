@@ -1144,7 +1144,7 @@ MonoBehaviour:
   unitSelectionIndicator: {fileID: 231859023}
   fireUI: {fileID: 925882574}
   hitChanceText: {fileID: 1139790156}
-  coverText: {fileID: 0}
+  coverText: {fileID: 1338365230}
   lowCoverTextColor: {r: 1, g: 1, b: 0, a: 1}
   highCoverTextColor: {r: 0.39215687, g: 0.39215687, b: 1, a: 1}
 --- !u!4 &1608539226
