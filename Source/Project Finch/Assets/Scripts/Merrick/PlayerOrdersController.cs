@@ -22,9 +22,14 @@ namespace CombatView {
         [System.NonSerialized] public Unit targetedUnit = null;
 
         // --- UI ---
+#pragma warning disable 649
         [SerializeField] private GameObject unitSelectionIndicator;
         [SerializeField] private GameObject fireUI;
         [SerializeField] private TMPro.TextMeshProUGUI hitChanceText;
+        [SerializeField] private TMPro.TextMeshProUGUI coverText;
+        [SerializeField] private Color lowCoverTextColor = new Color32(255, 255, 0, 255);
+        [SerializeField] private Color highCoverTextColor = new Color32(100, 100, 255, 255);
+#pragma warning restore 649
 
 
         private void Awake() {
