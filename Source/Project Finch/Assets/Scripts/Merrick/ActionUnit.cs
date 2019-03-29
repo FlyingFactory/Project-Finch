@@ -17,5 +17,9 @@ namespace CombatView {
         public void OrderMove(Tile t) {
             //TODO
         }
+
+        public void DrawMovableLocations() {
+            //TODO
+        }
     }
 }

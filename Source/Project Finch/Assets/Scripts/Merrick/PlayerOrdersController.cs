@@ -17,6 +17,7 @@ namespace CombatView {
         public static PlayerOrdersController playerOrdersController;
         public PlayerControlState playerControlState = PlayerControlState.UnitSelect;
         public List<ActionUnit> controllableUnits = new List<ActionUnit>();
+        public List<ActionUnit> otherUnits = new List<ActionUnit>();
         [System.NonSerialized] public ActionUnit selectedUnit = null;
         [System.NonSerialized] public Unit targetedUnit = null;
 
@@ -128,6 +129,13 @@ namespace CombatView {
                 targetedUnit = null;
                 fireUI.SetActive(false);
                 playerControlState = PlayerControlState.UnitSelect;
+            }
+        }
+
+        public void EndTurnButton() {
+            for (int i = 0; i < controllableUnits.Count; i++) {
+                Debug.Log(controllableUnits[i]);
+                controllableUnits[i].numActions = controllableUnits[i].actionsPerTurn;
             }
         }
     }
