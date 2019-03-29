@@ -134,7 +134,6 @@ namespace CombatView {
 
         public void EndTurnButton() {
             for (int i = 0; i < controllableUnits.Count; i++) {
-                Debug.Log(controllableUnits[i]);
                 controllableUnits[i].numActions = controllableUnits[i].actionsPerTurn;
             }
         }
