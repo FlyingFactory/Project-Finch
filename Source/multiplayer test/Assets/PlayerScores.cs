@@ -14,6 +14,11 @@ public class PlayerScores : MonoBehaviour
     public static int player_score;
     public static string player_name;
 
+    public static int match_id;
+    public static int matchedPlayer1;
+    public static int matchedPlayer2;
+    public static bool match_found;
+
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +26,10 @@ public class PlayerScores : MonoBehaviour
         //just to generate a random score to simulate game data that needs to be sent online
         player_score = random.Next(0,100);
         scoreText.text = "Score:" + player_score.ToString();
+        match_id = random.Next(0, 100);
+        match_found = true;
+        matchedPlayer1 = 1;
+        matchedPlayer2 = 2;
     }
 
     //function call when submit button is clicked
@@ -28,12 +37,13 @@ public class PlayerScores : MonoBehaviour
     {
         player_name = nameText.text;
         scoreText.text = "Score:" + player_score.ToString();
-        PostToDatabase();
+        UserPostToDatabase();
+        MatchPostToDatabase();
     }
 
     public void OnGetScore()
     {
-        RetrieveFromDatabase();
+        ScoreRetrieveFromDatabase();
     }
 
     private void UpdateScore()
@@ -42,18 +52,24 @@ public class PlayerScores : MonoBehaviour
     }
 
     //called to post to firebase.
-    public void PostToDatabase()
+    public void UserPostToDatabase()
     {
         User user = new User(); //user is a class that contains player_name and player_score, which will be posted to firebase
-        RestClient.Put("https://project-finch-database.firebaseio.com/"+player_name+".json", user); //link is the firebase i created
+        RestClient.Put("https://project-finch-database.firebaseio.com/User/"+player_name+".json", user); //link is the firebase link
     }
 
-    public void RetrieveFromDatabase()
+    public void ScoreRetrieveFromDatabase()
     {
-        RestClient.Get<User>("https://project-finch-database.firebaseio.com/"+nameText.text+".json").Then(response =>
+        RestClient.Get<User>("https://project-finch-database.firebaseio.com/User/"+nameText.text+".json").Then(response =>
         {
             user = response;
             UpdateScore();
         });
+    }
+
+    public void MatchPostToDatabase()
+    {
+        matchDetails match = new matchDetails();
+        RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + match_id + ".json", match); 
     }
 }
