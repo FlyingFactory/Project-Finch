@@ -11,7 +11,7 @@ namespace CombatView {
 
         private void Start() {
             MapGenerator.RegisterObjectTile(TEST_StartingUnit, tile);
-            PlayerOrdersController.playerOrdersController.controllableUnits.Add(TEST_StartingUnit);
+            if (TEST_StartingUnit != null) PlayerOrdersController.playerOrdersController.controllableUnits.Add(TEST_StartingUnit);
         }
     }
 
