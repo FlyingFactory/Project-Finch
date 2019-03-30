@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using Proyecto26;
 
 namespace CombatView {
 
@@ -14,15 +17,22 @@ namespace CombatView {
         }
 
         [System.NonSerialized] public static GameFlowController gameFlowController;
-
         [System.NonSerialized] public TurnState turnState = TurnState.Entry;
         [System.NonSerialized] public bool waitingForServer = false;
         [System.NonSerialized] public int currentPlayer = 0;
         [System.NonSerialized] public int numPlayers = 2;
-
-        private string matchID = null;
+        [System.NonSerialized] public static int matchID = 68;
         private bool player1;
         private string moveNumber = null;
+        [System.NonSerialized] public static string moveInformation = null;
+
+        [System.NonSerialized] public static string match_details1 = null;
+        [System.NonSerialized] public static int matchedPlayer1 = 1;
+        [System.NonSerialized] public static int matchedPlayer2 = 2;
+        [System.NonSerialized] public static bool matchfound = true;
+
+        public InputField moveInfoInput;
+        public InputField matchDetailsInput;
 
         private void Awake() {
             if (gameFlowController != null) Destroy(gameFlowController);
@@ -36,6 +46,7 @@ namespace CombatView {
         /// <param name="cancel">If true, the user is cancelling the request instead.</param>
         public void requestMatchmaking(int userID, bool cancel = false) {
             // The server should check if the user is already searching for or in a match.
+            
         }
 
         /// <summary>
@@ -50,12 +61,21 @@ namespace CombatView {
 
         /// <summary>
         /// Adds a unverified move to the match information. Information includes moveNumber as well as moveInfo.
+        /// eg moveInfo: p1(playerNumber),mN(moveNumber):0,uN(unitNumber):0,x:000,z:000,h:0,0
         /// The game should wait until the move has been verified before proceeding.
         /// The server will verify that it is this player who can make a move.
+        /// verification not implemented yet. can add moveinfo already.
         /// </summary>
         /// <param name="moveInfo"></param>
         public void addMove(string moveInfo) {
-            
+            moveInformation = moveInfo;
+            PostMoveInfoToDatabase();
+        }
+
+        public void InitialiseMatch(string matchDetails)
+        {
+            match_details1 = matchDetails;
+            PostMatchDetails();
         }
 
         /// <summary>
@@ -67,5 +87,48 @@ namespace CombatView {
         public string checkNextMove() {
             return null;
         }
+
+        //Start of PostmoveInfoToDatabase works.
+        public void PostMoveInfoToDatabase()
+        {
+            MoveInfo moveinfo = new MoveInfo();
+            matchID = 68;
+            RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json", moveinfo);
+        }
+
+        public string getMoveInfoFromInput()
+        {
+            string move_info = moveInfoInput.text;
+            return move_info;
+        }
+
+        public void OnAddMove()
+        {
+            string moveInfo = getMoveInfoFromInput();
+            addMove(moveInfo);
+        }
+        //end of PostmoveInfoToDatabase().
+
+
+        //Start of PostMatchDetailsToDatabase().
+        public void PostMatchDetails()
+        {
+            MatchDetails match_details = new MatchDetails();
+            matchID = 68;
+            RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/matchDetails.json", match_details);
+        }
+
+        public string getMatchDetailsFromInput()
+        {
+            string match_details = matchDetailsInput.text;
+            return match_details;
+        }
+
+        public void OnAddMatchDetail()
+        {
+            string match_d = getMatchDetailsFromInput();
+            InitialiseMatch(match_d);
+        }
+        //end of PostMatchDetailsToDatabase().
     }
 }
