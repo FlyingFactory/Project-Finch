@@ -31,8 +31,9 @@ namespace CombatView {
         [System.NonSerialized] public static int matchedPlayer2 = 2;
         [System.NonSerialized] public static bool matchfound = true;
 
-        public InputField moveInfoInput;
         public InputField matchDetailsInput;
+        public InputField moveInfoInput;
+        
 
         private void Awake() {
             if (gameFlowController != null) Destroy(gameFlowController);
@@ -120,8 +121,7 @@ namespace CombatView {
 
         public string getMatchDetailsFromInput()
         {
-            string match_details = matchDetailsInput.text;
-            return match_details;
+            return matchDetailsInput.text;
         }
 
         public void OnAddMatchDetail()
