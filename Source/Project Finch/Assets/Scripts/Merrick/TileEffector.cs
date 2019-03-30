@@ -44,7 +44,7 @@ namespace CombatView {
         }
         public List<TileAccess> Neighbours = new List<TileAccess>();
 
-        public List<CoverType>[] Cover = new List<CoverType>[4];
+        public List<CoverType>[] Cover = new List<CoverType>[4] { new List<CoverType>(), new List<CoverType>(), new List<CoverType>(), new List<CoverType>() };
 
         public CoverType getCover(Direction d) {
             CoverType r = CoverType.None;
@@ -62,6 +62,13 @@ namespace CombatView {
 
         public static float DistanceBetween(Tile a, Tile b) {
             return Mathf.Sqrt(Mathf.Pow(b.x - a.x, 2) + Mathf.Pow(b.z - a.z, 2));
+        }
+
+        public bool ContainsBlockingEnvironment() {
+            for (int i = 0; i < occupyingObjects.Count; i++) {
+                if (occupyingObjects[i].blocksMovement && occupyingObjects[i] is EnvObject) return true;
+            }
+            return false;
         }
     }
 
