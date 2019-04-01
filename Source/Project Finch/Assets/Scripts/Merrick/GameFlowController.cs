@@ -30,9 +30,14 @@ namespace CombatView {
         [System.NonSerialized] public static int matchedPlayer1 = 1;
         [System.NonSerialized] public static int matchedPlayer2 = 2;
         [System.NonSerialized] public static bool matchfound = true;
+        [System.NonSerialized] public static int UserID = 0;
+        UserQueue user_queue = new UserQueue();
+        //[System.NonSerialized] public static int user_id = 0;
+
 
         public InputField matchDetailsInput;
         public InputField moveInfoInput;
+        public InputField userIDInput;
         
 
         private void Awake() {
@@ -47,7 +52,61 @@ namespace CombatView {
         /// <param name="cancel">If true, the user is cancelling the request instead.</param>
         public void requestMatchmaking(int userID, bool cancel = false) {
             // The server should check if the user is already searching for or in a match.
+
+            //check if user is not already in queue.
+            if (!CheckIfUserInQueue(userID))
+            {
+                PostUserLFMtoDatabase(userID);
+            }
             
+            //check if user is in match.
+            if (CheckIfUserInMatch(userID))
+            {
+
+            }
+        }
+
+
+        public void PostUserLFMtoDatabase(int userID)
+        {
+            user_queue = new UserQueue();
+            user_queue.UserID = userID;
+            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/"+ userID +".json", user_queue);
+        }
+
+        public bool CheckIfUserInQueue(int userID)
+        {
+            RestClient.Get<UserQueue>("https://project-finch-database.firebaseio.com/queuingForMatch/"+".json").Then(response =>
+            {
+                user_queue = response;
+            });
+
+            if (user_queue.UserID == userID)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+
+        public int getUserIdFromInput()
+        {
+            int id = Convert.ToInt32(userIDInput.text);
+            return id;
+        }
+
+        public void onPostUserIDtoQueue()
+        {
+            int x = getUserIdFromInput();
+            requestMatchmaking(x);
+        }
+
+        public bool CheckIfUserInMatch(int userID)
+        {
+            return false;
         }
 
         /// <summary>
@@ -73,11 +132,7 @@ namespace CombatView {
             PostMoveInfoToDatabase();
         }
 
-        public void InitialiseMatch(string matchDetails)
-        {
-            match_details1 = matchDetails;
-            PostMatchDetails();
-        }
+        
 
         /// <summary>
         /// Checks if a new move has been accepted by the server.
@@ -89,7 +144,15 @@ namespace CombatView {
             return null;
         }
 
-        //Start of PostmoveInfoToDatabase works.
+
+        public void InitialiseMatch(string matchDetails)
+        {
+            match_details1 = matchDetails;
+            PostMatchDetails();
+        }
+
+
+        //Start of functions required for PostmoveInfoToDatabase().
         public void PostMoveInfoToDatabase()
         {
             MoveInfo moveinfo = new MoveInfo();
@@ -110,8 +173,9 @@ namespace CombatView {
         }
         //end of PostmoveInfoToDatabase().
 
+        
 
-        //Start of PostMatchDetailsToDatabase().
+        //Start of functions required for PostMatchDetailsToDatabase().
         public void PostMatchDetails()
         {
             MatchDetails match_details = new MatchDetails();
