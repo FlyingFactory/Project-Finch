@@ -31,8 +31,10 @@ namespace CombatView {
         [System.NonSerialized] public static int matchedPlayer2 = 2;
         [System.NonSerialized] public static bool matchfound = true;
         [System.NonSerialized] public static int UserID = 0;
+        [System.NonSerialized] public static bool InMatch = false;
+
         UserQueue user_queue = new UserQueue();
-        //[System.NonSerialized] public static int user_id = 0;
+        
 
 
         public InputField matchDetailsInput;
@@ -62,11 +64,26 @@ namespace CombatView {
             //check if user is in match.
             if (CheckIfUserInMatch(userID))
             {
+                //user is in match already. do what?
 
+
+            }
+
+            if (cancel)
+            {
+                RemoveUserLFMtoDatabase(userID);
             }
         }
 
-
+        //works
+        public void RemoveUserLFMtoDatabase(int userID)
+        {
+            user_queue = new UserQueue();
+            user_queue.UserID = null;
+            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + userID + "/.json", user_queue);
+        }
+        
+        //works
         public void PostUserLFMtoDatabase(int userID)
         {
             user_queue = new UserQueue();
@@ -74,6 +91,7 @@ namespace CombatView {
             RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/"+ userID +".json", user_queue);
         }
 
+        //works
         public bool CheckIfUserInQueue(int userID)
         {
             RestClient.Get<UserQueue>("https://project-finch-database.firebaseio.com/queuingForMatch/"+".json").Then(response =>
@@ -104,9 +122,20 @@ namespace CombatView {
             requestMatchmaking(x);
         }
 
+        public void onRemoveUserIDFromQueue()
+        {
+            int x = getUserIdFromInput();
+            requestMatchmaking(x, true);
+        }
+
         public bool CheckIfUserInMatch(int userID)
         {
-            return false;
+            RestClient.Get<bool>("https://project-finch-database.firebaseio.com/User/"+ userID + "InMatch/.json").Then(response =>
+            {
+                InMatch = response;
+            });
+
+            return InMatch;
         }
 
         /// <summary>
@@ -145,11 +174,44 @@ namespace CombatView {
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public void InitialiseMatch(string matchDetails)
         {
             match_details1 = matchDetails;
             PostMatchDetails();
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         //Start of functions required for PostmoveInfoToDatabase().

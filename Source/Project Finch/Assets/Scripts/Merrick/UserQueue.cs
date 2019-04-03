@@ -9,7 +9,7 @@ using UnityEngine;
 public class UserQueue
 {
     //add more data that is going to be stored on database here
-    public int UserID;
+    public int ? UserID;
 
     public UserQueue()
     {
