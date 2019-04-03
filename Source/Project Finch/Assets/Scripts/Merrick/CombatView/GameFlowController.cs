@@ -23,8 +23,10 @@ namespace CombatView {
         [System.NonSerialized] public int numPlayers = 2;
         [System.NonSerialized] public static int matchID = 68;
         private bool player1;
-        private string moveNumber = null;
         [System.NonSerialized] public static string moveInformation = null;
+        [System.NonSerialized] public static string NCmoveInformation = null;
+        [System.NonSerialized] public static int moveNumber = 0;
+
 
         [System.NonSerialized] public static string match_details1 = null;
         [System.NonSerialized] public static int matchedPlayer1 = 1;
@@ -32,14 +34,17 @@ namespace CombatView {
         [System.NonSerialized] public static bool matchfound = true;
         [System.NonSerialized] public static int UserID = 0;
         [System.NonSerialized] public static bool InMatch = false;
+        [System.NonSerialized] public static MoveInfo move_info_exists = null;
+        [System.NonSerialized] public static string move_info = null;
 
         UserQueue user_queue = new UserQueue();
-        
 
 
+        public Text moveInfoText;
         public InputField matchDetailsInput;
         public InputField moveInfoInput;
         public InputField userIDInput;
+        public InputField matchIDInput;
         
 
         private void Awake() {
@@ -65,8 +70,6 @@ namespace CombatView {
             if (CheckIfUserInMatch(userID))
             {
                 //user is in match already. do what?
-
-
             }
 
             if (cancel)
@@ -75,68 +78,7 @@ namespace CombatView {
             }
         }
 
-        //works
-        public void RemoveUserLFMtoDatabase(int userID)
-        {
-            user_queue = new UserQueue();
-            user_queue.UserID = null;
-            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + userID + "/.json", user_queue);
-        }
         
-        //works
-        public void PostUserLFMtoDatabase(int userID)
-        {
-            user_queue = new UserQueue();
-            user_queue.UserID = userID;
-            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/"+ userID +".json", user_queue);
-        }
-
-        //works
-        public bool CheckIfUserInQueue(int userID)
-        {
-            RestClient.Get<UserQueue>("https://project-finch-database.firebaseio.com/queuingForMatch/"+".json").Then(response =>
-            {
-                user_queue = response;
-            });
-
-            if (user_queue.UserID == userID)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            
-        }
-
-        public int getUserIdFromInput()
-        {
-            int id = Convert.ToInt32(userIDInput.text);
-            return id;
-        }
-
-        public void onPostUserIDtoQueue()
-        {
-            int x = getUserIdFromInput();
-            requestMatchmaking(x);
-        }
-
-        public void onRemoveUserIDFromQueue()
-        {
-            int x = getUserIdFromInput();
-            requestMatchmaking(x, true);
-        }
-
-        public bool CheckIfUserInMatch(int userID)
-        {
-            RestClient.Get<bool>("https://project-finch-database.firebaseio.com/User/"+ userID + "InMatch/.json").Then(response =>
-            {
-                InMatch = response;
-            });
-
-            return InMatch;
-        }
 
         /// <summary>
         /// Checks if a match has been assigned to the user.
@@ -168,27 +110,26 @@ namespace CombatView {
         /// If there is a new move, moveNumber should be incremented.
         /// If there are multiple unread moves, returns the earliest unread.
         /// </summary>
+        /// <param name="matchID">The match's unique ID</param>
         /// <returns>Returns the move information, or null if there is no new move.</returns>
-        public string checkNextMove() {
-            return null;
+        public string checkNextMove(int matchID) {
+            //check if match exists before we grab moveInfo
+            
+            if (matchExists(matchID))
+            {
+                Debug.Log("match ID exists");
+                RestClient.Get<MoveInfo>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
+                {
+                    move_info_exists = response;
+                    //UpdateMoveInfo();
+                });
+            }
+            //Debug.Log(move_info_exists.moveInfo);
+            return move_info_exists.moveInfo;
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+       
 
 
         public void InitialiseMatch(string matchDetails)
@@ -197,24 +138,104 @@ namespace CombatView {
             PostMatchDetails();
         }
 
+        //START OF FUNCTIONS REQUIRED FOR checkNextMove()
+        public bool matchExists(int matchID)
+        {
+            try
+            {
+                RestClient.Get<MoveInfo>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
+                {
+                    MoveInfo move_info_exists = response;
+
+                });
+                return true;
+            }
+            catch (NullReferenceException e)
+            {
+                return false;
+            }
+        }
+
+        public void UpdateMoveInfo()
+        {
+            moveInfoText.text = move_info_exists.moveInfo;
+        }
+
+        public void OnCheckMoveInfo()
+        {
+            int x = Convert.ToInt32(matchIDInput.text);
+            checkNextMove(x);
+        }
+        //END OF FUNCTIONS REQUIRED FOR checkNextMove()
 
 
+        //START OF REQUESTMATCHMAKING REQUIRED FUNCTIONS
+        //works
+        public void RemoveUserLFMtoDatabase(int userID)
+        {
+            user_queue = new UserQueue();
+            user_queue.UserID = null;
+            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + userID + "/.json", user_queue);
+        }
+
+        //works
+        public void PostUserLFMtoDatabase(int userID)
+        {
+            user_queue = new UserQueue();
+            user_queue.UserID = userID;
+            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + userID + ".json", user_queue);
+        }
+
+        //works
+        public bool CheckIfUserInQueue(int userID)
+        {
+            RestClient.Get<UserQueue>("https://project-finch-database.firebaseio.com/queuingForMatch/" + ".json").Then(response =>
+            {
+                user_queue = response;
+            });
+
+            if (user_queue.UserID == userID)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public int getUserIdFromInput()
+        {
+            int id = Convert.ToInt32(userIDInput.text);
+            return id;
+        }
+
+        public void onPostUserIDtoQueue()
+        {
+            int x = getUserIdFromInput();
+            requestMatchmaking(x);
+        }
+
+        public void onRemoveUserIDFromQueue()
+        {
+            int x = getUserIdFromInput();
+            requestMatchmaking(x, true);
+        }
+
+        public bool CheckIfUserInMatch(int userID)
+        {
+            RestClient.Get<bool>("https://project-finch-database.firebaseio.com/User/" + userID + "InMatch/.json").Then(response =>
+            {
+                InMatch = response;
+            });
+
+            return InMatch;
+        }
+        //END OF REQUESTMATCHMAKING REQUIRED FUNCTIONS
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //Start of functions required for PostmoveInfoToDatabase().
+        //START OF FUNCTIONS REQUIRED FOR ADDMOVE().
         public void PostMoveInfoToDatabase()
         {
             MoveInfo moveinfo = new MoveInfo();
@@ -233,11 +254,11 @@ namespace CombatView {
             string moveInfo = getMoveInfoFromInput();
             addMove(moveInfo);
         }
-        //end of PostmoveInfoToDatabase().
+        //END OF FUNCTIONS REQUIRED FOR ADDMOVE().
 
         
 
-        //Start of functions required for PostMatchDetailsToDatabase().
+        //START OF FUNCTIONS REQUIRED FOR INITMATCH()
         public void PostMatchDetails()
         {
             MatchDetails match_details = new MatchDetails();
@@ -255,6 +276,6 @@ namespace CombatView {
             string match_d = getMatchDetailsFromInput();
             InitialiseMatch(match_d);
         }
-        //end of PostMatchDetailsToDatabase().
+        //END OF FUNCTIONS REQUIRED FOR INITMATCH().
     }
 }

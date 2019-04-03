@@ -9,13 +9,14 @@ using UnityEngine;
 public class MoveInfo
 {
     //add more data that is going to be stored on database here
-    public String moveInfo;
-    public bool verified = false;
-
+    public string moveInfo;
+    public int moveNumber;
+    public string NCmoveInfo;
 
     public MoveInfo()
     {
         moveInfo = CombatView.GameFlowController.moveInformation;
-        verified = false;
+        moveNumber = CombatView.GameFlowController.moveNumber;
+        NCmoveInfo = CombatView.GameFlowController.NCmoveInformation;
     }
 }
