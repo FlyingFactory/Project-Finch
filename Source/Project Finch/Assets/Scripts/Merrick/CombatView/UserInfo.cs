@@ -13,6 +13,7 @@ public class UserInfo
     public int matchID;
     public string UserName;
     public bool InMatch;
+    public int numberOfSoldiers;
     
     public UserInfo()
     {
@@ -20,5 +21,6 @@ public class UserInfo
         matchID = CombatView.GameFlowController.matchID;
         UserName = CombatView.GameFlowController.UserName;
         InMatch = CombatView.GameFlowController.InMatch;
+        numberOfSoldiers = MenuView.PlayerAccount.numberOfSoldiers;
     }
 }

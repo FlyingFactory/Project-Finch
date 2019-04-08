@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Proyecto26;
 
 namespace MenuView {
 
@@ -11,6 +12,8 @@ namespace MenuView {
         public float unrankedMMR;
         public float rankedMMR;
         // future getonly property to get rank name from MMR
+
+        public static int numberOfSoldiers;
         public List<OwnableItem> items = new List<OwnableItem>();
         public List<Soldier> soldiers;
 
@@ -46,12 +49,23 @@ namespace MenuView {
             bool loadSuccess = true;
             PlayerAccount loadedAccount = new PlayerAccount();
 
+            
             // TODO: load data
+            RestClient.Get<Soldier>("https://project-finch-database.firebaseio.com/User/" + userID + "/Soldiers.json").Then(response =>
+            {
+                
+            });
 
             if (loadSuccess) {
                 return loadedAccount;
             }
             else return null;
         }
+
+        //public int getNumberOfSoldiers(int userID)
+        //{
+        //    RestClient.Get<>
+        //    return numberOfSoldiers;
+        //}
     }
 }
