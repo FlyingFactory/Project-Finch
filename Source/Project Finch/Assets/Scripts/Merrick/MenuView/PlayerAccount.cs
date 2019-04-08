@@ -13,7 +13,7 @@ namespace MenuView {
         public float rankedMMR;
         // future getonly property to get rank name from MMR
 
-        public static int numberOfSoldiers;
+        public int numberOfSoldiers;
         public List<OwnableItem> items = new List<OwnableItem>();
         public List<Soldier> soldiers;
 
@@ -48,13 +48,16 @@ namespace MenuView {
         public static PlayerAccount LoadData(int userID) {
             bool loadSuccess = true;
             PlayerAccount loadedAccount = new PlayerAccount();
-
             
-            // TODO: load data
-            RestClient.Get<Soldier>("https://project-finch-database.firebaseio.com/User/" + userID + "/Soldiers.json").Then(response =>
+            for (int i = 1; i < loadedAccount.numberOfSoldiers+1; i++)
             {
-                
-            });
+                RestClient.Get<Soldier>("https://project-finch-database.firebaseio.com/User/" + userID + "/Soldiers/Soldier"+i+"/.json").Then(response =>
+                {
+                    Soldier soldier = new Soldier();
+                    soldier = response;
+                    loadedAccount.soldiers.Add(soldier);
+                });
+            } 
 
             if (loadSuccess) {
                 return loadedAccount;
@@ -62,10 +65,15 @@ namespace MenuView {
             else return null;
         }
 
-        //public int getNumberOfSoldiers(int userID)
-        //{
-        //    RestClient.Get<>
-        //    return numberOfSoldiers;
-        //}
+        public IEnumerator getNumberOfSoldiers(int userID)
+        {
+            bool inProgress = true;
+            RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response => 
+            {
+                numberOfSoldiers = response.numberOfSoldiers;
+                inProgress = false;
+            });
+            while (inProgress) yield return new WaitForSeconds(0.25f);
+        }
     }
 }
