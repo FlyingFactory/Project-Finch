@@ -24,11 +24,6 @@ namespace CombatView {
         // --- UI ---
 #pragma warning disable 649
         [SerializeField] private GameObject unitSelectionIndicator;
-        [SerializeField] private GameObject fireUI;
-        [SerializeField] private TMPro.TextMeshProUGUI hitChanceText;
-        [SerializeField] private TMPro.TextMeshProUGUI coverText;
-        [SerializeField] private Color lowCoverTextColor = new Color32(255, 255, 0, 255);
-        [SerializeField] private Color highCoverTextColor = new Color32(100, 100, 255, 255);
 #pragma warning restore 649
 
 
@@ -57,14 +52,14 @@ namespace CombatView {
                                         }
                                         else {
                                             targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
-                                            fireUI.SetActive(true);
+                                            CanvasRefs.canvasRefs.fireUI.SetActive(true);
                                             playerControlState = PlayerControlState.ActionSelect;
                                             float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
                                             float hitChance;
                                             if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
                                             else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
                                             else hitChance = BASE_AIM;
-                                            hitChanceText.text = string.Format("Hit: {0:p}", hitChance);
+                                            CanvasRefs.canvasRefs.hitChanceText.text = string.Format("Hit: {0:p}", hitChance);
                                         }
                                         break;
                                     }
@@ -108,7 +103,7 @@ namespace CombatView {
 
                     if (Input.GetButtonDown("escape")) {
                         targetedUnit = null;
-                        fireUI.SetActive(false);
+                        CanvasRefs.canvasRefs.fireUI.SetActive(false);
                         playerControlState = PlayerControlState.UnitSelect;
                     }
                     break;
@@ -132,12 +127,26 @@ namespace CombatView {
                     Debug.Log("Missed!");
                 }
                 targetedUnit = null;
-                fireUI.SetActive(false);
+                CanvasRefs.canvasRefs.fireUI.SetActive(false);
                 playerControlState = PlayerControlState.UnitSelect;
             }
         }
 
         public void EndTurnButton() {
+            // need to handle wrapup effects
+            CanvasRefs.canvasRefs.EndTurnButton.SetActive(false);
+            CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(true);
+            GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.EnemyTurn;
+
+            // placeholder
+            Invoke("StartTurn", 1.5f);
+        }
+
+        public void StartTurn() {
+            // need to handle turn entry effects
+            CanvasRefs.canvasRefs.EndTurnButton.SetActive(true);
+            CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(false);
+            GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.Entry;
             for (int i = 0; i < controllableUnits.Count; i++) {
                 controllableUnits[i].numActions = controllableUnits[i].actionsPerTurn;
             }

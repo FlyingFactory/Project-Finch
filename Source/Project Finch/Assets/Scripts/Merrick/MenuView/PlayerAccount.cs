@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Proyecto26;
+using System.Threading;
 
 namespace MenuView {
 
@@ -18,51 +19,89 @@ namespace MenuView {
         public List<Soldier> soldiers;
 
         public static PlayerAccount currentPlayer = null;
+        public static bool loginInProgress = false;
 
         /// <summary>
         /// Hashes the password, then checks user/pass with the database.
         /// If it is valid, loads all data into the STATIC currentPlayer's variables.
         /// </summary>
-        /// <returns>true if the login was successful.</returns>
-        public static bool LoginAndLoadAllData(int userID, string password) { // Not sure if you want int or string for ID, just go ahead and change if needed
+        public void LoginAndLoadAllData(int userID, string password) {
+            if (!loginInProgress) {
+                loginInProgress = true;
+                //new MonoBehaviour().StartCoroutine(LoginAndLoadAllDataCoroutine(userID, password));
+                Thread loginThread = new Thread(new ParameterizedThreadStart(LoginAndLoadAllData_Thread));
+                loginThread.Start(new LoginInfo(userID, password));
+            }
+        }
+        private struct LoginInfo {
+            public int userID;
+            public string password;
+            public LoginInfo(int userID, string password) {
+                this.userID = userID;
+                this.password = password;
+            }
+        }
+
+        public static void LoginAndLoadAllData_Thread(object loginInfo) {
+            LoginInfo _loginInfo;
+            try { _loginInfo = (LoginInfo)loginInfo; }
+            catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
+
+            int userID = _loginInfo.userID;
+            string passwordHash = Hash128.Compute(_loginInfo.password).ToString(); // Not sure if this works, can try
+
             bool loginSuccess = true;
-            string passwordHash = Hash128.Compute(password).ToString(); // Not sure if this works, can try
             // TODO: attempt to login
+
             if (loginSuccess) {
-                currentPlayer = LoadData(userID);
-                if (currentPlayer == null) {
+                LoadDataInfo loadDataInfo = new LoadDataInfo(userID);
+
+                Thread loadDataThread = new Thread(new ParameterizedThreadStart(LoadData_Thread));
+                loadDataThread.Start(loadDataInfo);
+                loadDataThread.Join();
+
+                if (loadDataInfo.output == null) {
                     Debug.Log("Load data unsuccessful");
                     loginSuccess = false;
+                }
+                else {
+                    currentPlayer = loadDataInfo.output;
                 }
             }
             else {
                 Debug.Log("Login not successful");
             }
-            return loginSuccess;
         }
 
         /// <summary>
         /// Loads data of any user, for game-loading purposes or viewing profiles.
         /// </summary>
         /// <returns>The newly constructed PlayerAccount, or null if there is no user of that ID.</returns>
-        public static PlayerAccount LoadData(int userID) {
+        public static void LoadData_Thread(object loadDataInfo) {
+
+            LoadDataInfo _loadDataInfo;
+            try { _loadDataInfo = (LoadDataInfo)loadDataInfo; }
+            catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
+
             bool loadSuccess = true;
             PlayerAccount loadedAccount = new PlayerAccount();
+
+            // TODO: load data into loadedAccount
             
-            for (int i = 1; i < loadedAccount.numberOfSoldiers+1; i++)
-            {
-                RestClient.Get<Soldier>("https://project-finch-database.firebaseio.com/User/" + userID + "/Soldiers/Soldier"+i+"/.json").Then(response =>
-                {
-                    Soldier soldier = new Soldier();
-                    soldier = response;
-                    loadedAccount.soldiers.Add(soldier);
-                });
-            } 
 
             if (loadSuccess) {
-                return loadedAccount;
+                _loadDataInfo.output = loadedAccount;
             }
-            else return null;
+            else _loadDataInfo.output = null;
+            _loadDataInfo.complete = true;
+        }
+        public class LoadDataInfo {
+            public int userID;
+            public PlayerAccount output = null;
+            public bool complete = false;
+            public LoadDataInfo(int userID) {
+                this.userID = userID;
+            }
         }
 
         public IEnumerator getNumberOfSoldiers(int userID)

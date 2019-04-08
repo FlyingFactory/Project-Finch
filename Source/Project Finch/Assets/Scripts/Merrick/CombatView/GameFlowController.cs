@@ -14,6 +14,7 @@ namespace CombatView {
             PlayerInput,
             PlayerAction,
             Wrapup,
+            EnemyTurn,
         }
 
         public static GameFlowController gameFlowController;
