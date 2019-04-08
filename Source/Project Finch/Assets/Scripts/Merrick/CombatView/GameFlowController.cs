@@ -33,6 +33,7 @@ namespace CombatView {
         [System.NonSerialized] public static int matchedPlayer2 = 2;
         [System.NonSerialized] public static bool matchfound = true;
         [System.NonSerialized] public static int UserID = 0;
+        [System.NonSerialized] public static string UserName = "";
         [System.NonSerialized] public static bool InMatch = false;
         [System.NonSerialized] public static MoveInfo move_info_exists = null;
         [System.NonSerialized] public static string move_info = null;
@@ -86,9 +87,30 @@ namespace CombatView {
         /// <param name="userID">The user's unique ID.</param>
         /// <returns>Returns the match ID, or null if no match has been found.</returns>
         public string checkForMatch(int userID) {
-            //If there is a match, it edits the match so that the server knows the user has read the directions.
-            return null;
+            //If there is a match, it edits the match so that the server knows the user has read the directions. (not sure what this is supposed to do)
+            Debug.Log(CheckIfUserInMatch(userID));
+            if (CheckIfUserInMatch(userID))
+            {
+                Debug.Log("user is in match");
+                return matchID.ToString();
+            }
+            else
+            {
+                return null;
+            }
         }
+
+
+        public void onGetMatchID()
+        {
+            int x = Convert.ToInt32(userIDInput.text);
+            Debug.Log(x);
+            Debug.Log(checkForMatch(x));
+        }
+
+
+
+
 
         /// <summary>
         /// Adds a unverified move to the match information. Information includes moveNumber as well as moveInfo.
@@ -225,11 +247,13 @@ namespace CombatView {
 
         public bool CheckIfUserInMatch(int userID)
         {
-            RestClient.Get<bool>("https://project-finch-database.firebaseio.com/User/" + userID + "InMatch/.json").Then(response =>
+            RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response =>
             {
-                InMatch = response;
+                InMatch = response.InMatch;
+                matchID = response.matchID;
             });
-
+            //TODO: fix a problem here need to wait awhile for InMatch to be updated. first function call fails usually.
+            
             return InMatch;
         }
         //END OF REQUESTMATCHMAKING REQUIRED FUNCTIONS
