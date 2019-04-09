@@ -36,10 +36,12 @@ namespace CombatView {
             }
 
             ActionUnit unitPrefab = Resources.Load<ActionUnit>("Prefabs/Testing/Unit");
+            UnitUI unitUIPrefab = Resources.Load<UnitUI>("Prefabs/UnitUI");
             for (int i = 0; i < 5; i += 2) {
                 ActionUnit newUnit = Instantiate(unitPrefab);
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[0, i]);
                 PlayerOrdersController.playerOrdersController.controllableUnits.Add(newUnit);
+                Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform).target = newUnit;
             }
 
             PassiveUnit unitPrefab2 = Resources.Load<PassiveUnit>("Prefabs/Testing/Testdummy");

@@ -14,9 +14,9 @@ namespace MenuView {
         public float experience;
         public float fatigue;
         public CharacterClass characterClass;
-        public List<Training> trainings = new List<Training>();
-        public List<Mutation> mutations = new List<Mutation>();
-        public List<Equipment> equipments = new List<Equipment>();
+        public Dictionary<string, Training> trainings = new Dictionary<string, Training>();
+        public Dictionary<string, Mutation> mutations = new Dictionary<string, Mutation>();
+        public Dictionary<string, Equipment> equipments = new Dictionary<string, Equipment>();
 
         public Soldier() {
             this.name = "undefined";
