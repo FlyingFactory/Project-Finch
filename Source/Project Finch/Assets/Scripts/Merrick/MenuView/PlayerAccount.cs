@@ -14,12 +14,14 @@ namespace MenuView {
         public float rankedMMR;
         // future getonly property to get rank name from MMR
 
+        public Soldier soldier;
         public int numberOfSoldiers;
         public List<OwnableItem> items = new List<OwnableItem>();
         public List<Soldier> soldiers;
 
         public static PlayerAccount currentPlayer = null;
         public static bool loginInProgress = false;
+
 
         /// <summary>
         /// Hashes the password, then checks user/pass with the database.
@@ -88,6 +90,15 @@ namespace MenuView {
 
             // TODO: load data into loadedAccount
             
+            for (int i = 1; i < loadedAccount.numberOfSoldiers+1; i++)
+            {
+                RestClient.Get<Soldier>("https://project-finch-database.firebaseio.com/User/" + userID + "/Soldiers/Soldier"+i+"/.json").Then(response =>
+                {
+                    Soldier soldier = new Soldier();
+                    soldier = response;
+                    loadedAccount.soldiers.Add(soldier);
+                });
+            } 
 
             if (loadSuccess) {
                 _loadDataInfo.output = loadedAccount;
@@ -114,5 +125,16 @@ namespace MenuView {
             });
             while (inProgress) yield return new WaitForSeconds(0.25f);
         }
+
+
     }
 }
+        public IEnumerator getNumberOfSoldiers(int userID)
+        {
+            bool inProgress = true;
+            RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response => 
+            {
+                numberOfSoldiers = response.numberOfSoldiers;
+                inProgress = false;
+            });
+            while (inProgress) yield return new WaitForSeconds(0.25f);

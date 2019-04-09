@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Proyecto26;
+using UnityEditor;
 
 namespace CombatView {
 
@@ -33,15 +34,18 @@ namespace CombatView {
         public static string match_details1 = null;
         public static int matchedPlayer2 = 2;
         public static bool matchfound = true;
-        public static int UserID = 0;
-        public static string UserName = "";
+        public static int userId;
+        public static string userName;
         public static bool InMatch = false;
         public static MoveInfo move_info_exists = null;
         public static string move_info = null;
 
+        public static string Password;
         public static bool match_exists;
         private bool waitingforMatchStatus;
 
+        public static string Soldiers;
+        public static int numberOfSoldiers;
         UserQueue user_queue = new UserQueue();
 
 
@@ -312,5 +316,32 @@ namespace CombatView {
             InitialiseMatch(match_d);
         }
         //END OF FUNCTIONS REQUIRED FOR INITMATCH().
+
+        public IEnumerator getPlayerAccountInfo(int userID)
+        {
+            bool inProgress = true;
+            //RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response =>
+            //{
+            //    numberOfSoldiers = response.NumberOfSoldiers;
+            //    soldiers = response.soldiers;
+            //    Debug.Log("test");
+            //    Debug.Log(soldiers["Soldier1"]);
+            //    inProgress = false;
+            //});
+            RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(firstUser => {
+                EditorUtility.DisplayDialog("JSON", JsonUtility.ToJson(firstUser, true), "Ok");
+                EditorUtility.DisplayDialog("JSON", JsonUtility.ToJson(firstUser.Soldiers, true), "Ok");
+                
+                inProgress = false;
+            });
+            while (inProgress) yield return new WaitForSeconds(0.25f);
+        }
+
+        public void OnGetPlayerAccountInfo()
+        {
+            int x = Convert.ToInt32(userIDInput.text);
+            StartCoroutine(getPlayerAccountInfo(x));
+        }
     }
+
 }

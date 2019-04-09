@@ -9,18 +9,22 @@ using UnityEngine;
 public class UserInfo
 {
     //add more data that is going to be stored on database here
-    public int? UserID;
+    public int? userId;
     public int matchID;
-    public string UserName;
+    public string userName;
     public bool InMatch;
-    public int numberOfSoldiers;
-    
+    public int NumberOfSoldiers;
+    public string Password;
+    public string Soldiers;
+
     public UserInfo()
     {
-        UserID = CombatView.GameFlowController.UserID;
+        userId = CombatView.GameFlowController.userId;
         matchID = CombatView.GameFlowController.matchID;
-        UserName = CombatView.GameFlowController.UserName;
+        userName = CombatView.GameFlowController.userName;
         InMatch = CombatView.GameFlowController.InMatch;
-        numberOfSoldiers = MenuView.PlayerAccount.numberOfSoldiers;
+        NumberOfSoldiers = CombatView.GameFlowController.numberOfSoldiers;
+        Soldiers = CombatView.GameFlowController.Soldiers;
+        Password = CombatView.GameFlowController.Password;
     }
 }
