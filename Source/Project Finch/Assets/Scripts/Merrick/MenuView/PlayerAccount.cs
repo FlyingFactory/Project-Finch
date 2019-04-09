@@ -89,16 +89,16 @@ namespace MenuView {
             PlayerAccount loadedAccount = new PlayerAccount();
 
             // TODO: load data into loadedAccount
-            
-            for (int i = 1; i < loadedAccount.numberOfSoldiers+1; i++)
+
+            for (int i = 1; i < loadedAccount.numberOfSoldiers + 1; i++)
             {
-                RestClient.Get<Soldier>("https://project-finch-database.firebaseio.com/User/" + userID + "/Soldiers/Soldier"+i+"/.json").Then(response =>
-                {
-                    Soldier soldier = new Soldier();
-                    soldier = response;
-                    loadedAccount.soldiers.Add(soldier);
-                });
-            } 
+                RestClient.Get<Soldier>("https://project-finch-database.firebaseio.com/User/" + _loadDataInfo.userID + "/Soldiers/Soldier" + i + "/.json").Then(response =>
+                    {
+                        Soldier soldier = new Soldier();
+                        soldier = response;
+                        loadedAccount.soldiers.Add(soldier);
+                    });
+            }
 
             if (loadSuccess) {
                 _loadDataInfo.output = loadedAccount;
@@ -115,26 +115,26 @@ namespace MenuView {
             }
         }
 
-        public IEnumerator getNumberOfSoldiers(int userID)
-        {
-            bool inProgress = true;
-            RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response => 
-            {
-                numberOfSoldiers = response.numberOfSoldiers;
-                inProgress = false;
-            });
-            while (inProgress) yield return new WaitForSeconds(0.25f);
-        }
+        //public IEnumerator getNumberOfSoldiers(int userID)
+        //{
+        //    bool inProgress = true;
+        //    RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response => 
+        //    {
+        //        numberOfSoldiers = response.numberOfSoldiers;
+        //        inProgress = false;
+        //    });
+        //    while (inProgress) yield return new WaitForSeconds(0.25f);
+        //}
 
 
     }
 }
-        public IEnumerator getNumberOfSoldiers(int userID)
-        {
-            bool inProgress = true;
-            RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response => 
-            {
-                numberOfSoldiers = response.numberOfSoldiers;
-                inProgress = false;
-            });
-            while (inProgress) yield return new WaitForSeconds(0.25f);
+        //public IEnumerator getNumberOfSoldiers(int userID)
+        //{
+        //    bool inProgress = true;
+        //    RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response => 
+        //    {
+        //        numberOfSoldiers = response.numberOfSoldiers;
+        //        inProgress = false;
+        //    });
+        //    while (inProgress) yield return new WaitForSeconds(0.25f);
