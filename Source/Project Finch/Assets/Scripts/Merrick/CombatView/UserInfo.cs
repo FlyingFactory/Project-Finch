@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
 
 //class to store variables and data that will be sent to firebase with PostToDatabase() function call
 public class UserInfo
@@ -15,16 +14,21 @@ public class UserInfo
     public bool InMatch;
     public int NumberOfSoldiers;
     public string Password;
-    public string Soldiers;
+    public MenuView.Soldier Soldier;
+    public string soldierList;
+    public List<MenuView.Soldier> listOfSoldiers;
 
     public UserInfo()
     {
-        userId = CombatView.GameFlowController.userId;
-        matchID = CombatView.GameFlowController.matchID;
-        userName = CombatView.GameFlowController.userName;
-        InMatch = CombatView.GameFlowController.InMatch;
-        NumberOfSoldiers = CombatView.GameFlowController.numberOfSoldiers;
-        Soldiers = CombatView.GameFlowController.Soldiers;
-        Password = CombatView.GameFlowController.Password;
+        this.userId = 0;
+        //matchID = CombatView.GameFlowController.matchID;
+        //userName = "User";
+        //InMatch = CombatView.GameFlowController.InMatch;
+        //NumberOfSoldiers = CombatView.GameFlowController.numberOfSoldiers;
+        //MenuView.Soldier soldier = new MenuView.Soldier();
+        //Password = CombatView.GameFlowController.Password;
+        //soldierList = CombatView.GameFlowController.soldierList;
+        //listOfSoldiers = CombatView.GameFlowController.listOfSoldiers;
+        
     }
 }

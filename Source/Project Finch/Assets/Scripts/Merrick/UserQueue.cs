@@ -13,6 +13,6 @@ public class UserQueue
 
     public UserQueue()
     {
-        UserID = CombatView.GameFlowController.userId;
+        this.UserID = 0;
     }
 }

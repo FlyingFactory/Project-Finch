@@ -17,11 +17,11 @@ public class MatchDetails
 
     public MatchDetails()
     {
-        matchID = CombatView.GameFlowController.matchID;
-        matchedPlayer1 = CombatView.GameFlowController.matchedPlayer1;
-        matchedPlayer2 = CombatView.GameFlowController.matchedPlayer2;
-        matchFound = CombatView.GameFlowController.matchfound;
-        matchDetail = CombatView.GameFlowController.match_details1;
+        //matchID = CombatView.GameFlowController.matchID;
+        //matchedPlayer1 = CombatView.GameFlowController.matchedPlayer1;
+        //matchedPlayer2 = CombatView.GameFlowController.matchedPlayer2;
+        //matchFound = CombatView.GameFlowController.matchfound;
+        //matchDetail = CombatView.GameFlowController.match_details1;
         
     }
 }

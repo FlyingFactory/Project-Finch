@@ -5,10 +5,10 @@ namespace Proyecto26
 {
     public static class StaticCoroutine
     {
-        private class CoroutineHolder : MonoBehaviour { }
+        public class CoroutineHolder : MonoBehaviour { }
 
         private static CoroutineHolder _runner;
-        private static CoroutineHolder runner
+        public static CoroutineHolder runner
         {
             get
             {
@@ -21,9 +21,10 @@ namespace Proyecto26
             }
         }
 
-        public static Coroutine StartCoroutine(IEnumerator coroutine)
+        public static void StartCoroutine(IEnumerator coroutine)
         {
-            return runner.StartCoroutine(coroutine);
+            //return runner.StartCoroutine(coroutine);
+            Runner_call.Coroutines.Add(coroutine);
         }
     }
 }

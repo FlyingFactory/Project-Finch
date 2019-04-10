@@ -15,8 +15,8 @@ public class MoveInfo
 
     public MoveInfo()
     {
-        moveInfo = CombatView.GameFlowController.moveInformation;
-        moveNumber = CombatView.GameFlowController.moveNumber;
-        NCmoveInfo = CombatView.GameFlowController.NCmoveInformation;
+        //moveInfo = CombatView.GameFlowController.moveInformation;
+        //moveNumber = CombatView.GameFlowController.moveNumber;
+        //NCmoveInfo = CombatView.GameFlowController.NCmoveInformation;
     }
 }

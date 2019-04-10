@@ -5,12 +5,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using Proyecto26;
 using UnityEditor;
+using Firebase;
+using Firebase.Database;
+using System.Runtime.Serialization.Json;
+using System.IO;
+using System.Text;
 
-namespace CombatView {
+namespace CombatView
+{
 
-    public class GameFlowController : MonoBehaviour {
+    public class GameFlowController : MonoBehaviour
+    {
 
-        public enum TurnState {
+        public enum TurnState
+        {
             Entry,
             PlayerInput,
             PlayerAction,
@@ -23,29 +31,33 @@ namespace CombatView {
         [System.NonSerialized] public bool waitingForServer = false;
         [System.NonSerialized] public int currentPlayer = 0;
         [System.NonSerialized] public int numPlayers = 2;
-        public static int matchID = 68;
+        public  int matchID = 68;
         private bool player1;
-        public static string moveInformation = null;
-        public static string NCmoveInformation = null;
-        public static int moveNumber = 0;
+        public  string moveInformation = null;
+        public  string NCmoveInformation = null;
+        public  int moveNumber = 0;
 
 
-        public static int matchedPlayer1 = 1;
-        public static string match_details1 = null;
-        public static int matchedPlayer2 = 2;
-        public static bool matchfound = true;
-        public static int userId;
-        public static string userName;
-        public static bool InMatch = false;
-        public static MoveInfo move_info_exists = null;
-        public static string move_info = null;
+        public  int matchedPlayer1 = 1;
+        public  string match_details1 = null;
+        public  int matchedPlayer2 = 2;
+        public  bool matchfound = true;
+        //public int userId;
+        //public string userName;
+        public  bool InMatch = false;
+        public  MoveInfo move_info_exists = null;
+        public  string move_info = null;
 
-        public static string Password;
-        public static bool match_exists;
+        public UserInfo player_account_info;
+        public  string soldierList;
+        public  string Password;
+        public  bool match_exists;
         private bool waitingforMatchStatus;
+        public  int[] listTest;
 
-        public static string Soldiers;
-        public static int numberOfSoldiers;
+        public  List<MenuView.Soldier> listOfSoldiers;
+        public MenuView.Soldier Soldiers;
+        public  int numberOfSoldiers;
         UserQueue user_queue = new UserQueue();
 
 
@@ -54,9 +66,10 @@ namespace CombatView {
         public InputField moveInfoInput;
         public InputField userIDInput;
         public InputField matchIDInput;
-        
 
-        private void Awake() {
+
+        private void Awake()
+        {
             if (gameFlowController != null) Destroy(gameFlowController);
             gameFlowController = this;
         }
@@ -66,10 +79,11 @@ namespace CombatView {
         /// </summary>
         /// <param name="userID">The user's unique ID.</param>
         /// <param name="cancel">If true, the user is cancelling the request instead.</param>
-        public void requestMatchmaking(int userID, bool cancel = false) {
+        public void requestMatchmaking(int userID, bool cancel = false)
+        {
             // The server should check if the user is already searching for or in a match.
             StartCoroutine(requestMatchMakingCoroutine(userID, cancel));
-            
+
         }
 
         public IEnumerator requestMatchMakingCoroutine(int userId, bool cancel = false)
@@ -85,7 +99,7 @@ namespace CombatView {
             {
                 PostUserLFMtoDatabase(userId);
             }
-            
+
 
             //check if user is in match.
             yield return StartCoroutine(CheckIfUserInMatch(userId));
@@ -108,7 +122,7 @@ namespace CombatView {
             //If there is a match, it edits the match so that the server knows the user has read the directions. (not sure what this is supposed to do)
 
             StartCoroutine(checkForMatchCoroutine(userID));
-            
+
         }
 
         public IEnumerator checkForMatchCoroutine(int userID)
@@ -120,7 +134,7 @@ namespace CombatView {
             }
             else
             {
-                
+
             }
         }
 
@@ -130,7 +144,7 @@ namespace CombatView {
             int x = Convert.ToInt32(userIDInput.text);
             Debug.Log(x);
             checkForMatch(x);
-        
+
         }
 
 
@@ -151,7 +165,7 @@ namespace CombatView {
             PostMoveInfoToDatabase();
         }
 
-        
+
 
         /// <summary>
         /// Checks if a new move has been accepted by the server.
@@ -160,7 +174,8 @@ namespace CombatView {
         /// </summary>
         /// <param name="matchID">The match's unique ID</param>
         /// <returns>Returns the move information, or null if there is no new move.</returns>
-        public void checkNextMove(int matchID) {
+        public void checkNextMove(int matchID)
+        {
             //check if match exists before we grab moveInfo
 
             StartCoroutine(checkNextMoveCoroutine(matchID));
@@ -174,7 +189,7 @@ namespace CombatView {
                 Debug.Log(move_info_exists.moveInfo);
             }
         }
-       
+
 
 
         public void InitialiseMatch(string matchDetails)
@@ -189,17 +204,17 @@ namespace CombatView {
             bool inProgress = true;
             try
             {
-                
+
                 RestClient.Get<MoveInfo>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
+                {
+                    move_info_exists = response;
+                    inProgress = false;
+                    if (move_info_exists.moveInfo != null)
                     {
-                        move_info_exists = response;
-                        inProgress = false;
-                        if (move_info_exists.moveInfo != null)
-                        {
-                            match_exists = true;
-                        }
-                    });
-                
+                        match_exists = true;
+                    }
+                });
+
             }
             catch (NullReferenceException)
             {
@@ -269,7 +284,7 @@ namespace CombatView {
             });
 
             while (inProgress) yield return new WaitForSeconds(0.25f);
-            
+
         }
         //END OF REQUESTMATCHMAKING REQUIRED FUNCTIONS
 
@@ -295,7 +310,7 @@ namespace CombatView {
         }
         //END OF FUNCTIONS REQUIRED FOR ADDMOVE().
 
-        
+
 
         //START OF FUNCTIONS REQUIRED FOR INITMATCH()
         public void PostMatchDetails()
@@ -317,31 +332,133 @@ namespace CombatView {
         }
         //END OF FUNCTIONS REQUIRED FOR INITMATCH().
 
-        public IEnumerator getPlayerAccountInfo(int userID)
-        {
-            bool inProgress = true;
-            //RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response =>
-            //{
-            //    numberOfSoldiers = response.NumberOfSoldiers;
-            //    soldiers = response.soldiers;
-            //    Debug.Log("test");
-            //    Debug.Log(soldiers["Soldier1"]);
-            //    inProgress = false;
-            //});
-            RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(firstUser => {
-                EditorUtility.DisplayDialog("JSON", JsonUtility.ToJson(firstUser, true), "Ok");
-                EditorUtility.DisplayDialog("JSON", JsonUtility.ToJson(firstUser.Soldiers, true), "Ok");
-                
-                inProgress = false;
-            });
-            while (inProgress) yield return new WaitForSeconds(0.25f);
-        }
 
-        public void OnGetPlayerAccountInfo()
-        {
-            int x = Convert.ToInt32(userIDInput.text);
-            StartCoroutine(getPlayerAccountInfo(x));
-        }
+        //public IEnumerator getPlayerAccountInfo(int userID)
+        //{
+
+        //    //RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response =>
+        //    //{
+        //    //    numberOfSoldiers = response.NumberOfSoldiers;
+        //    //    soldiers = response.soldiers;
+        //    //    Debug.Log("test");
+        //    //    Debug.Log(soldiers["Soldier1"]);
+        //    //    inProgress = false;
+        //    //});
+
+        //    //Get all attributes in User account info, except for Soldiers.
+
+        //    UserInfo player_account_info = new UserInfo();
+        //    player_account_info.userId = userID;
+        //    //Debug.Log(player_account_info.userId);
+
+        //    bool inProgress = true;
+        //    RestClient.Get("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response =>
+        //    {
+        //        Debug.Log(player_account_info.userId);
+        //        //EditorUtility.DisplayDialog("Response", response.Text, "Ok");
+        //        //Debug.Log(response.Text);
+        //        //string json = JsonUtility.ToJson(response.Text);
+        //        player_account_info = JsonUtility.FromJson<UserInfo>(response.Text);
+        //        //player_account_info.userId = player_account_info_buffer.userId;
+        //        //Debug.Log(player_account_info_buffer.userName);
+        //        //Debug.Log(player_account_info_buffer.matchID);
+        //        Debug.Log("userid:" + player_account_info.userId);
+        //        try
+        //        {
+        //            Debug.Log("here:" + player_account_info.soldierList);
+        //            numberOfSoldiers = player_account_info.soldierList.Split(',').Length;
+        //        }
+        //        catch (Exception)
+        //        {
+        //            Debug.Log("entered catch");
+        //            if (player_account_info.soldierList != null)
+        //            {
+        //                Debug.Log("entered catch if");
+        //                numberOfSoldiers = 1;
+        //            }
+        //            else numberOfSoldiers = 0;
+        //        }
+
+        //        inProgress = true;
+        //        Debug.Log("numberOfSoldiers: " + numberOfSoldiers);
+        //        for (int i = 1; i < numberOfSoldiers + 1; i++)
+        //        {
+
+        //            RestClient.Get("https://project-finch-database.firebaseio.com/User/" + userID + "/Soldiers/Soldier" + i + ".json").Then(response2 =>
+        //            {
+        //                MenuView.Soldier soldier = JsonUtility.FromJson<MenuView.Soldier>(response2.Text);
+        //                Debug.Log(soldier.aim);
+        //                //Debug.Log("iterating.. :" + i);
+        //                player_account_info.listOfSoldiers.Add(soldier);
+        //                Debug.Log("number of soldiers in list currently:" + player_account_info.listOfSoldiers.Count);
+
+
+        //            });
+                    
+        //            inProgress = false;
+
+        //        };
+
+
+                //Debug.Log(player_account_info.soldierList.Split(','));
+
+
+
+
+
+
+
+
+                //bool inProgress2 = true;
+                //RestClient.Get("https://project-finch-database.firebaseio.com/User/" + userID + "/Soldiers.json").Then(response => 
+                //{
+                //    Debug.Log(response.Text);
+
+
+                //    List<MenuView.Soldier> soldier_info_list = JsonUtility.FromJson<List<MenuView.Soldier>>(response.Text);
+                //    //Debug.Log(soldier_info_list.Count);
+                //    //Debug.Log("aim: "+soldier_info.aim);
+                //    //Debug.Log("maxhp: "+soldier_info.maxHealth);
+                //    //Debug.Log("equips: " +soldier_info.equipments);
+                //    byte[] bytes = Encoding.UTF8.GetBytes(response.Text);
+                //    List<KeyValuePair<string, string>> soldier_info =JsonToDictionary(Encoding.UTF8.GetString(bytes, 0, response.Text.Length));
+                //    Debug.Log("exited function");
+                //    Debug.Log(soldier_info.Count);
+
+                //   // Debug.Log(soldier_info.Values);
+
+
+
+
+                //    inProgress2 = false;
+
+                //});
+
+                
+
+            //});
+
+        //    while (inProgress) yield return new WaitForSeconds(0.25f);
+        //}
+
+        //public void OnGetPlayerAccountInfo()
+        //{
+
+        //    int x = Convert.ToInt32(userIDInput.text);
+        //    StartCoroutine(getPlayerAccountInfo(x));
+        //    //Debug.Log(player_account_info.listOfSoldiers[0].aim);
+        //}
+
+        //public static List<KeyValuePair<string, string>> JsonToDictionary(string json)
+        //{
+        //    Debug.Log("entered jsontoDic");
+        //    var ser = new DataContractJsonSerializer(typeof(List<KeyValuePair<string, string>>));
+        //    var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+        //    stream.Position = 0;
+        //    Debug.Log("finish jsontoDic");
+        //    return (List<KeyValuePair<string, string>>)ser.ReadObject(stream);
+        //}
     }
 
 }
+
