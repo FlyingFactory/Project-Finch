@@ -7,12 +7,15 @@ namespace MenuView {
     public class Soldier {
 
         public string name;
+        public int owner;
+        public int index;
         public int maxHealth;
         public int mobility;
         public int aim;
         public int level;
         public float experience;
         public float fatigue;
+        public bool complete;
         public CharacterClass characterClass;
         public Dictionary<string, Training> trainings = new Dictionary<string, Training>();
         public Dictionary<string, Mutation> mutations = new Dictionary<string, Mutation>();

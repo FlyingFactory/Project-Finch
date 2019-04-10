@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Proyecto26;
 using System.Threading;
+using System;
 
 namespace MenuView
 {
@@ -22,8 +23,9 @@ namespace MenuView
         public string soldierList;
         public string userId;
         public int numberOfSoldiers;
+        public List<string> soldierNameList;
         public List<OwnableItem> items = new List<OwnableItem>();
-        public List<Soldier> soldiers;
+        public List<Soldier> soldiers = new List<Soldier>();
 
         public static PlayerAccount currentPlayer = null;
         public static bool loginInProgress = false;
@@ -43,6 +45,7 @@ namespace MenuView
                 loginThread.Start(new LoginInfo(userID, password));
             }
         }
+
         public class LoginInfo
         {
             public volatile int userId;
@@ -64,6 +67,7 @@ namespace MenuView
 
             int userID = _loginInfo.userId;
             string passwordHash = Hash128.Compute(_loginInfo.Password).ToString(); // Not sure if this works, can try
+            //Debug.Log("passwordHash: " + passwordHash);
             bool loginSuccess = false;
             
             // TODO: attempt to login, Fixed
@@ -81,11 +85,11 @@ namespace MenuView
                 if (cancel1.IsCancellationRequested) break;
             };
 
-            Debug.Log("Password:" + _loginInfo.Password);
-            Debug.Log("PasswordD:" + _loginInfo.PasswordD);
+            //Debug.Log("Password:" + _loginInfo.Password);
+            //Debug.Log("PasswordD:" + _loginInfo.PasswordD);
 
-
-            if (_loginInfo.Password == _loginInfo.PasswordD)
+            //not using passwordHash
+            if (passwordHash == _loginInfo.PasswordD)
             {
                 loginSuccess = true;
             }
@@ -93,6 +97,7 @@ namespace MenuView
 
             if (loginSuccess)
             {
+                Debug.Log("Login successful");
                 LoadDataInfo loadDataInfo = new LoadDataInfo(userID);
 
                 Thread loadDataThread = new Thread(new ParameterizedThreadStart(LoadData_Thread));
@@ -183,22 +188,76 @@ namespace MenuView
                 if (cancel.IsCancellationRequested) break;
             };
 
-            Debug.Log("matchId:" + _loadDataInfo.output.matchID);
-            Debug.Log("InMatch:" + _loadDataInfo.output.InMatch);
-            Debug.Log("soldierList:" + _loadDataInfo.output.soldierList);
-            Debug.Log("userId:" + _loadDataInfo.output.userId);
-            Debug.Log("userName:" + _loadDataInfo.output.userName);
+            //Debug.Log("matchId:" + _loadDataInfo.output.matchID);
+            //Debug.Log("InMatch:" + _loadDataInfo.output.InMatch);
+            //Debug.Log("soldierList:" + _loadDataInfo.output.soldierList);
+            //Debug.Log("userId:" + _loadDataInfo.output.userId);
+            //Debug.Log("userName:" + _loadDataInfo.output.userName);
+            try{_loadDataInfo.output.numberOfSoldiers = _loadDataInfo.output.soldierList.Split(',').Length; }
+            catch (Exception)
+            {
+                if (_loadDataInfo.output.soldierList != null)
+                {
+                    _loadDataInfo.output.numberOfSoldiers = 1;
+                }
+                else _loadDataInfo.output.numberOfSoldiers = 0;
+                    
+            }
+
+            string[] arr = new string[_loadDataInfo.output.numberOfSoldiers];
+
+            try
+            {
+                 arr = _loadDataInfo.output.soldierList.Split(',');
+            }
+            catch (Exception)
+            {
+                if (_loadDataInfo.output.soldierList != null)
+                {
+                    //arr = new string[1];
+                    arr[0] = _loadDataInfo.output.soldierList;
+                }
+                else
+                {
+                    //arr = new string[1];
+                    arr[0] = null;
+                }
+            }
             
 
-
-            for (int i = 1; i < loadedAccount.numberOfSoldiers + 1; i++)
+            foreach (string arrItem in arr)
             {
-                RestClient.Get<Soldier>("https://project-finch-database.firebaseio.com/User/" + _loadDataInfo.userID + "/Soldiers/Soldier" + i + "/.json").Then(response =>
-                    {
-                        Soldier soldier = new Soldier();
-                        soldier = response;
-                        loadedAccount.soldiers.Add(soldier);
-                    });
+                if (arrItem != null)
+                {
+                    _loadDataInfo.output.soldierNameList.Add(arrItem);
+                }
+                
+            }
+            
+            Debug.Log("number of soldiers:"+_loadDataInfo.output.soldierNameList.Count);
+
+            foreach (string soldier_id in _loadDataInfo.output.soldierNameList)
+            {
+                MenuView.Soldier soldier = new MenuView.Soldier();
+                soldier.index = Convert.ToInt32(soldier_id);
+                soldier.owner = Convert.ToInt32(_loadDataInfo.output.userId);
+                soldier.complete = false;
+                Thread getSoldier = new Thread(new ParameterizedThreadStart(getSoldier_thread));
+                getSoldier.Start(soldier);
+
+                System.Threading.CancellationToken cancel1 = new CancellationToken();
+                for (int i = 0; i < 30; i++)
+                {
+                    //Debug.Log(_loadDataInfo.complete);
+                    if (soldier.complete) break;
+
+                    await System.Threading.Tasks.Task.Delay(1000, cancel1);
+                    if (cancel1.IsCancellationRequested) break;
+                };
+
+                //Debug.Log("soldier aim:" + soldier.aim);
+                _loadDataInfo.output.soldiers.Add(soldier);
+                //Debug.Log("list of soldier class:"+ _loadDataInfo.output.soldiers.Count);
             }
 
             if (loadSuccess)
@@ -208,6 +267,39 @@ namespace MenuView
             else _loadDataInfo.output = null;
 
         }
+
+        public async static void getSoldier_thread(object soldier)
+        {
+
+            MenuView.Soldier _soldier = (MenuView.Soldier)soldier;
+            //Debug.Log("soldier owner:" + _soldier.owner);
+            //Debug.Log("soldier index:"+_soldier.index);
+            QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/User/" + _soldier.owner+ "/Soldiers/Soldier"+_soldier.index+".json");
+            Runner_call.Coroutines.Add(getFromDatabase_RestClientCall(qi));
+            System.Threading.CancellationToken cancel = new CancellationToken();
+            for (int i = 0; i < 30; i++)
+            {
+                if (!qi.inProgress) break;
+                await System.Threading.Tasks.Task.Delay(1000, cancel);
+                if (cancel.IsCancellationRequested) break;
+            };
+            //Debug.Log("started get");
+            MenuView.Soldier _soldier1 = JsonUtility.FromJson<MenuView.Soldier>(qi.responseText);
+            _soldier.aim = _soldier1.aim;
+            _soldier.characterClass = _soldier1.characterClass;
+            _soldier.equipments = _soldier1.equipments;
+            _soldier.experience = _soldier1.experience;
+            _soldier.fatigue = _soldier1.fatigue;
+            _soldier.level = _soldier1.level;
+            _soldier.maxHealth = _soldier1.maxHealth;
+            _soldier.mobility = _soldier1.mobility;
+            _soldier.mutations = _soldier1.mutations;
+            //Debug.Log("soldier aim from database:" + _soldier1.aim);
+            //Debug.Log("matchID:" +_loadDataInfo.output.matchID);
+            //Debug.Log("soldierlist:" +_loadDataInfo.output.soldierList);
+            _soldier.complete = true;
+        }
+
 
         public async static void getFromDatabase_thread(object loadDataInfo)
         {
@@ -241,7 +333,7 @@ namespace MenuView
         }
         public static IEnumerator getFromDatabase_RestClientCall(QueryInfo qi)
         {
-            Debug.Log("started coroutine");
+            //Debug.Log("started coroutine");
             RestClient.Get(qi.query).Then(response =>
             {
                 qi.responseText = response.Text;
@@ -260,6 +352,5 @@ namespace MenuView
                 this.query = query;
             }
         }
-
     }
 }

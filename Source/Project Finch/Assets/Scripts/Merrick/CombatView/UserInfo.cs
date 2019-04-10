@@ -21,14 +21,14 @@ public class UserInfo
     public UserInfo()
     {
         this.userId = 0;
-        //matchID = CombatView.GameFlowController.matchID;
+        this.matchID = 0;
         //userName = "User";
-        //InMatch = CombatView.GameFlowController.InMatch;
-        //NumberOfSoldiers = CombatView.GameFlowController.numberOfSoldiers;
-        //MenuView.Soldier soldier = new MenuView.Soldier();
+        //this.InMatch = CombatView.GameFlowController.InMatch;
+        //this.NumberOfSoldiers = CombatView.GameFlowController.numberOfSoldiers;
+        //this.MenuView.Soldier soldier = new MenuView.Soldier();
         //Password = CombatView.GameFlowController.Password;
         //soldierList = CombatView.GameFlowController.soldierList;
         //listOfSoldiers = CombatView.GameFlowController.listOfSoldiers;
-        
+
     }
 }
