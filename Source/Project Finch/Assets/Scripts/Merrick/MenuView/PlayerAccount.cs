@@ -43,28 +43,53 @@ namespace MenuView
                 loginThread.Start(new LoginInfo(userID, password));
             }
         }
-        private struct LoginInfo
+        public class LoginInfo
         {
-            public int userID;
-            public string password;
+            public volatile int userId;
+            public volatile string Password;
+            public volatile string PasswordD;
+            public bool complete = false;
             public LoginInfo(int userID, string password)
             {
-                this.userID = userID;
-                this.password = password;
+                this.userId = userID;
+                this.Password = password;
             }
         }
 
-        public static void LoginAndLoadAllData_Thread(object loginInfo)
+        public async static void LoginAndLoadAllData_Thread(object loginInfo)
         {
             LoginInfo _loginInfo;
             try { _loginInfo = (LoginInfo)loginInfo; }
             catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
 
-            int userID = _loginInfo.userID;
-            string passwordHash = Hash128.Compute(_loginInfo.password).ToString(); // Not sure if this works, can try
+            int userID = _loginInfo.userId;
+            string passwordHash = Hash128.Compute(_loginInfo.Password).ToString(); // Not sure if this works, can try
+            bool loginSuccess = false;
+            
+            // TODO: attempt to login, Fixed
 
-            bool loginSuccess = true;
-            // TODO: attempt to login
+            Thread getPassword = new Thread(new ParameterizedThreadStart(getPassword_thread));
+            getPassword.Start((object) _loginInfo);
+
+            System.Threading.CancellationToken cancel1 = new CancellationToken();
+            for (int i = 0; i < 10; i++)
+            {
+                Debug.Log(_loginInfo.complete);
+                if (_loginInfo.complete) break;
+
+                await System.Threading.Tasks.Task.Delay(1000, cancel1);
+                if (cancel1.IsCancellationRequested) break;
+            };
+
+            Debug.Log("Password:" + _loginInfo.Password);
+            Debug.Log("PasswordD:" + _loginInfo.PasswordD);
+
+
+            if (_loginInfo.Password == _loginInfo.PasswordD)
+            {
+                loginSuccess = true;
+            }
+            
 
             if (loginSuccess)
             {
@@ -89,6 +114,42 @@ namespace MenuView
                 Debug.Log("Login not successful");
             }
         }
+
+        public async static void getPassword_thread(object loginInfo)
+        {
+            Debug.Log("entered thread");
+            LoginInfo _loginInfo = (LoginInfo)loginInfo;
+
+            QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/User/" + _loginInfo.userId + "/.json");
+            Runner_call.Coroutines.Add(getPassword_RestClientCall(qi));
+            System.Threading.CancellationToken cancel = new CancellationToken();
+            for (int i = 0; i < 30; i++)
+            {
+                if (!qi.inProgress) break;
+                await System.Threading.Tasks.Task.Delay(1000, cancel);
+                if (cancel.IsCancellationRequested) break;
+            };
+            
+            LoginInfo _loginInfo1 = JsonUtility.FromJson<LoginInfo>(qi.responseText);
+            _loginInfo.PasswordD = _loginInfo1.Password;
+            _loginInfo.complete = true;
+            //Debug.Log("set to true:" + _loginInfo.complete);
+            //Debug.Log("got from database:" + _loginInfo.Password);
+            
+        }
+
+        public static IEnumerator getPassword_RestClientCall(QueryInfo qi)
+        {
+            //Debug.Log("started coroutine");
+            RestClient.Get(qi.query).Then(response =>
+            {
+                qi.responseText = response.Text;
+                qi.inProgress = false;
+            });
+            yield return null;
+        }
+
+
 
         /// <summary>
         /// Loads data of any user, for game-loading purposes or viewing profiles.
@@ -115,17 +176,19 @@ namespace MenuView
             System.Threading.CancellationToken cancel = new CancellationToken();
             for (int i = 0; i < 30; i++)
             {
-                Debug.Log(_loadDataInfo.complete);
+                //Debug.Log(_loadDataInfo.complete);
                 if (_loadDataInfo.complete) break;
 
                 await System.Threading.Tasks.Task.Delay(1000, cancel);
                 if (cancel.IsCancellationRequested) break;
             };
 
-            //Debug.Log("thread complete");
-            //Debug.Log("test");
-            //Debug.Log("yo:" + _loadDataInfo.output.matchID);
-            //Debug.Log("test1");
+            Debug.Log("matchId:" + _loadDataInfo.output.matchID);
+            Debug.Log("InMatch:" + _loadDataInfo.output.InMatch);
+            Debug.Log("soldierList:" + _loadDataInfo.output.soldierList);
+            Debug.Log("userId:" + _loadDataInfo.output.userId);
+            Debug.Log("userName:" + _loadDataInfo.output.userName);
+            
 
 
             for (int i = 1; i < loadedAccount.numberOfSoldiers + 1; i++)
@@ -148,7 +211,6 @@ namespace MenuView
 
         public async static void getFromDatabase_thread(object loadDataInfo)
         {
-            Debug.Log("entered Thread");
 
             LoadDataInfo _loadDataInfo = (LoadDataInfo)loadDataInfo;
 
@@ -198,5 +260,6 @@ namespace MenuView
                 this.query = query;
             }
         }
+
     }
 }
