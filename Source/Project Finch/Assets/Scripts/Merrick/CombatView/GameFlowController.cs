@@ -135,17 +135,15 @@ namespace CombatView
         public void PostMoveInfoToDatabase(string moveInfo, int matchID, bool player1)
         {
             MoveInfo moveinfo = new MoveInfo();
-            moveinfo.matchID = matchID;
             if (player1)
             {
                 moveinfo.u_player1Move = moveInfo;
-                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + moveinfo.matchID + "/moveInfo.json", moveinfo);
+                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json", moveinfo);
             }
             else
             {
                 moveinfo.u_player2Move = moveInfo;
-                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + moveinfo.matchID + "/moveInfo.json", moveinfo);
-
+                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json", moveinfo);
             }
             
         }
