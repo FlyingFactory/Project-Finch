@@ -12,11 +12,13 @@ public class MoveInfo
     public string moveInfo;
     public int moveNumber;
     public string NCmoveInfo;
+    public int matchID;
 
     public MoveInfo()
     {
-        //moveInfo = CombatView.GameFlowController.moveInformation;
-        //moveNumber = CombatView.GameFlowController.moveNumber;
-        //NCmoveInfo = CombatView.GameFlowController.NCmoveInformation;
+        this.matchID = 0;
+        this.moveInfo = "default";
+        this.moveNumber = 0;
+        this.NCmoveInfo = "not confirmed default";
     }
 }

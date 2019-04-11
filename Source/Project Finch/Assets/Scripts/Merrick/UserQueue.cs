@@ -9,10 +9,10 @@ using UnityEngine;
 public class UserQueue
 {
     //add more data that is going to be stored on database here
-    public int ? UserID;
+    public string UserID;
 
-    public UserQueue()
+    public UserQueue(string userId)
     {
-        this.UserID = 0;
+        this.UserID = userId;
     }
 }

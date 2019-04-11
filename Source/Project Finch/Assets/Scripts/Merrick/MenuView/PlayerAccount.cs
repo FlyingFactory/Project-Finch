@@ -154,6 +154,24 @@ namespace MenuView
             yield return null;
         }
 
+        public async static void checkForMatch(PlayerAccount player)
+        {
+            LoadDataInfo loadDataInfo = new LoadDataInfo(Convert.ToInt32(player.userId));
+            Thread check_match = new Thread(new ParameterizedThreadStart(getFromDatabase_thread));
+            check_match.Start(loadDataInfo);
+
+            System.Threading.CancellationToken cancel = new CancellationToken();
+            for (int i = 0; i < 30; i++)
+            {
+                //Debug.Log(_loadDataInfo.complete);
+                if (loadDataInfo.complete) break;
+
+                await System.Threading.Tasks.Task.Delay(1000, cancel);
+                if (cancel.IsCancellationRequested) break;
+            };
+            player.matchID = loadDataInfo.output.matchID;
+            Debug.Log(player.matchID);
+        }
 
 
         /// <summary>

@@ -27,4 +27,12 @@ public class PlayerAccountController : MonoBehaviour
 
         MenuView.PlayerAccount.LoginAndLoadAllData_Thread(testLoginInfo);
     }
+
+    public void onCheckForMatch()
+    {
+        string x = userId.text;
+        MenuView.PlayerAccount player = new MenuView.PlayerAccount();
+        player.userId = x;
+        MenuView.PlayerAccount.checkForMatch(player);
+    }
 }

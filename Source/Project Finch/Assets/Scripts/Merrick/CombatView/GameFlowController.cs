@@ -31,7 +31,7 @@ namespace CombatView
         [System.NonSerialized] public bool waitingForServer = false;
         [System.NonSerialized] public int currentPlayer = 0;
         [System.NonSerialized] public int numPlayers = 2;
-        public  int matchID = 68;
+        public int matchID;
         private bool player1;
         public  string moveInformation = null;
         public  string NCmoveInformation = null;
@@ -58,7 +58,7 @@ namespace CombatView
         public  List<MenuView.Soldier> listOfSoldiers;
         public MenuView.Soldier Soldiers;
         public  int numberOfSoldiers;
-        UserQueue user_queue = new UserQueue();
+        
 
 
         public Text moveInfoText;
@@ -79,14 +79,14 @@ namespace CombatView
         /// </summary>
         /// <param name="userID">The user's unique ID.</param>
         /// <param name="cancel">If true, the user is cancelling the request instead.</param>
-        public void requestMatchmaking(int userID, bool cancel = false)
+        public void requestMatchmaking(string userID, bool cancel = false)
         {
-            // The server should check if the user is already searching for or in a match.
+            //Debug.Log("entered request Matchmaking");
             StartCoroutine(requestMatchMakingCoroutine(userID, cancel));
 
         }
 
-        public IEnumerator requestMatchMakingCoroutine(int userId, bool cancel = false)
+        public IEnumerator requestMatchMakingCoroutine(string userId, bool cancel = false)
         {
             if (cancel)
             {
@@ -97,55 +97,77 @@ namespace CombatView
 
             if (!cancel)
             {
+                Debug.Log(cancel);
                 PostUserLFMtoDatabase(userId);
             }
 
 
             //check if user is in match.
-            yield return StartCoroutine(CheckIfUserInMatch(userId));
+            MenuView.PlayerAccount new_player = new MenuView.PlayerAccount();
+            new_player.userId = userId;
+            MenuView.PlayerAccount.checkForMatch(new_player);
 
-            if (InMatch)
+            if (new_player.InMatch)
             {
                 //what to do if in match already?
             }
+
+            yield return null;
         }
 
 
 
-        /// <summary>
-        /// Checks if a match has been assigned to the user.
-        /// </summary>
-        /// <param name="userID">The user's unique ID.</param>
-        /// <returns>Returns the match ID, or null if no match has been found.</returns>
-        public void checkForMatch(int userID)
-        {
-            //If there is a match, it edits the match so that the server knows the user has read the directions. (not sure what this is supposed to do)
+        ///// <summary>
+        ///// Checks if a match has been assigned to the user.
+        ///// </summary>
+        ///// <param name="userID">The user's unique ID.</param>
+        ///// <returns>Returns the match ID, or null if no match has been found.</returns>
+        //public int checkForMatch(int userID)
+        //{
+        //    //If there is a match, it edits the match so that the server knows the user has read the directions. (not sure what this is supposed to do)
+        //    MenuView.PlayerAccount new_player = new MenuView.PlayerAccount();
+        //    new_player.userId = Convert.ToString(userID);
+        //    StartCoroutine(checkForMatchCoroutine(new_player));
+        //    for (int i = 0; i <30; i++)
+        //    {
+                
+        //    }
 
-            StartCoroutine(checkForMatchCoroutine(userID));
+        //    ///////PROBLEM HERE NOT RETURNNG CORRECT NEW PLAYER MATCH ID.
+        //    Debug.Log("match ID:" + new_player.matchID);
+        //    return new_player.matchID;
+        //}
 
-        }
+        //public IEnumerator checkForMatchCoroutine(MenuView.PlayerAccount new_player)
+        //{
+        //    Debug.Log("starting checkForMatchCoroutine");
+        //    bool inProgress1 = true;
+        //    //not waiting for this to end
+        //    StartCoroutine(CheckIfUserInMatch(new_player));
+            
+        //    if (new_player.InMatch)
+        //    {
+                
+        //        Debug.Log("matchID from database:" +new_player.matchID);
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("new_player not in match");
+        //    }
+            
+            
+        //    while (inProgress1) yield return new WaitForSeconds(0.25f);
+           
+        //}
 
-        public IEnumerator checkForMatchCoroutine(int userID)
-        {
-            yield return StartCoroutine(CheckIfUserInMatch(userID));
-            if (InMatch)
-            {
-                Debug.Log(matchID);
-            }
-            else
-            {
 
-            }
-        }
+        //public void onGetMatchID()
+        //{
+        //    int x = Convert.ToInt32(userIDInput.text);
+        //    Debug.Log(x);
+        //    checkForMatch(x);
 
-
-        public void onGetMatchID()
-        {
-            int x = Convert.ToInt32(userIDInput.text);
-            Debug.Log(x);
-            checkForMatch(x);
-
-        }
+        //}
 
 
 
@@ -159,10 +181,10 @@ namespace CombatView
         /// verification not implemented yet. can add moveinfo already.
         /// </summary>
         /// <param name="moveInfo"></param>
-        public void addMove(string moveInfo)
+        public void addMove(string moveInfo, int matchID)
         {
             moveInformation = moveInfo;
-            PostMoveInfoToDatabase();
+            PostMoveInfoToDatabase(moveInfo, matchID);
         }
 
 
@@ -240,61 +262,67 @@ namespace CombatView
 
         //START OF REQUESTMATCHMAKING REQUIRED FUNCTIONS
         //works
-        public void RemoveUserLFMtoDatabase(int userID)
+        public void RemoveUserLFMtoDatabase(string userID)
         {
-            user_queue = new UserQueue();
-            user_queue.UserID = null;
+            UserQueue user_queue = new UserQueue(userID);
+            user_queue.UserID = null; //need to fix this issue.
             RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + userID + "/.json", user_queue);
         }
 
         //works
-        public void PostUserLFMtoDatabase(int userID)
+        public void PostUserLFMtoDatabase(string userID)
         {
-            user_queue = new UserQueue();
+            UserQueue user_queue = new UserQueue(userID);
             user_queue.UserID = userID;
-            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + userID + ".json", user_queue);
+            Debug.Log("userID:" + user_queue.UserID);
+            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/"+user_queue.UserID+".json", user_queue);
+            Debug.Log("put passed");
         }
 
-        public int getUserIdFromInput()
+        public string getUserIdFromInput()
         {
-            int id = Convert.ToInt32(userIDInput.text);
+            string id = userIDInput.text;
             return id;
         }
 
         public void onPostUserIDtoQueue()
         {
-            int x = getUserIdFromInput();
+            string x = getUserIdFromInput();
             requestMatchmaking(x);
         }
 
         public void onRemoveUserIDFromQueue()
         {
-            int x = getUserIdFromInput();
+            string x = getUserIdFromInput();
             requestMatchmaking(x, true);
         }
 
-        public IEnumerator CheckIfUserInMatch(int userID)
-        {
-            bool inProgress = true;
-            RestClient.Get<UserInfo>("https://project-finch-database.firebaseio.com/User/" + userID + ".json").Then(response =>
-            {
-                InMatch = response.InMatch;
-                matchID = response.matchID;
-                inProgress = false;
-            });
+        //public IEnumerator CheckIfUserInMatch(MenuView.PlayerAccount new_player)
+        //{
+        //    bool inProgress = true;
+        //    RestClient.Get("https://project-finch-database.firebaseio.com/User/" + new_player.userId + ".json").Then(response =>
+        //    {
+        //        new_player.InMatch = JsonUtility.FromJson<MenuView.PlayerAccount>(response.Text).InMatch;
+        //        new_player.matchID = JsonUtility.FromJson<MenuView.PlayerAccount>(response.Text).matchID;
+        //        Debug.Log("new_player.matchID:" + new_player.matchID);
 
-            while (inProgress) yield return new WaitForSeconds(0.25f);
+        //        inProgress = false;
+        //    });
 
-        }
+        //    Debug.Log("checkIfUserInMatch still in progress: "+inProgress);
+        //    while (inProgress) yield return new WaitForSeconds(0.25f);
+
+        //}
         //END OF REQUESTMATCHMAKING REQUIRED FUNCTIONS
 
 
         //START OF FUNCTIONS REQUIRED FOR ADDMOVE().
-        public void PostMoveInfoToDatabase()
+        public void PostMoveInfoToDatabase(string moveInfo, int matchID)
         {
             MoveInfo moveinfo = new MoveInfo();
-            matchID = 68;
-            RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json", moveinfo);
+            moveinfo.moveInfo = moveInfo;
+            moveinfo.matchID = matchID;
+            RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + moveinfo.matchID + "/moveInfo.json", moveinfo);
         }
 
         public string getMoveInfoFromInput()
@@ -306,7 +334,8 @@ namespace CombatView
         public void OnAddMove()
         {
             string moveInfo = getMoveInfoFromInput();
-            addMove(moveInfo);
+            int matchID = Convert.ToInt32(matchIDInput.text);
+            addMove(moveInfo, matchID);
         }
         //END OF FUNCTIONS REQUIRED FOR ADDMOVE().
 
