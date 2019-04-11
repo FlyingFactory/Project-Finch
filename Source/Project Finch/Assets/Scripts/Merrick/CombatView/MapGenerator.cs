@@ -7,16 +7,21 @@ namespace CombatView {
     public class MapGenerator : MonoBehaviour {
 
         public enum Map {
-            Random,
             TestingRange,
+            RandomMultiplayer,
         }
 
-        public Map map = Map.Random;
+        public Map map = Map.TestingRange;
+        public bool player1 = true;
+        public int seed = -294;
 
         private void Start() {
             switch (map) {
-                case Map.Random:
+                case Map.TestingRange:
                     GenerateRandomTerrain();
+                    break;
+                case Map.RandomMultiplayer:
+                    GenerateRandomCoordinated(player1, seed);
                     break;
             }
         }
@@ -67,6 +72,60 @@ namespace CombatView {
                             RegisterObjectTile(newCover, fullCoverTile);
                         }
                     }
+                }
+            }
+        }
+
+        private void GenerateRandomCoordinated(bool player1, int seed) {
+            new MapInfo().tiles = new List<Tile>();
+            MapInfo.currentMapInfo.bottomLayer = new Tile[32, 32];
+            System.Random r = new System.Random(seed);
+            
+            for (int x = 0; x < 32; x++) {
+                for (int z = 0; z < 32; z++) {
+                    Tile newTile = new Tile(x, z);
+                    MakePlaceholderTile(newTile);
+                    MapInfo.currentMapInfo.tiles.Add(newTile);
+                    MapInfo.currentMapInfo.bottomLayer[x, z] = newTile;
+                }
+            }
+            
+            ActionUnit unitPrefab = Resources.Load<ActionUnit>("Prefabs/Testing/Unit");
+            UnitUI unitUIPrefab = Resources.Load<UnitUI>("Prefabs/UnitUI");
+            List<System.Tuple<int, int>> p1spawns = new List<System.Tuple<int, int>>() {
+                new System.Tuple<int, int>(0, 0),
+                new System.Tuple<int, int>(2, 0),
+                new System.Tuple<int, int>(2, 2),
+                new System.Tuple<int, int>(0, 2),
+            };
+            List<System.Tuple<int, int>> p2spawns = new List<System.Tuple<int, int>>() {
+                new System.Tuple<int, int>(31, 31),
+                new System.Tuple<int, int>(29, 31),
+                new System.Tuple<int, int>(29, 29),
+                new System.Tuple<int, int>(31, 29),
+            };
+            foreach (System.Tuple<int, int> pos in player1 ? p1spawns : p2spawns) {
+                ActionUnit newUnit = Instantiate(unitPrefab);
+                RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
+                PlayerOrdersController.playerOrdersController.controllableUnits.Add(newUnit);
+                Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform).target = newUnit;
+            }
+            foreach (System.Tuple<int, int> pos in player1 ? p2spawns : p1spawns) {
+                ActionUnit newUnit = Instantiate(unitPrefab);
+                RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
+                Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform).target = newUnit;
+            }
+            
+            PassiveUnit unitPrefab2 = Resources.Load<PassiveUnit>("Prefabs/Testing/Testdummy");
+            EnvObject halfCoverPrefab = Resources.Load<EnvObject>("Prefabs/HalfCoverCube");
+            EnvObject fullCoverPrefab = Resources.Load<EnvObject>("Prefabs/FullCoverCube");
+
+            for (int i = 0; i < 20; i++) {
+                int x = r.Next(32);
+                int z = r.Next(32);
+                if (MapInfo.currentMapInfo.bottomLayer[x, z].top.occupyingObjects.Count == 0) {
+                    EnvObject newCover = Instantiate((r.Next(2) == 0) ? halfCoverPrefab : fullCoverPrefab);
+                    RegisterObjectTile(newCover, MapInfo.currentMapInfo.bottomLayer[x, z].top);
                 }
             }
         }
