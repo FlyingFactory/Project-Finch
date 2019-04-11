@@ -9,7 +9,8 @@ using UnityEngine;
 public class MoveInfo
 {
     //add more data that is going to be stored on database here
-    public string moveInfo;
+    public string u_player1Move;
+    public string u_player2Move;
     public int moveNumber;
     public string NCmoveInfo;
     public int matchID;
@@ -17,7 +18,7 @@ public class MoveInfo
     public MoveInfo()
     {
         this.matchID = 0;
-        this.moveInfo = "default";
+        this.u_player1Move = "default";
         this.moveNumber = 0;
         this.NCmoveInfo = "not confirmed default";
     }

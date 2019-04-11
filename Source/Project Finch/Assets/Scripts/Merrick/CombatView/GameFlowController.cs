@@ -39,6 +39,8 @@ namespace CombatView
         public  MoveInfo move_info_exists = null;
         public  string move_info = null;
         public  bool match_exists;
+
+        [System.NonSerialized] public bool player1; 
         
 
         /// <summary>
@@ -118,24 +120,34 @@ namespace CombatView
 
         /// <summary>
         /// Adds a unverified move to the match information. Information includes moveNumber as well as moveInfo.
-        /// eg moveInfo: p1(playerNumber),mN(moveNumber):0,uN(unitNumber):0,x:000,z:000,h:0,0
+        /// eg u_player1Move: "pid_soldierid, x:z:h, skill, hit/miss,dmg dealt"
         /// The game should wait until the move has been verified before proceeding.
         /// The server will verify that it is this player who can make a move.
         /// verification not implemented yet. can add moveinfo already.
         /// </summary>
         /// <param name="moveInfo"></param>
-        public void addMove(string moveInfo, int matchID)
+        public void addMove(string moveInfo)
         {
             moveInformation = moveInfo;
-            PostMoveInfoToDatabase(moveInfo, matchID);
+            PostMoveInfoToDatabase(moveInfo, matchID, player1);
         }
 
-        public void PostMoveInfoToDatabase(string moveInfo, int matchID)
+        public void PostMoveInfoToDatabase(string moveInfo, int matchID, bool player1)
         {
             MoveInfo moveinfo = new MoveInfo();
-            moveinfo.moveInfo = moveInfo;
             moveinfo.matchID = matchID;
-            RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + moveinfo.matchID + "/moveInfo.json", moveinfo);
+            if (player1)
+            {
+                moveinfo.u_player1Move = moveInfo;
+                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + moveinfo.matchID + "/moveInfo.json", moveinfo);
+            }
+            else
+            {
+                moveinfo.u_player2Move = moveInfo;
+                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + moveinfo.matchID + "/moveInfo.json", moveinfo);
+
+            }
+            
         }
 
 
