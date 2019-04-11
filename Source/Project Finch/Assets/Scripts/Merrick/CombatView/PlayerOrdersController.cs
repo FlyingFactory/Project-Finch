@@ -56,7 +56,7 @@ namespace CombatView {
                                             && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
                                             selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
                                         }
-                                        else {
+                                        else if (selectedUnit != null) {
                                             targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
                                             fireUI.SetActive(true);
                                             playerControlState = PlayerControlState.ActionSelect;

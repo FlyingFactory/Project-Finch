@@ -1176,6 +1176,7 @@ GameObject:
   - component: {fileID: 1608539226}
   - component: {fileID: 1608539225}
   - component: {fileID: 1608539227}
+  - component: {fileID: 1608539228}
   m_Layer: 0
   m_Name: SceneScripts
   m_TagString: Untagged
@@ -1230,6 +1231,35 @@ MonoBehaviour:
   map: 1
   player1: 1
   seed: -294
+--- !u!114 &1608539228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608539224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8f881b820baf874d85930e5f754d371, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matchID: 0
+  moveInformation: 
+  NCmoveInformation: 
+  match_details1: 
+  InMatch: 0
+  move_info_exists:
+    moveInfo: default
+    moveNumber: 0
+    NCmoveInfo: not confirmed default
+    matchID: 0
+  move_info: 
+  match_exists: 0
+  moveInfoText: {fileID: 0}
+  matchDetailsInput: {fileID: 0}
+  moveInfoInput: {fileID: 0}
+  userIDInput: {fileID: 0}
+  matchIDInput: {fileID: 0}
 --- !u!1 &1765240782
 GameObject:
   m_ObjectHideFlags: 0
