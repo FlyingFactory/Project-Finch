@@ -30,7 +30,8 @@ namespace CombatView
         [System.NonSerialized] public int currentPlayer = 0;
         [System.NonSerialized] public int numPlayers = 2;
 
-        public int matchID;
+        //set to 68 first for testing
+        public int matchID = 68;
 
         public  string moveInformation = null;
         public  string NCmoveInformation = null;
@@ -103,7 +104,7 @@ namespace CombatView
         public void RemoveUserLFMtoDatabase(string userID)
         {
             UserQueue user_queue = new UserQueue(userID);
-            user_queue.UserID = null; //need to fix this issue.
+            user_queue.UserID = null;
             RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + userID + "/.json", user_queue);
             Debug.Log("User ID: " + userID + " has been removed from the queue..");
         }
@@ -168,7 +169,7 @@ namespace CombatView
             yield return StartCoroutine(getMoveInfo(matchID));
             if (match_exists)
             {
-                Debug.Log(move_info_exists.moveInfo);
+                Debug.Log(move_info_exists.a_playersMoves);
             }
         }
 
@@ -182,7 +183,7 @@ namespace CombatView
                 {
                     move_info_exists = response;
                     inProgress = false;
-                    if (move_info_exists.moveInfo != null)
+                    if (move_info_exists.a_playersMoves != null)
                     {
                         match_exists = true;
                     }
@@ -228,7 +229,8 @@ namespace CombatView
 
         public void UpdateMoveInfo()
         {
-            moveInfoText.text = move_info_exists.moveInfo;
+            //this is wrong pls fix later
+            moveInfoText.text = move_info_exists.u_player1Move;
         }
 
         public void OnCheckMoveInfo()
@@ -273,8 +275,9 @@ namespace CombatView
         public void OnAddMove()
         {
             string moveInfo = getMoveInfoFromInput();
-            int matchID = Convert.ToInt32(matchIDInput.text);
-            addMove(moveInfo, matchID);
+            matchID = 68;
+            Debug.Log("default matchID:" +matchID);
+            addMove(moveInfo);
         }
         //END OF FUNCTIONS REQUIRED FOR TESTING ADDMOVE().
 
