@@ -170,7 +170,7 @@ namespace MenuView
                 if (cancel.IsCancellationRequested) break;
             };
             player.matchID = loadDataInfo.output.matchID;
-            Debug.Log(player.matchID);
+            //Debug.Log("matchID:" + player.matchID);
         }
 
 
