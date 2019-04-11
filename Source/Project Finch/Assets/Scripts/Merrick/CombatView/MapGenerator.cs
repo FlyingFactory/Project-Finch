@@ -15,6 +15,9 @@ namespace CombatView {
         public bool player1 = true;
         public int seed = -294;
 
+        private static Color allyColor = new Color32(127, 255, 255, 255);
+        private static Color enemyColor = new Color32(255, 165, 165, 255);
+
         private void Start() {
             switch (map) {
                 case Map.TestingRange:
@@ -89,8 +92,9 @@ namespace CombatView {
                     MapInfo.currentMapInfo.bottomLayer[x, z] = newTile;
                 }
             }
-            
+
             ActionUnit unitPrefab = Resources.Load<ActionUnit>("Prefabs/Testing/Unit");
+            ActionUnit unitEnemyPrefab = Resources.Load<ActionUnit>("Prefabs/Testing/UnitEnemy");
             UnitUI unitUIPrefab = Resources.Load<UnitUI>("Prefabs/UnitUI");
             List<System.Tuple<int, int>> p1spawns = new List<System.Tuple<int, int>>() {
                 new System.Tuple<int, int>(0, 0),
@@ -108,12 +112,16 @@ namespace CombatView {
                 ActionUnit newUnit = Instantiate(unitPrefab);
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
                 PlayerOrdersController.playerOrdersController.controllableUnits.Add(newUnit);
-                Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform).target = newUnit;
+                UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
+                u.target = newUnit;
+                u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = allyColor;
             }
             foreach (System.Tuple<int, int> pos in player1 ? p2spawns : p1spawns) {
-                ActionUnit newUnit = Instantiate(unitPrefab);
+                ActionUnit newUnit = Instantiate(unitEnemyPrefab);
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
-                Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform).target = newUnit;
+                UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
+                u.target = newUnit;
+                u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = enemyColor;
             }
             
             PassiveUnit unitPrefab2 = Resources.Load<PassiveUnit>("Prefabs/Testing/Testdummy");
