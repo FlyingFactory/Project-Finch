@@ -70,6 +70,13 @@ namespace CombatView {
             }
             return false;
         }
+
+        public bool ContainsBlockingAnything() {
+            for (int i = 0; i < occupyingObjects.Count; i++) {
+                if (occupyingObjects[i].blocksMovement) return true;
+            }
+            return false;
+        }
     }
 
     public struct TileAccess {

@@ -102,15 +102,18 @@ namespace CombatView {
                             TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
                             if (hitTile != null && selectedUnit != null && selectedUnit.numActions > 0) {
                                 bool move = true;
-                                if (selectedUnit.takesTile) {
-                                    for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {
-                                        if (hitTile.tile.occupyingObjects[i].takesTile) {
-                                            move = false;
-                                            break;
-                                        }
-                                    }
+                                if (selectedUnit.takesTile && hitTile.tile.ContainsBlockingAnything()) {
+                                    move = false;
                                 }
                                 if (move) {
+                                    string serverMove = "";
+                                    serverMove += selectedUnit.dict_id + ",";
+                                    serverMove += hitTile.tile.x + ":" + hitTile.tile.z + ":" + hitTile.tile.h + ",";
+                                    serverMove += "m";
+
+                                    GameFlowController.gameFlowController.addMove(serverMove);
+
+                                    // TO REMOVE
                                     selectedUnit.numActions -= 1;
                                     selectedUnit.transform.position = hitTile.transform.position;
                                     selectedUnit.tile.occupyingObjects.Remove(selectedUnit);
@@ -181,7 +184,7 @@ namespace CombatView {
                 // === SERVER ===
                 string serverMove = "";
                 serverMove += selectedUnit.dict_id + ",";
-                serverMove += selectedUnit.tile.x + ":" + selectedUnit.tile.z + ":" + selectedUnit.tile.h + ",";
+                serverMove += targetedUnit.tile.x + ":" + targetedUnit.tile.z + ":" + targetedUnit.tile.h + ",";
                 serverMove += "a,";
                 serverMove += (hit ? "h" : "m") + ",";
                 serverMove += damage;
@@ -196,6 +199,9 @@ namespace CombatView {
         }
 
         public void EndTurnButton() {
+            GameFlowController.gameFlowController.addMove("endturn,voluntary");
+
+            // TO REMOVE
             // need to handle wrapup effects
             CanvasRefs.canvasRefs.EndTurnButton.SetActive(false);
             CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(true);
