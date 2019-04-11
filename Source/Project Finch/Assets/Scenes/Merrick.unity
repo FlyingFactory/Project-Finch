@@ -1227,7 +1227,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef45f83dd72cb13448910e64220755f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: 0
+  map: 1
+  player1: 1
+  seed: -294
 --- !u!1 &1765240782
 GameObject:
   m_ObjectHideFlags: 0
