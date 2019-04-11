@@ -5,8 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Proyecto26;
 using UnityEditor;
-using Firebase;
-using Firebase.Database;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Text;
