@@ -9,6 +9,8 @@ namespace CombatView {
         public int numActions = 2;
         public int actionsPerTurn = 2;
         public int mobility = 6;
+        public int id = 0;
+        public string dict_id;
 
         new public void Start() {
             base.Start();

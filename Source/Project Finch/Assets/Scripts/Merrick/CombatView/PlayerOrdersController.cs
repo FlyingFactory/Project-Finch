@@ -167,13 +167,28 @@ namespace CombatView {
                 }
                 hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
 
-                if (Random.Range(0f, 1) < hitChance) {
+                bool hit = Random.Range(0f, 1) < hitChance;
+                int damage = 0;
+                if (hit) {
                     Debug.Log("Hit!");
-                    targetedUnit.Damage(5); // TODO: fill with real damage calculation
+                    damage = 5; // TODO: fill with real damage calculation
+                    // targetedUnit.Damage(5);
                 }
                 else {
                     Debug.Log("Missed!");
                 }
+
+                // === SERVER ===
+                string serverMove = "";
+                serverMove += selectedUnit.dict_id + ",";
+                serverMove += selectedUnit.tile.x + ":" + selectedUnit.tile.z + ":" + selectedUnit.tile.h + ",";
+                serverMove += "a,";
+                serverMove += (hit ? "h" : "m") + ",";
+                serverMove += damage;
+
+                GameFlowController.gameFlowController.addMove(serverMove);
+
+                // TO REMOVE
                 targetedUnit = null;
                 CanvasRefs.canvasRefs.fireUI.SetActive(false);
                 playerControlState = PlayerControlState.UnitSelect;
@@ -186,6 +201,7 @@ namespace CombatView {
             CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(true);
             GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.EnemyTurn;
             selectedUnit = null;
+            unitSelectionIndicator.transform.position = new Vector3(1000, 0, 0);
 
             // placeholder
             Invoke("StartTurn", 1.5f);

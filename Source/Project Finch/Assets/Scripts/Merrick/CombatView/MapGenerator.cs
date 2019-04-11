@@ -14,6 +14,7 @@ namespace CombatView {
         public Map map = Map.TestingRange;
         public bool player1 = true;
         public int seed = -294;
+        [System.NonSerialized] public int idBuffer = 0;
 
         private static Color allyColor = new Color32(127, 255, 255, 255);
         private static Color enemyColor = new Color32(255, 165, 165, 255);
@@ -27,6 +28,7 @@ namespace CombatView {
                     GenerateRandomCoordinated(player1, seed);
                     break;
             }
+            GameFlowController.gameFlowController.player1 = player1;
         }
 
         private void GenerateRandomTerrain() {
@@ -108,16 +110,22 @@ namespace CombatView {
                 new System.Tuple<int, int>(29, 29),
                 new System.Tuple<int, int>(31, 29),
             };
+
             foreach (System.Tuple<int, int> pos in player1 ? p1spawns : p2spawns) {
                 ActionUnit newUnit = Instantiate(unitPrefab);
+                newUnit.id += idBuffer++;
+                newUnit.dict_id = (player1 ? "1_" : "2_") + newUnit.id;
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
                 PlayerOrdersController.playerOrdersController.controllableUnits.Add(newUnit);
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
                 u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = allyColor;
             }
+            idBuffer = 0; // placeholder
             foreach (System.Tuple<int, int> pos in player1 ? p2spawns : p1spawns) {
                 ActionUnit newUnit = Instantiate(unitEnemyPrefab);
+                newUnit.id += idBuffer++;
+                newUnit.dict_id = (player1 ? "2_" : "1_") + newUnit.id;
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
