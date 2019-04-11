@@ -7,6 +7,7 @@ namespace CombatView {
     public class PlayerOrdersController : MonoBehaviour {
 
         public const float BASE_AIM = 0.65f;
+        public const float HALFCOVER_PENALTY = 0.20f;
 
         public enum PlayerControlState {
             UnitSelect,
@@ -15,9 +16,9 @@ namespace CombatView {
         }
 
         public static PlayerOrdersController playerOrdersController;
-        public PlayerControlState playerControlState = PlayerControlState.UnitSelect;
-        public List<ActionUnit> controllableUnits = new List<ActionUnit>();
-        public List<ActionUnit> otherUnits = new List<ActionUnit>();
+        [System.NonSerialized] public PlayerControlState playerControlState = PlayerControlState.UnitSelect;
+        [System.NonSerialized] public List<ActionUnit> controllableUnits = new List<ActionUnit>();
+        [System.NonSerialized] public List<ActionUnit> otherUnits = new List<ActionUnit>();
         [System.NonSerialized] public ActionUnit selectedUnit = null;
         [System.NonSerialized] public Unit targetedUnit = null;
 
@@ -59,11 +60,32 @@ namespace CombatView {
                                             targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
                                             fireUI.SetActive(true);
                                             playerControlState = PlayerControlState.ActionSelect;
+
                                             float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
                                             float hitChance;
                                             if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
                                             else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
                                             else hitChance = BASE_AIM;
+
+                                            CoverType highestUnflankedCover = CoverType.None;
+                                            if (selectedUnit.tile.x < targetedUnit.tile.x) {
+                                                CoverType directionCover = targetedUnit.tile.getCover(Direction.minusX);
+                                                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                                            }
+                                            else if (selectedUnit.tile.x > targetedUnit.tile.x) {
+                                                CoverType directionCover = targetedUnit.tile.getCover(Direction.X);
+                                                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                                            }
+                                            if (selectedUnit.tile.z < targetedUnit.tile.z) {
+                                                CoverType directionCover = targetedUnit.tile.getCover(Direction.minusZ);
+                                                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                                            }
+                                            else if (selectedUnit.tile.z > targetedUnit.tile.z) {
+                                                CoverType directionCover = targetedUnit.tile.getCover(Direction.Z);
+                                                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                                            }
+                                            hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
+
                                             hitChanceText.text = string.Format("Hit: {0:p}", hitChance);
                                         }
                                         break;
@@ -119,11 +141,32 @@ namespace CombatView {
             if (targetedUnit.status != Unit.Status.Dead
                 && selectedUnit.numActions > 0) {
                 selectedUnit.numActions = 0;
+
                 float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
                 float hitChance;
                 if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
                 else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
                 else hitChance = BASE_AIM;
+
+                CoverType highestUnflankedCover = CoverType.None;
+                if (selectedUnit.tile.x < targetedUnit.tile.x) {
+                    CoverType directionCover = targetedUnit.tile.getCover(Direction.minusX);
+                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                }
+                else if (selectedUnit.tile.x > targetedUnit.tile.x) {
+                    CoverType directionCover = targetedUnit.tile.getCover(Direction.X);
+                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                }
+                if (selectedUnit.tile.z < targetedUnit.tile.z) {
+                    CoverType directionCover = targetedUnit.tile.getCover(Direction.minusZ);
+                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                }
+                else if (selectedUnit.tile.z > targetedUnit.tile.z) {
+                    CoverType directionCover = targetedUnit.tile.getCover(Direction.Z);
+                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                }
+                hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
+
                 if (Random.Range(0f, 1) < hitChance) {
                     Debug.Log("Hit!");
                     targetedUnit.Damage(5); // TODO: fill with real damage calculation
@@ -142,6 +185,7 @@ namespace CombatView {
             CanvasRefs.canvasRefs.EndTurnButton.SetActive(false);
             CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(true);
             GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.EnemyTurn;
+            selectedUnit = null;
 
             // placeholder
             Invoke("StartTurn", 1.5f);

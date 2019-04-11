@@ -1195,10 +1195,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 225eb07b54283ec4cbdad528baecf91c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerControlState: 0
-  controllableUnits: []
-  otherUnits: []
   unitSelectionIndicator: {fileID: 231859023}
+  fireUI: {fileID: 925882574}
+  hitChanceText: {fileID: 1139790156}
+  coverText: {fileID: 1338365230}
+  lowCoverTextColor: {r: 1, g: 1, b: 0, a: 1}
+  highCoverTextColor: {r: 0.39215687, g: 0.39215687, b: 1, a: 1}
 --- !u!4 &1608539226
 Transform:
   m_ObjectHideFlags: 0
