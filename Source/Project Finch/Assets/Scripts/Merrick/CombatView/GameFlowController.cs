@@ -35,13 +35,13 @@ namespace CombatView
         public int matchID = 68;
 
         public List<Queue<string>> moveHistory = new List<Queue<string>>();
-        public  string moveInformation = null;
-        public  string NCmoveInformation = null;
-        public  string match_details1 = null;
-        public  bool InMatch = false;
-        public  MoveInfo move_info_exists = null;
-        public  string move_info = null;
-        public  bool match_exists;
+        public string moveInformation = null;
+        public string NCmoveInformation = null;
+        public string match_details1 = null;
+        public bool InMatch = false;
+        public MoveInfo move_info_exists = null;
+        public string move_info = null;
+        public bool match_exists;
 
  
         

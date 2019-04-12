@@ -1249,10 +1249,12 @@ MonoBehaviour:
   match_details1: 
   InMatch: 0
   move_info_exists:
-    moveInfo: default
-    moveNumber: 0
-    NCmoveInfo: not confirmed default
-    matchID: 0
+    u_player1Move: default1
+    u_player2Move: default2
+    a_playersMoves:
+    - default
+    - default
+    - default
   move_info: 
   match_exists: 0
   moveInfoText: {fileID: 0}
@@ -1260,6 +1262,7 @@ MonoBehaviour:
   moveInfoInput: {fileID: 0}
   userIDInput: {fileID: 0}
   matchIDInput: {fileID: 0}
+  moveNumberInput: {fileID: 0}
 --- !u!1 &1765240782
 GameObject:
   m_ObjectHideFlags: 0
