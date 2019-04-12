@@ -63,6 +63,11 @@ namespace CombatView
             gameFlowController = this;
         }
 
+        private void Start() {
+            //Placeholder
+            turnState = TurnState.PlayerInput;
+        }
+
         /// <summary>
         /// Adds this user to the database list of users which are looking for a match.
         /// </summary>

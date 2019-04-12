@@ -52,15 +52,48 @@ namespace CombatView {
                 string move = GameFlowController.gameFlowController.moveHistory[nextListMove].Dequeue();
                 if (move != null && move != "") {
                     confirmedMoves.Add(move);
-                    Debug.Log("Added to moves list: index " + nextListMove + ", string " + move);
                     nextListMove++;
                 }
             }
             if (confirmedMoves.Count > nextExecMove) {
                 Debug.Log("Execute move: " + confirmedMoves[nextExecMove]);
                 string[] moveSplit = confirmedMoves[nextExecMove].Split(',');
-                Debug.Log(string.Join("--", moveSplit));
-                // execute move
+
+                string[] coords;
+                Tile t;
+                int h;
+                switch (moveSplit[0]) {
+                    case "m":
+                        coords = moveSplit[2].Split(':');
+                        t = MapInfo.currentMapInfo.bottomLayer[int.Parse(coords[0]), int.Parse(coords[1])];
+                        h = int.Parse(coords[2]);
+                        for (int i = 0; i < h; i++) {
+                            try { t = t.above; }
+                            catch (System.ArgumentOutOfRangeException) { }
+                        }
+                        allUnits[moveSplit[1]].OrderMove(t);
+                        break;
+                    case "a":
+                        targetedUnit = null;
+                        CanvasRefs.canvasRefs.fireUI.SetActive(false);
+
+                        coords = moveSplit[2].Split(':');
+                        t = MapInfo.currentMapInfo.bottomLayer[int.Parse(coords[0]), int.Parse(coords[1])];
+                        h = int.Parse(coords[2]);
+                        for (int i = 0; i < h; i++) {
+                            try { t = t.above; }
+                            catch (System.ArgumentOutOfRangeException) { }
+                        }
+                        allUnits[moveSplit[1]].OrderAttack(t, moveSplit[3], int.Parse(moveSplit[4]));
+
+                        playerControlState = PlayerControlState.UnitSelect;
+                        break;
+                    case "endturn":
+                        break;
+                    case "endnatch":
+                        break;
+                }
+
                 nextExecMove++;
             }
 
@@ -133,18 +166,11 @@ namespace CombatView {
                                     }
                                     if (move) {
                                         string serverMove = "";
+                                        serverMove += "m";
                                         serverMove += selectedUnit.dict_id + ",";
                                         serverMove += hitTile.tile.x + ":" + hitTile.tile.z + ":" + hitTile.tile.h + ",";
-                                        serverMove += "m";
 
                                         GameFlowController.gameFlowController.addMove(serverMove);
-
-                                        // TO REMOVE
-                                        selectedUnit.numActions -= 1;
-                                        selectedUnit.transform.position = hitTile.transform.position;
-                                        selectedUnit.tile.occupyingObjects.Remove(selectedUnit);
-                                        selectedUnit.tile = hitTile.tile;
-                                        selectedUnit.tile.occupyingObjects.Add(selectedUnit);
                                     }
                                 }
                             }
@@ -218,18 +244,13 @@ namespace CombatView {
 
                 // === SERVER ===
                 string serverMove = "";
+                serverMove += "a,";
                 serverMove += selectedUnit.dict_id + ",";
                 serverMove += targetedUnit.tile.x + ":" + targetedUnit.tile.z + ":" + targetedUnit.tile.h + ",";
-                serverMove += "a,";
                 serverMove += (hit ? "h" : "m") + ",";
                 serverMove += damage;
 
                 GameFlowController.gameFlowController.addMove(serverMove);
-
-                // TO REMOVE
-                targetedUnit = null;
-                CanvasRefs.canvasRefs.fireUI.SetActive(false);
-                playerControlState = PlayerControlState.UnitSelect;
             }
         }
 
