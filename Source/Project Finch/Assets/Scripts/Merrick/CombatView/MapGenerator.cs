@@ -162,6 +162,10 @@ namespace CombatView {
                 tile.occupyingObjects.Add(unit);
                 unit.tile = tile;
                 unit.transform.position = new Vector3(tile.x, tile.h, tile.z);
+                if (unit is ActionUnit) {
+                    if ((unit as ActionUnit).dict_id.Length > 0) PlayerOrdersController.playerOrdersController.allUnits[(unit as ActionUnit).dict_id] = (unit as ActionUnit);
+                    else Debug.LogWarning("Unit has no dictionary key!");
+                }
             }
         }
         // This function for single-tile objects only

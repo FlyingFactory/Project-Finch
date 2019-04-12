@@ -32,6 +32,14 @@ namespace CombatView {
         [SerializeField] private Color highCoverTextColor = new Color32(100, 100, 255, 255);
 #pragma warning restore 649
 
+        // networking
+        [System.NonSerialized] public List<string> confirmedMoves = new List<string>();
+        [System.NonSerialized] public Dictionary<string, ActionUnit> allUnits = new Dictionary<string, ActionUnit>();
+        [System.NonSerialized] public int nextListMove = 0;
+        [System.NonSerialized] public int nextExecMove = 0;
+        [System.NonSerialized] private float serverPingCounter = 0;
+        public const float serverPingInterval = 0.5f;
+
 
         private void Awake() {
             if (playerOrdersController != null) Destroy(playerOrdersController);
@@ -39,104 +47,131 @@ namespace CombatView {
         }
 
         private void Update() {
-            switch (playerControlState) {
-                case PlayerControlState.UnitSelect:
-                    if (Input.GetButtonDown("select")) {
-                        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                        RaycastHit hit;
-                        if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask("Click"))) {
+            if (GameFlowController.gameFlowController.moveHistory.Count > nextListMove
+                && GameFlowController.gameFlowController.moveHistory[nextListMove].Count > 0) {
+                string move = GameFlowController.gameFlowController.moveHistory[nextListMove].Dequeue();
+                if (move != null && move != "") {
+                    confirmedMoves.Add(move);
+                    Debug.Log("Added to moves list: index " + nextListMove + ", string " + move);
+                    nextListMove++;
+                }
+            }
+            if (confirmedMoves.Count > nextExecMove) {
+                Debug.Log("Execute move: " + confirmedMoves[nextExecMove]);
+                string[] moveSplit = confirmedMoves[nextExecMove].Split(',');
+                Debug.Log(string.Join("--", moveSplit));
+                // execute move
+                nextExecMove++;
+            }
 
-                            TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
+            if (GameFlowController.gameFlowController.turnState == GameFlowController.TurnState.PlayerInput) {
+                switch (playerControlState) {
+                    case PlayerControlState.UnitSelect:
+                        if (Input.GetButtonDown("select")) {
+                            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                            RaycastHit hit;
+                            if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask("Click"))) {
 
-                            if (hitTile != null) {
-                                for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {
-                                    if (hitTile.tile.occupyingObjects[i] is Unit
-                                        && (hitTile.tile.occupyingObjects[i] as Unit).status != Unit.Status.Dead) {
-                                        if (hitTile.tile.occupyingObjects[i] is ActionUnit
-                                            && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
-                                            selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
+                                TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
+
+                                if (hitTile != null) {
+                                    for (int i = 0; i < hitTile.tile.occupyingObjects.Count; i++) {
+                                        if (hitTile.tile.occupyingObjects[i] is Unit
+                                            && (hitTile.tile.occupyingObjects[i] as Unit).status != Unit.Status.Dead) {
+                                            if (hitTile.tile.occupyingObjects[i] is ActionUnit
+                                                && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
+                                                selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
+                                            }
+                                            else if (selectedUnit != null) {
+                                                targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
+                                                fireUI.SetActive(true);
+                                                playerControlState = PlayerControlState.ActionSelect;
+
+                                                float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
+                                                float hitChance;
+                                                if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
+                                                else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
+                                                else hitChance = BASE_AIM;
+
+                                                CoverType highestUnflankedCover = CoverType.None;
+                                                if (selectedUnit.tile.x < targetedUnit.tile.x) {
+                                                    CoverType directionCover = targetedUnit.tile.getCover(Direction.minusX);
+                                                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                                                }
+                                                else if (selectedUnit.tile.x > targetedUnit.tile.x) {
+                                                    CoverType directionCover = targetedUnit.tile.getCover(Direction.X);
+                                                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                                                }
+                                                if (selectedUnit.tile.z < targetedUnit.tile.z) {
+                                                    CoverType directionCover = targetedUnit.tile.getCover(Direction.minusZ);
+                                                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                                                }
+                                                else if (selectedUnit.tile.z > targetedUnit.tile.z) {
+                                                    CoverType directionCover = targetedUnit.tile.getCover(Direction.Z);
+                                                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+                                                }
+                                                hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
+
+                                                hitChanceText.text = string.Format("Hit: {0:p}", hitChance);
+                                            }
+                                            break;
                                         }
-                                        else if (selectedUnit != null) {
-                                            targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
-                                            fireUI.SetActive(true);
-                                            playerControlState = PlayerControlState.ActionSelect;
-
-                                            float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
-                                            float hitChance;
-                                            if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
-                                            else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
-                                            else hitChance = BASE_AIM;
-
-                                            CoverType highestUnflankedCover = CoverType.None;
-                                            if (selectedUnit.tile.x < targetedUnit.tile.x) {
-                                                CoverType directionCover = targetedUnit.tile.getCover(Direction.minusX);
-                                                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                                            }
-                                            else if (selectedUnit.tile.x > targetedUnit.tile.x) {
-                                                CoverType directionCover = targetedUnit.tile.getCover(Direction.X);
-                                                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                                            }
-                                            if (selectedUnit.tile.z < targetedUnit.tile.z) {
-                                                CoverType directionCover = targetedUnit.tile.getCover(Direction.minusZ);
-                                                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                                            }
-                                            else if (selectedUnit.tile.z > targetedUnit.tile.z) {
-                                                CoverType directionCover = targetedUnit.tile.getCover(Direction.Z);
-                                                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                                            }
-                                            hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
-
-                                            hitChanceText.text = string.Format("Hit: {0:p}", hitChance);
-                                        }
-                                        break;
                                     }
                                 }
                             }
                         }
-                    }
-                    else if (Input.GetButtonDown("select2")) {
-                        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                        RaycastHit hit;
-                        if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask("Click"))) {
+                        else if (Input.GetButtonDown("select2")) {
+                            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                            RaycastHit hit;
+                            if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask("Click"))) {
 
-                            TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
-                            if (hitTile != null && selectedUnit != null && selectedUnit.numActions > 0) {
-                                bool move = true;
-                                if (selectedUnit.takesTile && hitTile.tile.ContainsBlockingAnything()) {
-                                    move = false;
-                                }
-                                if (move) {
-                                    string serverMove = "";
-                                    serverMove += selectedUnit.dict_id + ",";
-                                    serverMove += hitTile.tile.x + ":" + hitTile.tile.z + ":" + hitTile.tile.h + ",";
-                                    serverMove += "m";
+                                TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
+                                if (hitTile != null && selectedUnit != null && selectedUnit.numActions > 0) {
+                                    bool move = true;
+                                    if (selectedUnit.takesTile && hitTile.tile.ContainsBlockingAnything()) {
+                                        move = false;
+                                    }
+                                    if (move) {
+                                        string serverMove = "";
+                                        serverMove += selectedUnit.dict_id + ",";
+                                        serverMove += hitTile.tile.x + ":" + hitTile.tile.z + ":" + hitTile.tile.h + ",";
+                                        serverMove += "m";
 
-                                    GameFlowController.gameFlowController.addMove(serverMove);
+                                        GameFlowController.gameFlowController.addMove(serverMove);
 
-                                    // TO REMOVE
-                                    selectedUnit.numActions -= 1;
-                                    selectedUnit.transform.position = hitTile.transform.position;
-                                    selectedUnit.tile.occupyingObjects.Remove(selectedUnit);
-                                    selectedUnit.tile = hitTile.tile;
-                                    selectedUnit.tile.occupyingObjects.Add(selectedUnit);
+                                        // TO REMOVE
+                                        selectedUnit.numActions -= 1;
+                                        selectedUnit.transform.position = hitTile.transform.position;
+                                        selectedUnit.tile.occupyingObjects.Remove(selectedUnit);
+                                        selectedUnit.tile = hitTile.tile;
+                                        selectedUnit.tile.occupyingObjects.Add(selectedUnit);
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (selectedUnit != null && unitSelectionIndicator != null) {
-                        unitSelectionIndicator.transform.position = selectedUnit.transform.position;
-                    }
-                    break;
+                        if (selectedUnit != null && unitSelectionIndicator != null) {
+                            unitSelectionIndicator.transform.position = selectedUnit.transform.position;
+                        }
+                        break;
 
-                case PlayerControlState.ActionSelect:
+                    case PlayerControlState.ActionSelect:
 
-                    if (Input.GetButtonDown("escape")) {
-                        targetedUnit = null;
-                        CanvasRefs.canvasRefs.fireUI.SetActive(false);
-                        playerControlState = PlayerControlState.UnitSelect;
-                    }
-                    break;
+                        if (Input.GetButtonDown("escape")) {
+                            targetedUnit = null;
+                            CanvasRefs.canvasRefs.fireUI.SetActive(false);
+                            playerControlState = PlayerControlState.UnitSelect;
+                        }
+                        break;
+                }
+            }
+
+            if (serverPingCounter <= 0) {
+                GameFlowController.gameFlowController.getMove(nextListMove);
+                serverPingCounter = serverPingInterval;
+            }
+            else {
+                serverPingCounter -= Time.deltaTime;
             }
         }
 
@@ -217,7 +252,8 @@ namespace CombatView {
             // need to handle turn entry effects
             CanvasRefs.canvasRefs.EndTurnButton.SetActive(true);
             CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(false);
-            GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.Entry;
+            //GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.Entry;
+            GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.PlayerInput;
             for (int i = 0; i < controllableUnits.Count; i++) {
                 controllableUnits[i].numActions = controllableUnits[i].actionsPerTurn;
             }
