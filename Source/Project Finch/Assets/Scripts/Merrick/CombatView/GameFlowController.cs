@@ -29,10 +29,12 @@ namespace CombatView
         [System.NonSerialized] public bool waitingForServer = false;
         [System.NonSerialized] public int currentPlayer = 0;
         [System.NonSerialized] public int numPlayers = 2;
+        [System.NonSerialized] public bool player1;
 
         //set to 68 first for testing
         public int matchID = 68;
 
+        public List<Queue<string>> moveHistory = new List<Queue<string>>();
         public  string moveInformation = null;
         public  string NCmoveInformation = null;
         public  string match_details1 = null;
@@ -41,7 +43,7 @@ namespace CombatView
         public  string move_info = null;
         public  bool match_exists;
 
-        [System.NonSerialized] public bool player1; 
+ 
         
 
         /// <summary>
@@ -52,6 +54,7 @@ namespace CombatView
         public InputField moveInfoInput;
         public InputField userIDInput;
         public InputField matchIDInput;
+        public InputField moveNumberInput;
         /// end of UI stuff for debugging.
 
         private void Awake()
@@ -199,6 +202,43 @@ namespace CombatView
 
         }
 
+        public void getMove(int moveNumber)
+        {
+            matchID = 68;
+
+            while (moveHistory.Count <= moveNumber)
+            {
+                moveHistory.Add(new Queue<string>());
+            }
+
+            Debug.Log(moveHistory[moveNumber]);
+            
+
+            RestClient.Get<MoveInfo>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
+            {
+                
+                Debug.Log("response from database:"+response.a_playersMoves[moveNumber]);
+                Debug.Log("test");
+                Debug.Log(moveHistory[moveNumber]);
+                try { moveHistory[moveNumber].Enqueue(response.a_playersMoves[moveNumber]); }
+                
+                catch (Exception e) { Debug.Log(e.StackTrace); }
+                
+                Debug.Log("test2");
+                Debug.Log("dequeue:"+ moveHistory[moveNumber].Dequeue());
+                
+        
+                
+            });
+
+        }
+
+        public void onGetMove()
+        {
+            int x = Convert.ToInt32(moveNumberInput.text);
+            getMove(x);
+        }
+
 
         /// <summary>
         /// Puts first match details on database to allow both players to draw information of match to start match.
@@ -236,7 +276,7 @@ namespace CombatView
         public void OnCheckMoveInfo()
         {
             int x = Convert.ToInt32(matchIDInput.text);
-            checkNextMove(x);
+            getMove(x);
         }
         //END OF FUNCTIONS REQUIRED FOR TESTING checkNextMove()
 
