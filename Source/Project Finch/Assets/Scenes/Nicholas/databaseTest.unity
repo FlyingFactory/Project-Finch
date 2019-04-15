@@ -4108,30 +4108,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8f881b820baf874d85930e5f754d371, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  matchID: 0
+  matchID: 68
   moveInformation: 
   NCmoveInformation: 
   match_details1: 
   InMatch: 0
-  move_info_exists:
-    u_player1Move: default1
-    u_player2Move: default2
-    a_playersMoves:
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
   move_info: 
   match_exists: 0
   moveInfoText: {fileID: 0}
   matchDetailsInput: {fileID: 0}
-  moveInfoInput: {fileID: 826664585}
-  userIDInput: {fileID: 124475124}
-  matchIDInput: {fileID: 1940982402}
+  moveInfoInput: {fileID: 0}
+  userIDInput: {fileID: 0}
+  matchIDInput: {fileID: 302771251}
   moveNumberInput: {fileID: 302771251}
 --- !u!4 &1713739225
 Transform:

@@ -225,11 +225,22 @@ namespace CombatView
             {
                 moveHistory.Add(new Queue<string>());
             }
-
-            RestClient.Get<acceptedMoves>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/moveHistory.json").Then(response =>
+            try
             {
-                if (response.a_playersMoves.Count > moveNumber) moveHistory[moveNumber].Enqueue(response.a_playersMoves[moveNumber]);
-            });
+                RestClient.Get<acceptedMoves>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/moveHistory.json").Then(response =>
+                {
+
+                    if (response.a_playersMoves.Count > moveNumber)
+                    {
+                        moveHistory[moveNumber].Enqueue(response.a_playersMoves[moveNumber]);
+                    }
+
+                });
+            }catch (Exception)
+            {
+
+            }
+            
 
         }
 
