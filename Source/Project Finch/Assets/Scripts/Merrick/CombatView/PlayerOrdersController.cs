@@ -18,7 +18,7 @@ namespace CombatView {
         public static PlayerOrdersController playerOrdersController;
         [System.NonSerialized] public PlayerControlState playerControlState = PlayerControlState.UnitSelect;
         [System.NonSerialized] public List<ActionUnit> controllableUnits = new List<ActionUnit>();
-        [System.NonSerialized] public List<ActionUnit> otherUnits = new List<ActionUnit>();
+        [System.NonSerialized] public List<ActionUnit> otherPlayerUnits = new List<ActionUnit>();
         [System.NonSerialized] public ActionUnit selectedUnit = null;
         [System.NonSerialized] public Unit targetedUnit = null;
 
@@ -26,6 +26,7 @@ namespace CombatView {
 #pragma warning disable 649
         [SerializeField] private GameObject unitSelectionIndicator;
         [SerializeField] private GameObject fireUI;
+        [SerializeField] private GameObject endTurnUI;
         [SerializeField] private TMPro.TextMeshProUGUI hitChanceText;
         [SerializeField] private TMPro.TextMeshProUGUI coverText;
         [SerializeField] private Color lowCoverTextColor = new Color32(255, 255, 0, 255);
@@ -38,7 +39,7 @@ namespace CombatView {
         [System.NonSerialized] public int nextListMove = 0;
         [System.NonSerialized] public int nextExecMove = 0;
         [System.NonSerialized] private float serverPingCounter = 0;
-        public const float serverPingInterval = 0.5f;
+        public const float serverPingInterval = 0.2f;
 
 
         private void Awake() {
@@ -56,7 +57,7 @@ namespace CombatView {
                 }
             }
             if (confirmedMoves.Count > nextExecMove) {
-                Debug.Log("Execute move: " + confirmedMoves[nextExecMove]);
+                Debug.Log("Execute move #" + nextExecMove + ": " + confirmedMoves[nextExecMove]);
                 string[] moveSplit = confirmedMoves[nextExecMove].Split(',');
 
                 string[] coords;
@@ -65,11 +66,12 @@ namespace CombatView {
                 switch (moveSplit[0]) {
                     case "m":
                         coords = moveSplit[2].Split(':');
+                        Debug.Log("move");
                         t = MapInfo.currentMapInfo.bottomLayer[int.Parse(coords[0]), int.Parse(coords[1])];
                         h = int.Parse(coords[2]);
                         for (int i = 0; i < h; i++) {
                             try { t = t.above; }
-                            catch (System.ArgumentOutOfRangeException) { }
+                            catch (System.ArgumentOutOfRangeException) { Debug.Log("out of range"); }
                         }
                         allUnits[moveSplit[1]].OrderMove(t);
                         break;
@@ -89,8 +91,15 @@ namespace CombatView {
                         playerControlState = PlayerControlState.UnitSelect;
                         break;
                     case "endturn":
+                        GameFlowController.gameFlowController.isPlayer1Turn = !GameFlowController.gameFlowController.isPlayer1Turn;
+                        if (GameFlowController.gameFlowController.isPlayer1Turn) {
+                            StartTurn();
+                        }
+                        else {
+                            EndTurn();
+                        }
                         break;
-                    case "endnatch":
+                    case "endmatch":
                         break;
                 }
 
@@ -166,9 +175,9 @@ namespace CombatView {
                                     }
                                     if (move) {
                                         string serverMove = "";
-                                        serverMove += "m";
+                                        serverMove += "m,";
                                         serverMove += selectedUnit.dict_id + ",";
-                                        serverMove += hitTile.tile.x + ":" + hitTile.tile.z + ":" + hitTile.tile.h + ",";
+                                        serverMove += hitTile.tile.x + ":" + hitTile.tile.z + ":" + hitTile.tile.h;
 
                                         GameFlowController.gameFlowController.addMove(serverMove);
                                     }
@@ -247,34 +256,43 @@ namespace CombatView {
                 serverMove += "a,";
                 serverMove += selectedUnit.dict_id + ",";
                 serverMove += targetedUnit.tile.x + ":" + targetedUnit.tile.z + ":" + targetedUnit.tile.h + ",";
-                serverMove += (hit ? "h" : "m") + ",";
-                serverMove += damage;
+                serverMove += (hit ? "h," : "m,");
+                serverMove += damage.ToString();
+
+                targetedUnit = null;
+                CanvasRefs.canvasRefs.fireUI.SetActive(false);
+                playerControlState = PlayerControlState.UnitSelect;
 
                 GameFlowController.gameFlowController.addMove(serverMove);
             }
         }
 
         public void EndTurnButton() {
-            GameFlowController.gameFlowController.addMove("endturn,voluntary");
-
-            // TO REMOVE
-            // need to handle wrapup effects
             CanvasRefs.canvasRefs.EndTurnButton.SetActive(false);
             CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(true);
             GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.EnemyTurn;
-            selectedUnit = null;
+            endTurnUI.SetActive(false);
             unitSelectionIndicator.transform.position = new Vector3(1000, 0, 0);
+            GameFlowController.gameFlowController.addMove("endturn,voluntary");
+        }
 
-            // placeholder
-            Invoke("StartTurn", 1.5f);
+        public void EndTurn() {
+            CanvasRefs.canvasRefs.EndTurnButton.SetActive(false);
+            CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(true);
+            GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.EnemyTurn;
+            endTurnUI.SetActive(false);
+            unitSelectionIndicator.transform.position = new Vector3(1000, 0, 0);
+            selectedUnit = null;
+            for (int i = 0; i < otherPlayerUnits.Count; i++) {
+                otherPlayerUnits[i].numActions = otherPlayerUnits[i].actionsPerTurn;
+            }
         }
 
         public void StartTurn() {
-            // need to handle turn entry effects
             CanvasRefs.canvasRefs.EndTurnButton.SetActive(true);
             CanvasRefs.canvasRefs.EnemyTurnIndicator.SetActive(false);
-            //GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.Entry;
             GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.PlayerInput;
+            endTurnUI.SetActive(true);
             for (int i = 0; i < controllableUnits.Count; i++) {
                 controllableUnits[i].numActions = controllableUnits[i].actionsPerTurn;
             }

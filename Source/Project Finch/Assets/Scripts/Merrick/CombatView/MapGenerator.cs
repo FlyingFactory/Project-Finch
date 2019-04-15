@@ -127,6 +127,7 @@ namespace CombatView {
                 newUnit.id += idBuffer++;
                 newUnit.dict_id = (player1 ? "2_" : "1_") + newUnit.id;
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
+                PlayerOrdersController.playerOrdersController.otherPlayerUnits.Add(newUnit);
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
                 u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = enemyColor;

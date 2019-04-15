@@ -1241,6 +1241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitSelectionIndicator: {fileID: 231859023}
   fireUI: {fileID: 925882574}
+  endTurnUI: {fileID: 591014727}
   hitChanceText: {fileID: 1139790156}
   coverText: {fileID: 1338365230}
   lowCoverTextColor: {r: 1, g: 1, b: 0, a: 1}
