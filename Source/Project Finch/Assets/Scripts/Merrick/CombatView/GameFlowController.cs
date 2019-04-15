@@ -27,7 +27,7 @@ namespace CombatView
         public static GameFlowController gameFlowController;
         [System.NonSerialized] public TurnState turnState = TurnState.Entry;
         [System.NonSerialized] public bool waitingForServer = false;
-        [System.NonSerialized] public int currentPlayer = 0;
+        [System.NonSerialized] public bool isPlayer1Turn = true;
         [System.NonSerialized] public int numPlayers = 2;
         [System.NonSerialized] public bool player1;
 
@@ -42,9 +42,6 @@ namespace CombatView
         public MoveInfoAll move_info_exists = null;
         public string move_info = null;
         public bool match_exists;
-
- 
-        
 
         /// <summary>
         /// The UI stuff below are for debugging.
