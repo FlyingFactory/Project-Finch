@@ -133,7 +133,9 @@ namespace CombatView
         /// <param name="moveInfo"></param>
         public void addMove(string moveInfo)
         {
-            moveInformation = moveInfo;
+            string rubbish = Hash128.Compute(DateTime.Now.ToString()).ToString();
+            //moveInformation = moveInfo;
+            moveInfo += "," + rubbish;
             PostMoveInfoToDatabase(moveInfo, matchID, player1);
         }
 
