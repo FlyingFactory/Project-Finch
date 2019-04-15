@@ -39,7 +39,6 @@ namespace CombatView
         public string NCmoveInformation = null;
         public string match_details1 = null;
         public bool InMatch = false;
-        public MoveInfoAll move_info_exists = null;
         public string move_info = null;
         public bool match_exists;
 
@@ -176,47 +175,47 @@ namespace CombatView
         /// </summary>
         /// <param name="matchID">The match's unique ID</param>
         /// <returns>Returns the move information, or null if there is no new move.</returns>
-        public void checkNextMove(int matchID)
-        {
-            //check if match exists before we grab moveInfo
+        //public void checkNextMove(int matchID)
+        //{
+        //    //check if match exists before we grab moveInfo
 
-            StartCoroutine(checkNextMoveCoroutine(matchID));
-        }
+        //    StartCoroutine(checkNextMoveCoroutine(matchID));
+        //}
 
-        public IEnumerator checkNextMoveCoroutine(int matchID)
-        {
-            yield return StartCoroutine(getMoveInfo(matchID));
-            if (match_exists)
-            {
-                Debug.Log(move_info_exists.a_playersMoves);
-            }
-        }
+        //public IEnumerator checkNextMoveCoroutine(int matchID)
+        //{
+        //    yield return StartCoroutine(getMoveInfo(matchID));
+        //    if (match_exists)
+        //    {
+        //        Debug.Log(move_info_exists.a_playersMoves);
+        //    }
+        //}
 
-        public IEnumerator getMoveInfo(int matchID)
-        {
-            bool inProgress = true;
-            try
-            {
+        //public IEnumerator getMoveInfo(int matchID)
+        //{
+        //    bool inProgress = true;
+        //    try
+        //    {
 
-                RestClient.Get<MoveInfoAll>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
-                {
-                    move_info_exists = response;
-                    inProgress = false;
-                    if (move_info_exists.a_playersMoves != null)
-                    {
-                        match_exists = true;
-                    }
-                });
+        //        RestClient.Get<MoveInfoAll>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
+        //        {
+        //            move_info_exists = response;
+        //            inProgress = false;
+        //            if (move_info_exists.a_playersMoves != null)
+        //            {
+        //                match_exists = true;
+        //            }
+        //        });
 
-            }
-            catch (NullReferenceException)
-            {
-                match_exists = false;
-            }
+        //    }
+        //    catch (NullReferenceException)
+        //    {
+        //        match_exists = false;
+        //    }
 
-            while (inProgress) yield return new WaitForSeconds(0.25f);
+        //    while (inProgress) yield return new WaitForSeconds(0.25f);
 
-        }
+        //}
 
         public void getMove(int moveNumber)
         {
@@ -227,11 +226,25 @@ namespace CombatView
                 moveHistory.Add(new Queue<string>());
             }
 
-            RestClient.Get<MoveInfoAll>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
+            RestClient.Get<acceptedMoves>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/moveHistory.json").Then(response =>
             {
                 if (response.a_playersMoves.Count > moveNumber) moveHistory[moveNumber].Enqueue(response.a_playersMoves[moveNumber]);
             });
 
+        }
+
+        [Serializable]
+        //class to store variables and data that will be sent to firebase with PostToDatabase() function call
+        public class acceptedMoves
+        {
+            //add more data that is going to be stored on database here
+            public List<string> a_playersMoves;
+
+
+            public acceptedMoves()
+            {
+                this.a_playersMoves = new List<string> {""};
+            }
         }
 
         public void onGetMove()
