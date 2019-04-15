@@ -39,7 +39,7 @@ namespace CombatView
         public string NCmoveInformation = null;
         public string match_details1 = null;
         public bool InMatch = false;
-        public MoveInfo move_info_exists = null;
+        public MoveInfoAll move_info_exists = null;
         public string move_info = null;
         public bool match_exists;
 
@@ -143,18 +143,32 @@ namespace CombatView
 
         public void PostMoveInfoToDatabase(string moveInfo, int matchID, bool player1)
         {
-            MoveInfo moveinfo = new MoveInfo();
+            string_container pmove = new string_container();
             if (player1)
             {
-                moveinfo.u_player1Move = moveInfo;
-                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json", moveinfo);
+                pmove.value = moveInfo;
+                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/p1move.json", pmove);
             }
             else
             {
-                moveinfo.u_player2Move = moveInfo;
-                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json", moveinfo);
+                pmove.value = moveInfo;
+                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/p2move.json", pmove);
             }
             
+        }
+
+        [Serializable]
+        //class to store variables and data that will be sent to firebase with PostToDatabase() function call
+        public class string_container
+        {
+            //add more data that is going to be stored on database here
+            public string value;
+
+
+            public string_container()
+            {
+                this.value = "";
+            }
         }
 
 
@@ -187,7 +201,7 @@ namespace CombatView
             try
             {
 
-                RestClient.Get<MoveInfo>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
+                RestClient.Get<MoveInfoAll>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
                 {
                     move_info_exists = response;
                     inProgress = false;
@@ -216,7 +230,7 @@ namespace CombatView
                 moveHistory.Add(new Queue<string>());
             }
 
-            RestClient.Get<MoveInfo>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
+            RestClient.Get<MoveInfoAll>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
             {
                 if (response.a_playersMoves.Count > moveNumber) moveHistory[moveNumber].Enqueue(response.a_playersMoves[moveNumber]);
             });
@@ -260,7 +274,7 @@ namespace CombatView
         public void UpdateMoveInfo()
         {
             //this is wrong pls fix later
-            moveInfoText.text = move_info_exists.u_player1Move;
+            //moveInfoText.text = move_info_exists.u_player1Move;
         }
 
         public void OnCheckMoveInfo()
