@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SoldierData :MonoBehaviour
+public class SoldierData : MonoBehaviour
 
 {
     public Text title;
@@ -16,11 +16,15 @@ public class SoldierData :MonoBehaviour
     public Text Mobility;
     public Text Aim;
 
-    public string[] imported;
+    public string[] imported = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
+    public string[] imported2 = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
+    public string[] imported3 = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
+    public string[] imported4 = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
+    public string[] imported5 = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
     // This time, it's for that particular soldier.
     // I am to assume that these strings of data are in array form.
 
-    
+
     // void onClick(int soldierID)
     // The code below should only work when the name is clicked on the previous screen.
     // For testing purposes, Awake() is used.

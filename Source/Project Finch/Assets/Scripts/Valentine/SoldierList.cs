@@ -5,27 +5,16 @@ using UnityEngine.UI;
 
 public class SoldierList : MonoBehaviour
 {
-    public string[] imported;
-    
-    public Text SoldierName1 = null;
-    public Text SoldierName2 = null;
-    public Text SoldierName3 = null;
-    public Text SoldierName4 = null;
-    public Text SoldierName5 = null;
+    [SerializeField]
+    private Text myText;
 
-    void Awake()
+    public void SetText(string textString)
     {
-        // imported = Resources.LoadAll<Text>("...");
-        // To implement an import from the server. For now, use a local array.
-        // Possible to get an array of soldier IDs, then extract their names?
+        myText.text = textString;
+    }
 
-        imported = new string[] { "Catherine", "Markus", "Ryan", "Clarissa", "Janet" };
-
-        SoldierName1.text = imported[0];
-        SoldierName2.text = imported[1];
-        SoldierName3.text = imported[2];
-        SoldierName4.text = imported[3];
-        SoldierName5.text = imported[4];
+    public void GenerateSoldierList()
+    {
 
     }
 
