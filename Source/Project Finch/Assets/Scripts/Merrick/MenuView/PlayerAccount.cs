@@ -13,14 +13,15 @@ namespace MenuView
 
         public string userName;
         public byte[] passwordHash;
+        public string password;
         public float unrankedMMR;
         public float rankedMMR;
         // future getonly property to get rank name from MMR
 
+        public int counter = 0;
         public Soldier soldier;
         public bool InMatch;
         public volatile int matchID;
-        public string soldierList;
         public string userId;
         public int numberOfSoldiers;
         public List<string> soldierNameList;
@@ -35,7 +36,7 @@ namespace MenuView
         /// Hashes the password, then checks user/pass with the database.
         /// If it is valid, loads all data into the STATIC currentPlayer's variables.
         /// </summary>
-        public void LoginAndLoadAllData(int userID, string password)
+        public void LoginAndLoadAllData(string userID, string password)
         {
             if (!loginInProgress)
             {
@@ -48,11 +49,11 @@ namespace MenuView
 
         public class LoginInfo
         {
-            public volatile int userId;
+            public volatile string userId;
             public volatile string Password;
             public volatile string PasswordD;
             public bool complete = false;
-            public LoginInfo(int userID, string password)
+            public LoginInfo(string userID, string password)
             {
                 this.userId = userID;
                 this.Password = password;
@@ -65,7 +66,7 @@ namespace MenuView
             try { _loginInfo = (LoginInfo)loginInfo; }
             catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
 
-            int userID = _loginInfo.userId;
+            string userID = _loginInfo.userId;
             string passwordHash = Hash128.Compute(_loginInfo.Password).ToString(); // Not sure if this works, can try
             //Debug.Log("passwordHash: " + passwordHash);
             bool loginSuccess = false;
@@ -99,9 +100,13 @@ namespace MenuView
             {
                 Debug.Log("Login successful");
                 LoadDataInfo loadDataInfo = new LoadDataInfo(userID);
+                soldierList soldierList = new soldierList(userID);
+                loadDataAndLoadSoldierInfo mother = new loadDataAndLoadSoldierInfo();
+                mother.soldierList = soldierList;
+                mother.loadDataInfo = loadDataInfo;
 
                 Thread loadDataThread = new Thread(new ParameterizedThreadStart(LoadData_Thread));
-                loadDataThread.Start(loadDataInfo);
+                loadDataThread.Start(mother);
                 loadDataThread.Join();
 
                 if (loadDataInfo.output == null)
@@ -156,7 +161,7 @@ namespace MenuView
 
         public async static void checkForMatch(PlayerAccount player)
         {
-            LoadDataInfo loadDataInfo = new LoadDataInfo(Convert.ToInt32(player.userId));
+            LoadDataInfo loadDataInfo = new LoadDataInfo(player.userId);
             Thread check_match = new Thread(new ParameterizedThreadStart(getFromDatabase_thread));
             check_match.Start(loadDataInfo);
 
@@ -178,29 +183,29 @@ namespace MenuView
         /// Loads data of any user, for game-loading purposes or viewing profiles.
         /// </summary>
         /// <returns>The newly constructed PlayerAccount, or null if there is no user of that ID.</returns>
-        public async static void LoadData_Thread(object loadDataInfo)
+        public async static void LoadData_Thread(object mother)
         {
-
-            LoadDataInfo _loadDataInfo;
-            try { _loadDataInfo = (LoadDataInfo)loadDataInfo; }
+            loadDataAndLoadSoldierInfo _mother;
+            try { _mother = (loadDataAndLoadSoldierInfo)mother; }
             catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
+
 
             bool loadSuccess = true;
             PlayerAccount loadedAccount = new PlayerAccount();
-            _loadDataInfo.output = loadedAccount;
+            _mother.loadDataInfo.output = loadedAccount;
 
             //Debug.Log("userID:" +_loadDataInfo.userID);
 
 
             // TODO: load data into loadedAccount
             Thread getDatabase = new Thread(new ParameterizedThreadStart(getFromDatabase_thread));
-            getDatabase.Start((object)_loadDataInfo);
+            getDatabase.Start((object)_mother.loadDataInfo);
 
             System.Threading.CancellationToken cancel = new CancellationToken();
             for (int i = 0; i < 30; i++)
             {
                 //Debug.Log(_loadDataInfo.complete);
-                if (_loadDataInfo.complete) break;
+                if (_mother.loadDataInfo.complete) break;
 
                 await System.Threading.Tasks.Task.Delay(1000, cancel);
                 if (cancel.IsCancellationRequested) break;
@@ -211,29 +216,48 @@ namespace MenuView
             //Debug.Log("soldierList:" + _loadDataInfo.output.soldierList);
             //Debug.Log("userId:" + _loadDataInfo.output.userId);
             //Debug.Log("userName:" + _loadDataInfo.output.userName);
-            try{_loadDataInfo.output.numberOfSoldiers = _loadDataInfo.output.soldierList.Split(',').Length; }
+            //soldierList _soldierlist;
+            //try { _soldierlist = (soldierList)soldierlist; }
+            //catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
+
+            Thread getSoldierList = new Thread(new ParameterizedThreadStart(getSoldierList_thread));
+            getSoldierList.Start((object)_mother.soldierList);
+
+            System.Threading.CancellationToken cancel2 = new CancellationToken();
+            for (int i = 0; i < 30; i++)
+            {
+                //Debug.Log(_loadDataInfo.complete);
+                if (_mother.soldierList.complete) break;
+
+                await System.Threading.Tasks.Task.Delay(1000, cancel2);
+                if (cancel2.IsCancellationRequested) break;
+            };
+
+            Debug.Log("soldierList:" + _mother.soldierList.value);
+
+            try {_mother.loadDataInfo.output.numberOfSoldiers = _mother.soldierList.value.Split(',').Length; }
             catch (Exception)
             {
-                if (_loadDataInfo.output.soldierList != null)
+                if (_mother.soldierList.value != null)
                 {
-                    _loadDataInfo.output.numberOfSoldiers = 1;
+                    _mother.loadDataInfo.output.numberOfSoldiers = 1;
                 }
-                else _loadDataInfo.output.numberOfSoldiers = 0;
+                else _mother.loadDataInfo.output.numberOfSoldiers = 0;
                     
             }
 
-            string[] arr = new string[_loadDataInfo.output.numberOfSoldiers];
+            string[] arr = new string[_mother.loadDataInfo.output.numberOfSoldiers];
 
             try
             {
-                 arr = _loadDataInfo.output.soldierList.Split(',');
+                 arr = _mother.soldierList.value.Split(',');
             }
             catch (Exception)
             {
-                if (_loadDataInfo.output.soldierList != null)
+                if (_mother.soldierList.value != null)
                 {
                     //arr = new string[1];
-                    arr[0] = _loadDataInfo.output.soldierList;
+                    arr[0] = _mother.soldierList.value;
                 }
                 else
                 {
@@ -247,18 +271,18 @@ namespace MenuView
             {
                 if (arrItem != null)
                 {
-                    _loadDataInfo.output.soldierNameList.Add(arrItem);
+                    _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
                 }
                 
             }
             
-            Debug.Log("number of soldiers:"+_loadDataInfo.output.soldierNameList.Count);
+            Debug.Log("number of soldiers:"+_mother.loadDataInfo.output.soldierNameList.Count);
 
-            foreach (string soldier_id in _loadDataInfo.output.soldierNameList)
+            foreach (string soldier_id in _mother.loadDataInfo.output.soldierNameList)
             {
                 MenuView.Soldier soldier = new MenuView.Soldier();
-                soldier.index = Convert.ToInt32(soldier_id);
-                soldier.owner = Convert.ToInt32(_loadDataInfo.output.userId);
+                soldier.index = soldier_id;
+                soldier.owner = _mother.loadDataInfo.output.userId;
                 soldier.complete = false;
                 Thread getSoldier = new Thread(new ParameterizedThreadStart(getSoldier_thread));
                 getSoldier.Start(soldier);
@@ -274,15 +298,15 @@ namespace MenuView
                 };
 
                 //Debug.Log("soldier aim:" + soldier.aim);
-                _loadDataInfo.output.soldiers.Add(soldier);
+                _mother.loadDataInfo.output.soldiers.Add(soldier);
                 //Debug.Log("list of soldier class:"+ _loadDataInfo.output.soldiers.Count);
             }
 
             if (loadSuccess)
             {
-                _loadDataInfo.output = loadedAccount;
+                _mother.loadDataInfo.output = loadedAccount;
             }
-            else _loadDataInfo.output = null;
+            else _mother.loadDataInfo.output = null;
 
         }
 
@@ -339,16 +363,52 @@ namespace MenuView
             //Debug.Log("soldierlist:" +_loadDataInfo.output.soldierList);
             _loadDataInfo.complete = true;
         }
+
+        public async static void getSoldierList_thread(object soldier_list)
+        {
+            soldierList _soldierList = (soldierList)soldier_list;
+            QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/User/" + _soldierList.userID + "/soldierList.json");
+            Runner_call.Coroutines.Add(getFromDatabase_RestClientCall(qi));
+            System.Threading.CancellationToken cancel = new CancellationToken();
+            for (int i = 0; i < 30; i++)
+            {
+                if (!qi.inProgress) break;
+                await System.Threading.Tasks.Task.Delay(1000, cancel);
+                if (cancel.IsCancellationRequested) break;
+            };
+            soldierList buffer = JsonUtility.FromJson<soldierList>(qi.responseText);
+            _soldierList.value = buffer.value;
+            Debug.Log("soldierList:" + _soldierList.value);
+        }
+
         public class LoadDataInfo
         {
-            public int userID;
+            public string userID;
             public PlayerAccount output = null;
             public bool complete = false;
-            public LoadDataInfo(int userID)
+            public LoadDataInfo(string userID)
             {
                 this.userID = userID;
             }
         }
+
+        public class soldierList
+        {
+            public string value;
+            public string userID;
+            public bool complete = false;
+            public soldierList(string userID)              
+            {
+                this.userID = userID;
+                this.value = "";
+            }
+        }
+        public class loadDataAndLoadSoldierInfo
+        {
+            public LoadDataInfo loadDataInfo;
+            public soldierList soldierList;
+        }
+
         public static IEnumerator getFromDatabase_RestClientCall(QueryInfo qi)
         {
             //Debug.Log("started coroutine");
@@ -368,6 +428,35 @@ namespace MenuView
             public QueryInfo(string query)
             {
                 this.query = query;
+            }
+        }
+
+        public void createNewAccount(string userName, string password)
+        {
+            string password_hash = Hash128.Compute(password).ToString();
+            PlayerAccount new_account = new PlayerAccount();
+            new_account.password = password_hash;
+            new_account.userName = userName;
+            new_account.InMatch = false;
+            new_account.matchID = -1;
+            RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + ".json", new_account);
+        }
+
+        public void putSoldier(Soldier soldier, bool itIsNew)
+        {
+            if (itIsNew)
+            {
+                //Debug.Log("putting new soldier..");
+                counter += 1;
+                //Debug.Log("counter:" + counter);
+                soldier.index = counter.ToString();
+                soldierNameList.Add(soldier.index.ToString());
+                //Debug.Log("soldiernamelist count:" + soldierNameList.Count);
+                RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier"+soldier.index+".json", soldier);
+            }
+            else
+            {
+                RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier" + soldier.index + ".json", soldier);
             }
         }
     }

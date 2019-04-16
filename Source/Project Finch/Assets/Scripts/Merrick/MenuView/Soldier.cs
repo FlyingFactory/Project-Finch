@@ -7,8 +7,8 @@ namespace MenuView {
     public class Soldier {
 
         public string name;
-        public int owner;
-        public int index;
+        public string owner;
+        public string index; //index is unique id
         public int maxHealth;
         public int mobility;
         public int aim;
@@ -22,6 +22,8 @@ namespace MenuView {
         public Dictionary<string, Equipment> equipments = new Dictionary<string, Equipment>();
 
         public Soldier() {
+            
+            this.index = "";
             this.name = "undefined";
             this.maxHealth = 6;
             this.mobility = 6;
@@ -30,6 +32,7 @@ namespace MenuView {
             this.experience = 0;
             this.fatigue = 0;
             this.characterClass = CharacterClass.Ranger;
+            
         }
 
         // Mutator methods
@@ -69,10 +72,10 @@ namespace MenuView {
             return this;
         }
 
-        public static Soldier fromCSV(string csvData) {
-            // TODO: read csv and fill values
-            return new Soldier();
-        }
+        //public static Soldier fromCSV(string csvData) {
+        //    // TODO: read csv and fill values
+        //    return new Soldier();
+        //}
         
         public CombatView.ActionUnit ToActionUnit() {
             // TODO
