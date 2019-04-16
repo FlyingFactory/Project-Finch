@@ -43,9 +43,9 @@ namespace CombatView {
         [System.NonSerialized] public bool waitingForServer = false;
         [System.NonSerialized] public string lastSentMove = "";
         [System.NonSerialized] public float timeWaitingForServer = 0;
-        public const float serverResendInterval = 5f;
+        public const float serverResendInterval = 10f;
         [System.NonSerialized] public int numResends = 0;
-        public const int maxResendCount = 5;
+        public const int maxResendCount = 3;
 
 
         private void Awake() {
