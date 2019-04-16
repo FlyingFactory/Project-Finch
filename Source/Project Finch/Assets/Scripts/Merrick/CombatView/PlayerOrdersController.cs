@@ -40,6 +40,12 @@ namespace CombatView {
         [System.NonSerialized] public int nextExecMove = 0;
         [System.NonSerialized] private float serverPingCounter = 0;
         public const float serverPingInterval = 0.2f;
+        [System.NonSerialized] public bool waitingForServer = false;
+        [System.NonSerialized] public string lastSentMove = "";
+        [System.NonSerialized] public float timeWaitingForServer = 0;
+        public const float serverResendInterval = 5f;
+        [System.NonSerialized] public int numResends = 0;
+        public const int maxResendCount = 5;
 
 
         private void Awake() {
@@ -59,6 +65,9 @@ namespace CombatView {
             if (confirmedMoves.Count > nextExecMove) {
                 Debug.Log("Execute move #" + nextExecMove + ": " + confirmedMoves[nextExecMove]);
                 string[] moveSplit = confirmedMoves[nextExecMove].Split(',');
+                waitingForServer = false;
+                timeWaitingForServer = 0;
+                numResends = 0;
 
                 string[] coords;
                 Tile t;
@@ -91,12 +100,13 @@ namespace CombatView {
                         playerControlState = PlayerControlState.UnitSelect;
                         break;
                     case "endturn":
-                        GameFlowController.gameFlowController.isPlayer1Turn = !GameFlowController.gameFlowController.isPlayer1Turn;
-                        if (GameFlowController.gameFlowController.isPlayer1Turn) {
-                            StartTurn();
+                        if (GameFlowController.gameFlowController.isMyTurn) {
+                            GameFlowController.gameFlowController.isMyTurn = false;
+                            EndTurn();
                         }
                         else {
-                            EndTurn();
+                            GameFlowController.gameFlowController.isMyTurn = true;
+                            StartTurn();
                         }
                         break;
                     case "endmatch":
@@ -106,7 +116,7 @@ namespace CombatView {
                 nextExecMove++;
             }
 
-            if (GameFlowController.gameFlowController.turnState == GameFlowController.TurnState.PlayerInput) {
+            if (!waitingForServer && GameFlowController.gameFlowController.isMyTurn && GameFlowController.gameFlowController.turnState == GameFlowController.TurnState.PlayerInput) {
                 switch (playerControlState) {
                     case PlayerControlState.UnitSelect:
                         if (Input.GetButtonDown("select")) {
@@ -179,7 +189,7 @@ namespace CombatView {
                                         serverMove += selectedUnit.dict_id + ",";
                                         serverMove += hitTile.tile.x + ":" + hitTile.tile.z + ":" + hitTile.tile.h;
 
-                                        GameFlowController.gameFlowController.addMove(serverMove);
+                                        PostMove(serverMove);
                                     }
                                 }
                             }
@@ -207,6 +217,23 @@ namespace CombatView {
             }
             else {
                 serverPingCounter -= Time.deltaTime;
+            }
+
+            if (waitingForServer) {
+                timeWaitingForServer += Time.deltaTime;
+                if (timeWaitingForServer > serverResendInterval) {
+                    if (numResends < maxResendCount) {
+                        timeWaitingForServer = 0;
+                        numResends++;
+                        Debug.Log("No response. Resending...");
+                        ResendMove();
+                    }
+                    else {
+                        // TODO: display connection issues
+                        Debug.LogError("Connection to server lost!");
+                        this.enabled = false;
+                    }
+                }
             }
         }
 
@@ -263,7 +290,7 @@ namespace CombatView {
                 CanvasRefs.canvasRefs.fireUI.SetActive(false);
                 playerControlState = PlayerControlState.UnitSelect;
 
-                GameFlowController.gameFlowController.addMove(serverMove);
+                PostMove(serverMove);
             }
         }
 
@@ -273,7 +300,7 @@ namespace CombatView {
             GameFlowController.gameFlowController.turnState = GameFlowController.TurnState.EnemyTurn;
             endTurnUI.SetActive(false);
             unitSelectionIndicator.transform.position = new Vector3(1000, 0, 0);
-            GameFlowController.gameFlowController.addMove("endturn,voluntary");
+            PostMove("endturn,voluntary");
         }
 
         public void EndTurn() {
@@ -296,6 +323,20 @@ namespace CombatView {
             for (int i = 0; i < controllableUnits.Count; i++) {
                 controllableUnits[i].numActions = controllableUnits[i].actionsPerTurn;
             }
+        }
+
+        public void PostMove(string moveInfo) {
+            string rubbish = Hash128.Compute(System.DateTime.Now.ToString()).ToString();
+            moveInfo += "," + rubbish;
+            GameFlowController.gameFlowController.addMove(moveInfo);
+            serverPingCounter = 0.5f * serverPingInterval;
+            waitingForServer = true;
+            lastSentMove = moveInfo;
+        }
+
+        public void ResendMove() {
+            GameFlowController.gameFlowController.addMove(lastSentMove);
+            serverPingCounter = 0.5f * serverPingInterval;
         }
     }
 }

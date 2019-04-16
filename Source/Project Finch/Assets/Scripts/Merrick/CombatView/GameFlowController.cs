@@ -27,12 +27,13 @@ namespace CombatView
         public static GameFlowController gameFlowController;
         [System.NonSerialized] public TurnState turnState = TurnState.Entry;
         [System.NonSerialized] public bool waitingForServer = false;
-        [System.NonSerialized] public bool isPlayer1Turn = true;
+        [System.NonSerialized] public bool isMyTurn = true;
         [System.NonSerialized] public int numPlayers = 2;
-        [System.NonSerialized] public bool player1;
 
-        //set to 68 first for testing
-        public int matchID = 68;
+        // === statics for cross-scene information passing
+        public static int matchID = 68;
+        public static bool player1 = true;
+        public static int seed = -294;
 
         public List<Queue<string>> moveHistory = new List<Queue<string>>();
         public string moveInformation = null;
@@ -131,28 +132,11 @@ namespace CombatView
         /// verification not implemented yet. can add moveinfo already.
         /// </summary>
         /// <param name="moveInfo"></param>
-        public void addMove(string moveInfo)
-        {
-            string rubbish = Hash128.Compute(DateTime.Now.ToString()).ToString();
-            //moveInformation = moveInfo;
-            moveInfo += "," + rubbish;
-            PostMoveInfoToDatabase(moveInfo, matchID, player1);
-        }
-
-        public void PostMoveInfoToDatabase(string moveInfo, int matchID, bool player1)
-        {
+        public void addMove(string moveInfo) {
             string_container pmove = new string_container();
-            if (player1)
-            {
-                pmove.value = moveInfo;
-                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/p1move.json", pmove);
-            }
-            else
-            {
-                pmove.value = moveInfo;
-                RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/p2move.json", pmove);
-            }
-            
+            pmove.value = moveInfo;
+            RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID
+                           + (player1 ? "/moveInfo/p1move.json" : "/moveInfo/p2move.json"), pmove);
         }
 
         [Serializable]
@@ -160,13 +144,7 @@ namespace CombatView
         public class string_container
         {
             //add more data that is going to be stored on database here
-            public string value;
-
-
-            public string_container()
-            {
-                this.value = "";
-            }
+            public string value = "";
         }
 
 

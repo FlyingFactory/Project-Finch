@@ -12,7 +12,6 @@ namespace CombatView {
         }
 
         public Map map = Map.TestingRange;
-        public bool player1 = true;
         public int seed = -294;
         [System.NonSerialized] public int idBuffer = 0;
 
@@ -25,10 +24,9 @@ namespace CombatView {
                     GenerateRandomTerrain();
                     break;
                 case Map.RandomMultiplayer:
-                    GenerateRandomCoordinated(player1, seed);
+                    GenerateRandomCoordinated(GameFlowController.player1, seed);
                     break;
             }
-            GameFlowController.gameFlowController.player1 = player1;
         }
 
         private void GenerateRandomTerrain() {
@@ -85,6 +83,7 @@ namespace CombatView {
             new MapInfo().tiles = new List<Tile>();
             MapInfo.currentMapInfo.bottomLayer = new Tile[32, 32];
             System.Random r = new System.Random(seed);
+            GameFlowController.gameFlowController.isMyTurn = player1;
             
             for (int x = 0; x < 32; x++) {
                 for (int z = 0; z < 32; z++) {
