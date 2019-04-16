@@ -560,7 +560,7 @@ GameObject:
   - component: {fileID: 115554529}
   - component: {fileID: 115554528}
   m_Layer: 5
-  m_Name: Stat1 (1)
+  m_Name: Experience
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -822,8 +822,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -52, y: 150.5}
-  m_SizeDelta: {x: 682.9, y: 55.2}
+  m_AnchoredPosition: {x: -27.725, y: 150.5}
+  m_SizeDelta: {x: 634.35, y: 55.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &169600834
 MonoBehaviour:
@@ -852,13 +852,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 81
-    m_Alignment: 4
+    m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: selected soldier name goes here.
+  m_Text: null.
 --- !u!222 &169600835
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -956,6 +956,7 @@ GameObject:
   m_Component:
   - component: {fileID: 249888232}
   - component: {fileID: 249888233}
+  - component: {fileID: 249888234}
   m_Layer: 5
   m_Name: Stats
   m_TagString: Untagged
@@ -1001,6 +1002,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3804aaa391f281f4083977c8d84f547a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &249888234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 249888231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be024db0ee4c3f14c9a24af262da538c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: {fileID: 169600834}
+  ID: {fileID: 1578650294}
+  Level: {fileID: 582711637}
+  Experience: {fileID: 115554528}
+  Bio: {fileID: 2015050489}
+  HP: {fileID: 1248528718}
+  Fatigue: {fileID: 1692024648}
+  Mobility: {fileID: 1414379692}
+  Aim: {fileID: 1130665451}
+  imported: []
 --- !u!1 &250863828
 GameObject:
   m_ObjectHideFlags: 0
@@ -1013,7 +1036,7 @@ GameObject:
   - component: {fileID: 250863831}
   - component: {fileID: 250863830}
   m_Layer: 5
-  m_Name: Stat4
+  m_Name: Bio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1318,7 +1341,7 @@ GameObject:
   - component: {fileID: 381680112}
   - component: {fileID: 381680111}
   m_Layer: 5
-  m_Name: Stat2
+  m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1377,7 +1400,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Height:'
+  m_Text: 'Level:'
 --- !u!222 &381680112
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1606,7 +1629,7 @@ GameObject:
   - component: {fileID: 409329183}
   - component: {fileID: 409329182}
   m_Layer: 5
-  m_Name: Stat1
+  m_Name: ID
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1665,7 +1688,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Age:'
+  m_Text: 'ID:'
 --- !u!222 &409329183
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2316,7 +2339,7 @@ GameObject:
   - component: {fileID: 582711638}
   - component: {fileID: 582711637}
   m_Layer: 5
-  m_Name: Stat1 (1)
+  m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2524,7 +2547,7 @@ GameObject:
   - component: {fileID: 625935282}
   - component: {fileID: 625935281}
   m_Layer: 5
-  m_Name: Text
+  m_Name: SoldierName1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2582,7 +2605,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Soldier #1'
+  m_Text: null
 --- !u!222 &625935282
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2725,7 +2748,7 @@ GameObject:
   - component: {fileID: 653453536}
   - component: {fileID: 653453535}
   m_Layer: 5
-  m_Name: Stat8
+  m_Name: Aim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2784,7 +2807,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Defense:'
+  m_Text: 'Aim:'
 --- !u!222 &653453536
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3751,7 +3774,7 @@ GameObject:
   - component: {fileID: 826230730}
   - component: {fileID: 826230729}
   m_Layer: 5
-  m_Name: Text
+  m_Name: SoldierName2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3809,7 +3832,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Soldier #2'
+  m_Text: null
 --- !u!222 &826230730
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4335,7 +4358,7 @@ GameObject:
   - component: {fileID: 993370098}
   - component: {fileID: 993370097}
   m_Layer: 5
-  m_Name: Text
+  m_Name: SoldierName4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4393,7 +4416,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Soldier #4'
+  m_Text: null
 --- !u!222 &993370098
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4567,7 +4590,7 @@ GameObject:
   - component: {fileID: 1044363622}
   - component: {fileID: 1044363621}
   m_Layer: 5
-  m_Name: Text
+  m_Name: SoldierName3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4625,7 +4648,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Soldier #3'
+  m_Text: null
 --- !u!222 &1044363622
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4950,7 +4973,7 @@ GameObject:
   - component: {fileID: 1130665452}
   - component: {fileID: 1130665451}
   m_Layer: 5
-  m_Name: Stat1 (1)
+  m_Name: Aim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5339,7 +5362,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 38.700012}
-  m_SizeDelta: {x: 284.53, y: 38.7}
+  m_SizeDelta: {x: 284.5, y: 38.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1217170053
 MonoBehaviour:
@@ -5533,7 +5556,7 @@ GameObject:
   - component: {fileID: 1248528719}
   - component: {fileID: 1248528718}
   m_Layer: 5
-  m_Name: Stat1 (1)
+  m_Name: HP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6025,7 +6048,7 @@ GameObject:
   - component: {fileID: 1414379693}
   - component: {fileID: 1414379692}
   m_Layer: 5
-  m_Name: Stat1 (1)
+  m_Name: Mobility
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6101,6 +6124,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1480945906}
+  - component: {fileID: 1480945907}
   m_Layer: 5
   m_Name: SquadList
   m_TagString: Untagged
@@ -6132,6 +6156,24 @@ RectTransform:
   m_AnchoredPosition: {x: -210.791, y: -33.7}
   m_SizeDelta: {x: 284.53, y: 193.5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1480945907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480945905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8a17655a747514f937840ce0d03c4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  imported: []
+  SoldierName1: {fileID: 625935281}
+  SoldierName2: {fileID: 826230729}
+  SoldierName3: {fileID: 1044363621}
+  SoldierName4: {fileID: 993370097}
+  SoldierName5: {fileID: 2049565266}
 --- !u!1 &1501055072
 GameObject:
   m_ObjectHideFlags: 0
@@ -6223,7 +6265,7 @@ GameObject:
   - component: {fileID: 1578650295}
   - component: {fileID: 1578650294}
   m_Layer: 5
-  m_Name: Stat1 (1)
+  m_Name: ID
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6521,7 +6563,7 @@ GameObject:
   - component: {fileID: 1676887568}
   - component: {fileID: 1676887567}
   m_Layer: 5
-  m_Name: Stat7
+  m_Name: Mobility
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6580,7 +6622,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Damage:'
+  m_Text: 'Mobility:'
 --- !u!222 &1676887568
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6601,7 +6643,7 @@ GameObject:
   - component: {fileID: 1687628697}
   - component: {fileID: 1687628696}
   m_Layer: 5
-  m_Name: Stat5
+  m_Name: HP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6660,7 +6702,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Rank:'
+  m_Text: 'HP:'
 --- !u!222 &1687628697
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6681,7 +6723,7 @@ GameObject:
   - component: {fileID: 1692024649}
   - component: {fileID: 1692024648}
   m_Layer: 5
-  m_Name: Stat1 (1)
+  m_Name: Fatigue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7039,7 +7081,7 @@ GameObject:
   - component: {fileID: 1766400183}
   - component: {fileID: 1766400182}
   m_Layer: 5
-  m_Name: Stat3
+  m_Name: Experience
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7098,7 +7140,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Weight:'
+  m_Text: 'EXP:'
 --- !u!222 &1766400183
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7849,7 +7891,7 @@ GameObject:
   - component: {fileID: 2015050490}
   - component: {fileID: 2015050489}
   m_Layer: 5
-  m_Name: Stat1 (1)
+  m_Name: Bio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7928,7 +7970,7 @@ GameObject:
   - component: {fileID: 2016933068}
   - component: {fileID: 2016933067}
   m_Layer: 5
-  m_Name: Stat6
+  m_Name: Fatigue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7987,7 +8029,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'HP:'
+  m_Text: 'Fatigue:'
 --- !u!222 &2016933068
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8148,7 +8190,7 @@ GameObject:
   - component: {fileID: 2049565267}
   - component: {fileID: 2049565266}
   m_Layer: 5
-  m_Name: Text
+  m_Name: SoldierName5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8206,7 +8248,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Soldier #5'
+  m_Text: null
 --- !u!222 &2049565267
 CanvasRenderer:
   m_ObjectHideFlags: 0
