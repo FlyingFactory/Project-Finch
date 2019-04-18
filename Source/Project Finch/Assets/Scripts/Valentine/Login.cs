@@ -37,8 +37,7 @@ public class Login : MonoBehaviour
 
         Debug.Log("asdasdasdnumOfSoldiers: " + MenuView.PlayerAccount.currentPlayer.numberOfSoldiers);
         gameObject.SetActive(false);
-        SceneManager.LoadScene(1);
-        gameObject.SetActive(true);
+        SceneManager.LoadSceneAsync(1);
         yield return null;
     }
 

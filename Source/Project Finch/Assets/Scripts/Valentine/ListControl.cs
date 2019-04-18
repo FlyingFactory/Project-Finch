@@ -6,10 +6,11 @@ public class ListControl : MonoBehaviour
 {
     [SerializeField]
     private GameObject buttonTemplate;
+    public int j;
 
     void Start()
     {
-       for (int i = 1; i<= 20; i++)
+       for (int i = 1; i<= j; i++)
         {
             GameObject button = Instantiate(buttonTemplate) as GameObject;
             button.SetActive(true);

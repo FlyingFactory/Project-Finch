@@ -17,7 +17,12 @@ public class SoldierData : MonoBehaviour
     public Text Aim;
 
     public string[] imported = {};
-   
+
+    /*public void GetSoldierData(string user, string password)
+    {
+        MenuView.PlayerAccount.LoginAndLoadAllData_Thread(loginInfo);
+    }*/
+
     // This time, it's for that particular soldier.
     // I am to assume that these strings of data are in array form.
 
