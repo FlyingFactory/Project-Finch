@@ -35,6 +35,7 @@ public class Login : MonoBehaviour
         } 
 
         Debug.Log("asdasdasdnumOfSoldiers: " + MenuView.PlayerAccount.currentPlayer.numberOfSoldiers);
+        gameObject.SetActive(false);
         yield return null;
     }
 
