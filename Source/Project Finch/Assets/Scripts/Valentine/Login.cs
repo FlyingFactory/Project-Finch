@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Login : MonoBehaviour
 {
@@ -36,6 +37,8 @@ public class Login : MonoBehaviour
 
         Debug.Log("asdasdasdnumOfSoldiers: " + MenuView.PlayerAccount.currentPlayer.numberOfSoldiers);
         gameObject.SetActive(false);
+        SceneManager.LoadScene(1);
+        gameObject.SetActive(true);
         yield return null;
     }
 

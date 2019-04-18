@@ -16,11 +16,8 @@ public class SoldierData : MonoBehaviour
     public Text Mobility;
     public Text Aim;
 
-    public string[] imported = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
-    public string[] imported2 = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
-    public string[] imported3 = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
-    public string[] imported4 = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
-    public string[] imported5 = { "Catherine", "10005", "1", "500", "Your typical soldier. Will get job done.", "200", "10", "5", "3" };
+    public string[] imported = {};
+   
     // This time, it's for that particular soldier.
     // I am to assume that these strings of data are in array form.
 
@@ -35,7 +32,7 @@ public class SoldierData : MonoBehaviour
         // To implement an import from the server. For now, use a local array.
         // On click, match with the Soldier's unique ID, and pull their array of results.
 
-        imported = new string[] { "Catherine", "10005", "1","500","Your typical soldier. Will get job done.", "200","10","5","3" };
+        imported = new string[] { "name_here", "0", "1", "500", "", "200", "10", "5", "3" };
 
         title.text = imported[0];
         ID.text = imported[1];
