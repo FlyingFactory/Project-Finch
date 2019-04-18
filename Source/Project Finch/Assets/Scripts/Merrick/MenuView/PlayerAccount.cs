@@ -27,6 +27,8 @@ namespace MenuView
         public List<string> soldierNameList;
         public List<OwnableItem> items = new List<OwnableItem>();
         public List<Soldier> soldiers = new List<Soldier>();
+        public LoginInfo loginInfo;
+        public bool dataLoaded = false;
 
         public static PlayerAccount currentPlayer = null;
         public static bool loginInProgress = false;
@@ -40,10 +42,12 @@ namespace MenuView
         {
             if (!loginInProgress)
             {
+                Debug.Log("logging in..");
                 loginInProgress = true;
                 //new MonoBehaviour().StartCoroutine(LoginAndLoadAllDataCoroutine(userID, password));
+                LoginInfo _loginInfo = new LoginInfo(userID, password);
                 Thread loginThread = new Thread(new ParameterizedThreadStart(LoginAndLoadAllData_Thread));
-                loginThread.Start(new LoginInfo(userID, password));
+                loginThread.Start(_loginInfo);
             }
         }
 
@@ -86,8 +90,8 @@ namespace MenuView
                 if (cancel1.IsCancellationRequested) break;
             };
 
-            //Debug.Log("Password:" + _loginInfo.Password);
-            //Debug.Log("PasswordD:" + _loginInfo.PasswordD);
+            Debug.Log("Password:" + _loginInfo.Password);
+            Debug.Log("PasswordD:" + _loginInfo.PasswordD);
 
             //not using passwordHash
             if (passwordHash == _loginInfo.PasswordD)
@@ -107,8 +111,18 @@ namespace MenuView
 
                 Thread loadDataThread = new Thread(new ParameterizedThreadStart(LoadData_Thread));
                 loadDataThread.Start(mother);
-                loadDataThread.Join();
 
+                System.Threading.CancellationToken cancel3 = new CancellationToken();
+                for (int i = 0; i < 10; i++)
+                {
+                    //Debug.Log(_loginInfo.complete);
+                    if (mother.complete) break;
+
+                    await System.Threading.Tasks.Task.Delay(1000, cancel3);
+                    if (cancel1.IsCancellationRequested) break;
+                };
+
+                Debug.LogWarning(mother.loadDataInfo.output);
                 if (loadDataInfo.output == null)
                 {
                     Debug.Log("Load data unsuccessful");
@@ -117,6 +131,7 @@ namespace MenuView
                 else
                 {
                     currentPlayer = loadDataInfo.output;
+                    currentPlayer.dataLoaded = true;
                 }
             }
             else
@@ -141,6 +156,7 @@ namespace MenuView
             };
             
             LoginInfo _loginInfo1 = JsonUtility.FromJson<LoginInfo>(qi.responseText);
+            Debug.Log("password from database:" + _loginInfo1.Password);
             _loginInfo.PasswordD = _loginInfo1.Password;
             _loginInfo.complete = true;
             //Debug.Log("set to true:" + _loginInfo.complete);
@@ -191,8 +207,6 @@ namespace MenuView
 
 
             bool loadSuccess = true;
-            PlayerAccount loadedAccount = new PlayerAccount();
-            _mother.loadDataInfo.output = loadedAccount;
 
             //Debug.Log("userID:" +_loadDataInfo.userID);
 
@@ -210,7 +224,6 @@ namespace MenuView
                 await System.Threading.Tasks.Task.Delay(1000, cancel);
                 if (cancel.IsCancellationRequested) break;
             };
-
             //Debug.Log("matchId:" + _loadDataInfo.output.matchID);
             //Debug.Log("InMatch:" + _loadDataInfo.output.InMatch);
             //Debug.Log("soldierList:" + _loadDataInfo.output.soldierList);
@@ -302,12 +315,11 @@ namespace MenuView
                 //Debug.Log("list of soldier class:"+ _loadDataInfo.output.soldiers.Count);
             }
 
-            if (loadSuccess)
+            if (!loadSuccess)
             {
-                _mother.loadDataInfo.output = loadedAccount;
+                _mother.loadDataInfo.output = null;
             }
-            else _mother.loadDataInfo.output = null;
-
+            _mother.complete = true;
         }
 
         public async static void getSoldier_thread(object soldier)
@@ -359,6 +371,8 @@ namespace MenuView
             };
             //Debug.Log("started get");
             _loadDataInfo.output = JsonUtility.FromJson<PlayerAccount>(qi.responseText);
+            Debug.LogWarning(_loadDataInfo.output);
+            //Debug.Log("responsetext" +qi.responseText);
             //Debug.Log("matchID:" +_loadDataInfo.output.matchID);
             //Debug.Log("soldierlist:" +_loadDataInfo.output.soldierList);
             _loadDataInfo.complete = true;
@@ -407,6 +421,7 @@ namespace MenuView
         {
             public LoadDataInfo loadDataInfo;
             public soldierList soldierList;
+            public bool complete;
         }
 
         public static IEnumerator getFromDatabase_RestClientCall(QueryInfo qi)
