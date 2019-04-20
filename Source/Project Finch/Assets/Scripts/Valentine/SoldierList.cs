@@ -13,10 +13,6 @@ public class SoldierList : MonoBehaviour
         myText.text = textString;
     }
 
-    public void GenerateSoldierList()
-    {
-
-    }
 
 
 

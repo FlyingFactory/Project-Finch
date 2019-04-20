@@ -14,8 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Valentine/Game Quit.unity
     guid: f039f74920655eb468022a349615a71a
-  - enabled: 1
-    path: Assets/Scenes/Valentine/Roster.unity
+  - enabled: 0
+    path: Assets/__DELETED_GUID_Trash/417c21fdcd459394a939e6ccb5a9c3a7
     guid: 417c21fdcd459394a939e6ccb5a9c3a7
   - enabled: 1
     path: Assets/Scenes/Valentine/Store.unity
