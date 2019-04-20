@@ -13,7 +13,7 @@ namespace MenuView
 
         public string userName;
         public byte[] passwordHash;
-        public string password;
+        public string Password;
         public float unrankedMMR;
         public float rankedMMR;
         // future getonly property to get rank name from MMR
@@ -450,7 +450,7 @@ namespace MenuView
         {
             string password_hash = Hash128.Compute(password).ToString();
             PlayerAccount new_account = new PlayerAccount();
-            new_account.password = password_hash;
+            new_account.Password = password_hash;
             new_account.userName = userName;
             new_account.InMatch = false;
             new_account.matchID = -1;

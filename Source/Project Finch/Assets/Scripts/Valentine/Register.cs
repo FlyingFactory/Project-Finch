@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Text.RegularExpressions;
+using UnityEngine.SceneManagement;
 
 public class Register : MonoBehaviour
 {
-    public GameObject Name;
-    public GameObject PW;
-    public GameObject Confirm;
+    public InputField username;
+    public InputField pw;
+    public InputField confirm_pw;
 
     private string Username;
     private string Password;
@@ -17,39 +18,33 @@ public class Register : MonoBehaviour
     private string form;
     private bool UsernameValid = false;
 
-    void Start()
-    {
-        
-    }
 
     public void RegisterButton()
     {
-        print("Registration Successful!");
-        // By default, this should push to Firebase, but I am not sure of where to write the data.
-    }
+        Username = username.text;
+        Password = pw.text;
+        ConfirmPassword = confirm_pw.text;
 
-    void Update()
-    {
-        Username = Name.GetComponent<InputField>().text;
-        Password = PW.GetComponent<InputField>().text;
-        ConfirmPassword = Confirm.GetComponent<InputField>().text;
-
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Password != "" && Username != "" && ConfirmPassword != "" && Password == ConfirmPassword)
         {
-            if (Password != "" && Username != "" && ConfirmPassword != "" && Password == ConfirmPassword)
-            {
-                RegisterButton();
-            }
+            print("creating account..");
+            MenuView.PlayerAccount new_acc = new MenuView.PlayerAccount();
+            new_acc.createNewAccount(Username, Password);
+            print("Registration Successful!");
+            SceneManager.LoadSceneAsync("LoginMenu");
 
-            else if(Password != ConfirmPassword)
-            {
-                print("Password and Confirm password does not match!");
-            }
-
-            else{
-                print("Invalid entries! Please try again.");
-            }
         }
+
+        else if (Password != ConfirmPassword)
+        {
+            Debug.LogWarning("Passwords do not match. Please reenter");
+        }
+
+        else
+        {
+            Debug.LogWarning("Invalid entries! Please try again.");
+        }
+        
         
     }
 
