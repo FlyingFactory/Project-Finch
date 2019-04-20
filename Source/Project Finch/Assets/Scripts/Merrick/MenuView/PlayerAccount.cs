@@ -131,7 +131,7 @@ namespace MenuView
                 else
                 {
                     currentPlayer = loadDataInfo.output;
-                    currentPlayer.dataLoaded = true;
+                    
                 }
             }
             else
@@ -312,14 +312,15 @@ namespace MenuView
 
                 //Debug.Log("soldier aim:" + soldier.aim);
                 _mother.loadDataInfo.output.soldiers.Add(soldier);
-                //Debug.Log("list of soldier class:"+ _loadDataInfo.output.soldiers.Count);
+                Debug.Log("list of soldier class:"+ _mother.loadDataInfo.output.soldiers.Count);
             }
-
+            currentPlayer.dataLoaded = true;
             if (!loadSuccess)
             {
                 _mother.loadDataInfo.output = null;
             }
             _mother.complete = true;
+            
         }
 
         public async static void getSoldier_thread(object soldier)

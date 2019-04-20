@@ -6,11 +6,12 @@ public class ListControl : MonoBehaviour
 {
     [SerializeField]
     private GameObject buttonTemplate;
-    public int j;
+    public int numberOfSoldiers;
 
     void Start()
     {
-       for (int i = 1; i<= j; i++)
+        numberOfSoldiers = MenuView.PlayerAccount.currentPlayer.numberOfSoldiers;
+       for (int i = 1; i<= numberOfSoldiers; i++)
         {
             GameObject button = Instantiate(buttonTemplate) as GameObject;
             button.SetActive(true);
