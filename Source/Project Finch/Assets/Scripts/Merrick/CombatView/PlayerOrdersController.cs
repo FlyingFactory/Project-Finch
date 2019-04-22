@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Proyecto26;
 
 namespace CombatView {
 
@@ -38,7 +39,8 @@ namespace CombatView {
         [System.NonSerialized] public Dictionary<string, ActionUnit> allUnits = new Dictionary<string, ActionUnit>();
         [System.NonSerialized] public int nextListMove = 0;
         [System.NonSerialized] public int nextExecMove = 0;
-        [System.NonSerialized] private float serverPingCounter = 0;
+        [System.NonSerialized] public bool matchEnded = false;
+        [System.NonSerialized] public float serverPingCounter = 0;
         public const float serverPingInterval = 0.2f;
         [System.NonSerialized] public bool waitingForServer = false;
         [System.NonSerialized] public string lastSentMove = "";
@@ -54,6 +56,8 @@ namespace CombatView {
         }
 
         private void Update() {
+            if (matchEnded) return;
+
             if (GameFlowController.gameFlowController.moveHistory.Count > nextListMove
                 && GameFlowController.gameFlowController.moveHistory[nextListMove].Count > 0) {
                 string move = GameFlowController.gameFlowController.moveHistory[nextListMove].Dequeue();
@@ -79,8 +83,8 @@ namespace CombatView {
                         t = MapInfo.currentMapInfo.bottomLayer[int.Parse(coords[0]), int.Parse(coords[1])];
                         h = int.Parse(coords[2]);
                         for (int i = 0; i < h; i++) {
-                            try { t = t.above; }
-                            catch (System.ArgumentOutOfRangeException) { Debug.Log("out of range"); }
+                            if (t.above != null) { t = t.above; }
+                            else { Debug.Log("coordinate error!"); }
                         }
                         allUnits[moveSplit[1]].OrderMove(t);
                         break;
@@ -115,8 +119,13 @@ namespace CombatView {
 
                 nextExecMove++;
             }
-
-            if (!waitingForServer && GameFlowController.gameFlowController.isMyTurn && GameFlowController.gameFlowController.turnState == GameFlowController.TurnState.PlayerInput) {
+            else if (controllableUnits.Count == 0) {
+                EndMatch(false);
+            }
+            else if (otherPlayerUnits.Count == 0) {
+                EndMatch(true);
+            }
+            else if (!waitingForServer && GameFlowController.gameFlowController.isMyTurn && GameFlowController.gameFlowController.turnState == GameFlowController.TurnState.PlayerInput) {
                 switch (playerControlState) {
                     case PlayerControlState.UnitSelect:
                         if (Input.GetButtonDown("select")) {
@@ -179,7 +188,8 @@ namespace CombatView {
 
                                 TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
                                 if (hitTile != null && selectedUnit != null && selectedUnit.numActions > 0) {
-                                    bool move = true;
+                                    int movesTaken = Mathf.CeilToInt(Tile.DistanceBetween(hitTile.tile, selectedUnit.tile) / selectedUnit.mobility);
+                                    bool move = movesTaken <= selectedUnit.numActions;
                                     if (selectedUnit.takesTile && hitTile.tile.ContainsBlockingAnything()) {
                                         move = false;
                                     }
@@ -188,7 +198,6 @@ namespace CombatView {
                                         serverMove += "m,";
                                         serverMove += selectedUnit.dict_id + ",";
                                         serverMove += hitTile.tile.x + ":" + hitTile.tile.z + ":" + hitTile.tile.h;
-
                                         PostMove(serverMove);
                                     }
                                 }
@@ -343,6 +352,16 @@ namespace CombatView {
         public void ResendMove() {
             GameFlowController.gameFlowController.addMove(lastSentMove);
             serverPingCounter = 0.5f * serverPingInterval;
+        }
+
+        public void EndMatch(bool win = false) {
+            matchEnded = true;
+            GameFlowController.gameFlowController.addMove("leftmatch");
+            MenuView.PlayerAccount player = MenuView.PlayerAccount.currentPlayer;
+            player.InMatch = false;
+            player.currency += 100;
+            RestClient.Put("https://project-finch-database.firebaseio.com/User/" + player.userName + ".json", player);
+            UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
         }
     }
 }

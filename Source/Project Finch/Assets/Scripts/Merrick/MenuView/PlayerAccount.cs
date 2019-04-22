@@ -29,6 +29,7 @@ namespace MenuView
         public Dictionary<string, Soldier> soldiers = new Dictionary<string, Soldier>();
         public LoginInfo loginInfo;
         public bool dataLoaded = false;
+        public int currency = 0;
 
         public static PlayerAccount currentPlayer = null;
         public static bool loginInProgress = false;
