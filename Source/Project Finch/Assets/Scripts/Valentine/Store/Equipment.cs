@@ -25,6 +25,6 @@ public class GameItemWeapon : GameItem
 
 public class GameItemHealthKit : GameItem
 {
-    public float HealingModifier { get; set; }
+    public float HealingDone { get; set; }
 }
 
