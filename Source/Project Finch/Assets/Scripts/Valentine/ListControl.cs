@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class ListControl : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject buttonTemplate;
+#pragma warning disable 0649
+    [SerializeField] private GameObject buttonTemplate;
+#pragma warning restore 0649
     public int numberOfSoldiers;
 
     void Start()

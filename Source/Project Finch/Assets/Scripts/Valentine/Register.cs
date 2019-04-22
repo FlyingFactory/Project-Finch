@@ -16,7 +16,7 @@ public class Register : MonoBehaviour
     private string Password;
     private string ConfirmPassword;
     private string form;
-    private bool UsernameValid = false;
+    //private bool UsernameValid = false;
 
 
     public void RegisterButton()

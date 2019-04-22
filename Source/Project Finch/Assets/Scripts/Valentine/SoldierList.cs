@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 public class SoldierList : MonoBehaviour
 {
-    [SerializeField]
-    private Text myText;
+#pragma warning disable 0649
+    [SerializeField] private Text myText;
+#pragma warning restore 0649
 
     public void SetText(string textString)
     {

@@ -5,9 +5,9 @@ using System;
 
 public class StoreEquipmentPopulate : MonoBehaviour
 {
-
-    [SerializeField]
-    private GameObject EquipmentPanel;
+#pragma warning disable 0649
+    [SerializeField] private GameObject EquipmentPanel;
+#pragma warning restore 0649
 
     private string[] itemnumber = { "1", "2", "4", "8", "20", "32", "50", "80" };
     void GenerateList()

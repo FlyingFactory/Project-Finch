@@ -7,8 +7,9 @@ using System;
 
 public class PopulateList : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject buttonTemplate;
+#pragma warning disable 0649
+    [SerializeField] private GameObject buttonTemplate;
+#pragma warning restore 0649
 
     private string[] imported = {"0","2","5","9","11", "18", "50", "51", "80", "101", "200"};
     //public List<string> imported = new List<string> Login.importedinfo;
