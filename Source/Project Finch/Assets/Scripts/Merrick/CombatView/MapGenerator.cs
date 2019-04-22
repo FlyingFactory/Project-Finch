@@ -15,8 +15,8 @@ namespace CombatView {
         public int seed = -294;
         [System.NonSerialized] public int idBuffer = 0;
 
-        private static Color allyColor = new Color32(127, 255, 255, 255);
-        private static Color enemyColor = new Color32(255, 165, 165, 255);
+        public static Color allyColor = new Color32(127, 255, 255, 255);
+        public static Color enemyColor = new Color32(255, 165, 165, 255);
 
         private void Start() {
             switch (map) {

@@ -313,6 +313,9 @@ namespace CombatView {
             for (int i = 0; i < otherPlayerUnits.Count; i++) {
                 otherPlayerUnits[i].numActions = otherPlayerUnits[i].actionsPerTurn;
             }
+            for (int i = 0; i < controllableUnits.Count; i++) {
+                controllableUnits[i].numActions = 0;
+            }
         }
 
         public void StartTurn() {
@@ -322,6 +325,9 @@ namespace CombatView {
             endTurnUI.SetActive(true);
             for (int i = 0; i < controllableUnits.Count; i++) {
                 controllableUnits[i].numActions = controllableUnits[i].actionsPerTurn;
+            }
+            for (int i = 0; i < otherPlayerUnits.Count; i++) {
+                otherPlayerUnits[i].numActions = 0;
             }
         }
 
