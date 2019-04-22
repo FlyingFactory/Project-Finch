@@ -26,7 +26,7 @@ namespace MenuView
         public int numberOfSoldiers;
         public List<string> soldierNameList;
         public List<OwnableItem> items = new List<OwnableItem>();
-        public List<Soldier> soldiers = new List<Soldier>();
+        public Dictionary<string, Soldier> soldiers = new Dictionary<string, Soldier>();
         public LoginInfo loginInfo;
         public bool dataLoaded = false;
 
@@ -122,7 +122,6 @@ namespace MenuView
                     if (cancel1.IsCancellationRequested) break;
                 };
 
-                Debug.LogWarning(mother.loadDataInfo.output);
                 if (loadDataInfo.output == null)
                 {
                     Debug.Log("Load data unsuccessful");
@@ -146,7 +145,7 @@ namespace MenuView
             LoginInfo _loginInfo = (LoginInfo)loginInfo;
 
             QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/User/" + _loginInfo.userId + "/.json");
-            Runner_call.Coroutines.Add(getPassword_RestClientCall(qi));
+            Runner_call.Coroutines.Add(getFromDatabase_RestClientCall(qi));
             System.Threading.CancellationToken cancel = new CancellationToken();
             for (int i = 0; i < 30; i++)
             {
@@ -164,16 +163,6 @@ namespace MenuView
             
         }
 
-        public static IEnumerator getPassword_RestClientCall(QueryInfo qi)
-        {
-            //Debug.Log("started coroutine");
-            RestClient.Get(qi.query).Then(response =>
-            {
-                qi.responseText = response.Text;
-                qi.inProgress = false;
-            });
-            yield return null;
-        }
 
         public async static void checkForMatch(PlayerAccount player)
         {
@@ -204,14 +193,8 @@ namespace MenuView
             loadDataAndLoadSoldierInfo _mother;
             try { _mother = (loadDataAndLoadSoldierInfo)mother; }
             catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
-
-
             bool loadSuccess = true;
 
-            //Debug.Log("userID:" +_loadDataInfo.userID);
-
-
-            // TODO: load data into loadedAccount
             Thread getDatabase = new Thread(new ParameterizedThreadStart(getFromDatabase_thread));
             getDatabase.Start((object)_mother.loadDataInfo);
 
@@ -224,136 +207,167 @@ namespace MenuView
                 await System.Threading.Tasks.Task.Delay(1000, cancel);
                 if (cancel.IsCancellationRequested) break;
             };
-            //Debug.Log("matchId:" + _loadDataInfo.output.matchID);
-            //Debug.Log("InMatch:" + _loadDataInfo.output.InMatch);
-            //Debug.Log("soldierList:" + _loadDataInfo.output.soldierList);
-            //Debug.Log("userId:" + _loadDataInfo.output.userId);
-            //Debug.Log("userName:" + _loadDataInfo.output.userName);
-            //soldierList _soldierlist;
-            //try { _soldierlist = (soldierList)soldierlist; }
-            //catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
 
-            Thread getSoldierList = new Thread(new ParameterizedThreadStart(getSoldierList_thread));
-            getSoldierList.Start((object)_mother.soldierList);
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////
+            //TO DO: DO THE STRING FORMATTING HERE.
+            //USING _mother.loadDataInfo.output_string <- this is the full string that we pulled from database.
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            System.Threading.CancellationToken cancel2 = new CancellationToken();
-            for (int i = 0; i < 30; i++)
+            Dictionary<string,string> d = PF_Utils.FirebaseParser.SplitByBrace(_mother.loadDataInfo.output_string);
+            foreach(KeyValuePair<string,string> kvp in d)
             {
-                //Debug.Log(_loadDataInfo.complete);
-                if (_mother.soldierList.complete) break;
-
-                await System.Threading.Tasks.Task.Delay(1000, cancel2);
-                if (cancel2.IsCancellationRequested) break;
-            };
-
-            Debug.Log("soldierList:" + _mother.soldierList.value);
-
-            try {_mother.loadDataInfo.output.numberOfSoldiers = _mother.soldierList.value.Split(',').Length; }
-            catch (Exception)
-            {
-                if (_mother.soldierList.value != null)
-                {
-                    _mother.loadDataInfo.output.numberOfSoldiers = 1;
-                }
-                else _mother.loadDataInfo.output.numberOfSoldiers = 0;
-                    
+                Debug.Log("key: " + kvp.Key + " value: " + kvp.Value);
             }
+            _mother.loadDataInfo.output =  JsonUtility.FromJson<PlayerAccount>(d[""]);
 
-            string[] arr = new string[_mother.loadDataInfo.output.numberOfSoldiers];
-
-            try
+            Dictionary<string, string> d_soldiers = PF_Utils.FirebaseParser.SplitByBrace(d["Soldiers"]);
+            foreach (KeyValuePair<string,string> kvp in d_soldiers)
             {
-                 arr = _mother.soldierList.value.Split(',');
-            }
-            catch (Exception)
-            {
-                if (_mother.soldierList.value != null)
+                if (kvp.Key != "")
                 {
-                    //arr = new string[1];
-                    arr[0] = _mother.soldierList.value;
-                }
-                else
-                {
-                    //arr = new string[1];
-                    arr[0] = null;
+                    _mother.loadDataInfo.output.soldiers[kvp.Key] = JsonUtility.FromJson<Soldier>(kvp.Value);
                 }
             }
-            
+            Debug.Log("checkpoint 1");
+            soldierListClass soldierList = JsonUtility.FromJson<soldierListClass>(d["soldierList"]);
 
-            foreach (string arrItem in arr)
+            foreach(string arrItem in soldierList.value.Split(','))
             {
-                if (arrItem != null)
-                {
-                    _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
-                }
-                
+                Debug.Log("checkpoint2");
+                _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
             }
-            
-            Debug.Log("number of soldiers:"+_mother.loadDataInfo.output.soldierNameList.Count);
+            currentPlayer = _mother.loadDataInfo.output;
 
-            foreach (string soldier_id in _mother.loadDataInfo.output.soldierNameList)
-            {
-                MenuView.Soldier soldier = new MenuView.Soldier();
-                soldier.index = soldier_id;
-                soldier.owner = _mother.loadDataInfo.output.userId;
-                soldier.complete = false;
-                Thread getSoldier = new Thread(new ParameterizedThreadStart(getSoldier_thread));
-                getSoldier.Start(soldier);
-
-                System.Threading.CancellationToken cancel1 = new CancellationToken();
-                for (int i = 0; i < 30; i++)
-                {
-                    //Debug.Log(_loadDataInfo.complete);
-                    if (soldier.complete) break;
-
-                    await System.Threading.Tasks.Task.Delay(1000, cancel1);
-                    if (cancel1.IsCancellationRequested) break;
-                };
-
-                //Debug.Log("soldier aim:" + soldier.aim);
-                _mother.loadDataInfo.output.soldiers.Add(soldier);
-                Debug.Log("list of soldier class:"+ _mother.loadDataInfo.output.soldiers.Count);
-            }
+            Debug.Log("exited checkpoint 2");
+            Debug.Log(currentPlayer.dataLoaded);
             currentPlayer.dataLoaded = true;
-            if (!loadSuccess)
-            {
-                _mother.loadDataInfo.output = null;
-            }
+            Debug.Log("finished loading:" + currentPlayer.dataLoaded);
             _mother.complete = true;
-            
+
+
+            //Thread getSoldierList = new Thread(new ParameterizedThreadStart(getSoldierList_thread));
+            //getSoldierList.Start((object)_mother.soldierList);
+
+            //System.Threading.CancellationToken cancel2 = new CancellationToken();
+            //for (int i = 0; i < 30; i++)
+            //{
+            //    //Debug.Log(_loadDataInfo.complete);
+            //    if (_mother.soldierList.complete) break;
+
+            //    await System.Threading.Tasks.Task.Delay(1000, cancel2);
+            //    if (cancel2.IsCancellationRequested) break;
+            //};
+
+            //Debug.Log("soldierList:" + _mother.soldierList.value);
+
+            //try {_mother.loadDataInfo.output.numberOfSoldiers = _mother.soldierList.value.Split(',').Length; }
+            //catch (Exception)
+            //{
+            //    if (_mother.soldierList.value != null)
+            //    {
+            //        _mother.loadDataInfo.output.numberOfSoldiers = 1;
+            //    }
+            //    else _mother.loadDataInfo.output.numberOfSoldiers = 0;
+
+            //}
+
+            //string[] arr = new string[_mother.loadDataInfo.output.numberOfSoldiers];
+
+            //try
+            //{
+            //     arr = _mother.soldierList.value.Split(',');
+            //}
+            //catch (Exception)
+            //{
+            //    if (_mother.soldierList.value != null)
+            //    {
+            //        //arr = new string[1];
+            //        arr[0] = _mother.soldierList.value;
+            //    }
+            //    else
+            //    {
+            //        //arr = new string[1];
+            //        arr[0] = null;
+            //    }
+            //}
+
+
+            //foreach (string arrItem in arr)
+            //{
+            //    if (arrItem != null)
+            //    {
+            //        _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
+            //    }
+
+            //}
+
+            //Debug.Log("number of soldiers:"+_mother.loadDataInfo.output.soldierNameList.Count);
+
+            //foreach (string soldier_id in _mother.loadDataInfo.output.soldierNameList)
+            //{
+            //    MenuView.Soldier soldier = new MenuView.Soldier();
+            //    soldier.index = soldier_id;
+            //    soldier.owner = _mother.loadDataInfo.output.userId;
+            //    soldier.complete = false;
+            //    Thread getSoldier = new Thread(new ParameterizedThreadStart(getSoldier_thread));
+            //    getSoldier.Start(soldier);
+
+            //    System.Threading.CancellationToken cancel1 = new CancellationToken();
+            //    for (int i = 0; i < 30; i++)
+            //    {
+            //        //Debug.Log(_loadDataInfo.complete);
+            //        if (soldier.complete) break;
+
+            //        await System.Threading.Tasks.Task.Delay(1000, cancel1);
+            //        if (cancel1.IsCancellationRequested) break;
+            //    };
+
+            //    //Debug.Log("soldier aim:" + soldier.aim);
+            //    _mother.loadDataInfo.output.soldiers.Add(soldier);
+            //    Debug.Log("list of soldier class:"+ _mother.loadDataInfo.output.soldiers.Count);
+            //}
+            //currentPlayer.dataLoaded = true;
+            //if (!loadSuccess)
+            //{
+            //    _mother.loadDataInfo.output = null;
+            //}
+            //_mother.complete = true;
+
+
+
         }
 
-        public async static void getSoldier_thread(object soldier)
-        {
+        //public async static void getSoldier_thread(object soldier)
+        //{
 
-            MenuView.Soldier _soldier = (MenuView.Soldier)soldier;
-            //Debug.Log("soldier owner:" + _soldier.owner);
-            //Debug.Log("soldier index:"+_soldier.index);
-            QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/User/" + _soldier.owner+ "/Soldiers/Soldier"+_soldier.index+".json");
-            Runner_call.Coroutines.Add(getFromDatabase_RestClientCall(qi));
-            System.Threading.CancellationToken cancel = new CancellationToken();
-            for (int i = 0; i < 30; i++)
-            {
-                if (!qi.inProgress) break;
-                await System.Threading.Tasks.Task.Delay(1000, cancel);
-                if (cancel.IsCancellationRequested) break;
-            };
-            //Debug.Log("started get");
-            MenuView.Soldier _soldier1 = JsonUtility.FromJson<MenuView.Soldier>(qi.responseText);
-            _soldier.aim = _soldier1.aim;
-            _soldier.characterClass = _soldier1.characterClass;
-            _soldier.equipments = _soldier1.equipments;
-            _soldier.experience = _soldier1.experience;
-            _soldier.fatigue = _soldier1.fatigue;
-            _soldier.level = _soldier1.level;
-            _soldier.maxHealth = _soldier1.maxHealth;
-            _soldier.mobility = _soldier1.mobility;
-            _soldier.mutations = _soldier1.mutations;
-            //Debug.Log("soldier aim from database:" + _soldier1.aim);
-            //Debug.Log("matchID:" +_loadDataInfo.output.matchID);
-            //Debug.Log("soldierlist:" +_loadDataInfo.output.soldierList);
-            _soldier.complete = true;
-        }
+        //    MenuView.Soldier _soldier = (MenuView.Soldier)soldier;
+        //    //Debug.Log("soldier owner:" + _soldier.owner);
+        //    //Debug.Log("soldier index:"+_soldier.index);
+        //    QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/User/" + _soldier.owner+ "/Soldiers/Soldier"+_soldier.index+".json");
+        //    Runner_call.Coroutines.Add(getFromDatabase_RestClientCall(qi));
+        //    System.Threading.CancellationToken cancel = new CancellationToken();
+        //    for (int i = 0; i < 30; i++)
+        //    {
+        //        if (!qi.inProgress) break;
+        //        await System.Threading.Tasks.Task.Delay(1000, cancel);
+        //        if (cancel.IsCancellationRequested) break;
+        //    };
+        //    //Debug.Log("started get");
+        //    MenuView.Soldier _soldier1 = JsonUtility.FromJson<MenuView.Soldier>(qi.responseText);
+        //    _soldier.aim = _soldier1.aim;
+        //    _soldier.characterClass = _soldier1.characterClass;
+        //    _soldier.equipments = _soldier1.equipments;
+        //    _soldier.experience = _soldier1.experience;
+        //    _soldier.fatigue = _soldier1.fatigue;
+        //    _soldier.level = _soldier1.level;
+        //    _soldier.maxHealth = _soldier1.maxHealth;
+        //    _soldier.mobility = _soldier1.mobility;
+        //    _soldier.mutations = _soldier1.mutations;
+        //    //Debug.Log("soldier aim from database:" + _soldier1.aim);
+        //    //Debug.Log("matchID:" +_loadDataInfo.output.matchID);
+        //    //Debug.Log("soldierlist:" +_loadDataInfo.output.soldierList);
+        //    _soldier.complete = true;
+        //}
 
 
         public async static void getFromDatabase_thread(object loadDataInfo)
@@ -370,12 +384,9 @@ namespace MenuView
                 await System.Threading.Tasks.Task.Delay(1000, cancel);
                 if (cancel.IsCancellationRequested) break;
             };
-            //Debug.Log("started get");
+            _loadDataInfo.output_string = qi.responseText;
             _loadDataInfo.output = JsonUtility.FromJson<PlayerAccount>(qi.responseText);
-            Debug.LogWarning(_loadDataInfo.output);
-            //Debug.Log("responsetext" +qi.responseText);
-            //Debug.Log("matchID:" +_loadDataInfo.output.matchID);
-            //Debug.Log("soldierlist:" +_loadDataInfo.output.soldierList);
+            Debug.Log("responsetext" +qi.responseText);
             _loadDataInfo.complete = true;
         }
 
@@ -399,6 +410,7 @@ namespace MenuView
         public class LoadDataInfo
         {
             public string userID;
+            public string output_string;
             public PlayerAccount output = null;
             public bool complete = false;
             public LoadDataInfo(string userID)
@@ -474,6 +486,36 @@ namespace MenuView
             {
                 RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier" + soldier.index + ".json", soldier);
             }
+        }
+
+        public static void stringToClass(string json)
+        {
+            int start_index_soldiers = json.IndexOf("\"Soldiers\":");
+            int end_index_soldiers = json.LastIndexOf("}},");
+            string filtered_first = json.Substring(0, start_index_soldiers);
+
+            string second_sub_string = json.Substring(end_index_soldiers + 3, json.Length - (end_index_soldiers + 3));
+            int start_index_soldierList = second_sub_string.IndexOf("\"soldierList\":");
+            int end_index_soldierList = second_sub_string.LastIndexOf("},");
+
+            string filtered_second = second_sub_string.Substring(0, start_index_soldierList) +second_sub_string.Substring(end_index_soldierList+2, second_sub_string.Length - (end_index_soldierList+2));
+            string top_dict_data = filtered_first + filtered_second;
+
+            string list_of_soldier_class = json.Substring(start_index_soldiers, end_index_soldiers - start_index_soldiers + 2);
+
+            //soldierListClass list_of_soldiers = JsonUtility.FromJson<soldierListClass>(list_of_soldier_class);
+
+            //Debug.Log(list_of_soldiers.list_of_soldier_class.Count);
+            Debug.Log(list_of_soldier_class);
+            currentPlayer = JsonUtility.FromJson<MenuView.PlayerAccount>(top_dict_data);
+            //currentPlayer.soldiers = JsonUtility.FromJson<Object>()
+            //Debug.Log(currentPlayer.matchID);
+            //Debug.Log(currentPlayer.soldiers.Count);
+        }
+
+        public class soldierListClass
+        {
+            public string value;
         }
     }
 }

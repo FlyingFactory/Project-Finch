@@ -16,8 +16,6 @@ public class Login : MonoBehaviour
         string user_name = userName.text;
         string pass_word = password.text;
         Runner_call.Coroutines.Add(login(user_name, pass_word));
-
-
     }
 
     public IEnumerator login(string user, string password)
