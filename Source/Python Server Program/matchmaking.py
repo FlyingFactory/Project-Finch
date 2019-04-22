@@ -16,11 +16,15 @@ def matchmaking():
             if len(listOfPlayers) >= 2:
                 print(listOfPlayers[0], listOfPlayers[1])
                 num_of_matches += 1
-                firebase.put('/queuingForMatch/'+listOfPlayers[0], "userId", None)
-                firebase.put('/queuingForMatch/'+listOfPlayers[1], "userId", None)
+                firebase.put('/queuingForMatch/'+listOfPlayers[0], "UserID", None)
+                firebase.put('/queuingForMatch/'+listOfPlayers[1], "UserID", None)
+                firebase.put('/User/' + listOfPlayers[0], "matchID", num_of_matches)
                 firebase.put('/User/'+listOfPlayers[0], "InMatch", True)
+                firebase.put('/User/' + listOfPlayers[1], "matchID", num_of_matches)
                 firebase.put('/User/'+listOfPlayers[1], "InMatch", True)
-                create_match(1, listOfPlayers[0], listOfPlayers[1])
+
+
+                create_match(num_of_matches, listOfPlayers[0], listOfPlayers[1])
 
 
 def create_match(matchId, player1, player2):

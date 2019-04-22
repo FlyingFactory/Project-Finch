@@ -12,7 +12,6 @@ public class Login : MonoBehaviour
 
     public void onSignIn()
     {
-        Debug.Log("signing in..");
         string user_name = userName.text;
         string pass_word = password.text;
         Runner_call.Coroutines.Add(login(user_name, pass_word));
@@ -27,7 +26,7 @@ public class Login : MonoBehaviour
         MenuView.PlayerAccount.LoginAndLoadAllData_Thread(loginInfo);
 
         while (waitingForLogin) {
-            Debug.Log("waiting log in");
+
             if (MenuView.PlayerAccount.currentPlayer != null
                 && MenuView.PlayerAccount.currentPlayer.dataLoaded)
             {

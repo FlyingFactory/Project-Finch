@@ -83,15 +83,12 @@ namespace MenuView
             System.Threading.CancellationToken cancel1 = new CancellationToken();
             for (int i = 0; i < 10; i++)
             {
-                Debug.Log(_loginInfo.complete);
+
                 if (_loginInfo.complete) break;
 
                 await System.Threading.Tasks.Task.Delay(1000, cancel1);
                 if (cancel1.IsCancellationRequested) break;
             };
-
-            Debug.Log("Password:" + _loginInfo.Password);
-            Debug.Log("PasswordD:" + _loginInfo.PasswordD);
 
             //not using passwordHash
             if (passwordHash == _loginInfo.PasswordD)
@@ -102,7 +99,6 @@ namespace MenuView
 
             if (loginSuccess)
             {
-                Debug.Log("Login successful");
                 LoadDataInfo loadDataInfo = new LoadDataInfo(userID);
                 soldierList soldierList = new soldierList(userID);
                 loadDataAndLoadSoldierInfo mother = new loadDataAndLoadSoldierInfo();
@@ -141,7 +137,6 @@ namespace MenuView
 
         public async static void getPassword_thread(object loginInfo)
         {
-            Debug.Log("entered thread");
             LoginInfo _loginInfo = (LoginInfo)loginInfo;
 
             QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/User/" + _loginInfo.userId + "/.json");
@@ -155,12 +150,8 @@ namespace MenuView
             };
             
             LoginInfo _loginInfo1 = JsonUtility.FromJson<LoginInfo>(qi.responseText);
-            Debug.Log("password from database:" + _loginInfo1.Password);
             _loginInfo.PasswordD = _loginInfo1.Password;
             _loginInfo.complete = true;
-            //Debug.Log("set to true:" + _loginInfo.complete);
-            //Debug.Log("got from database:" + _loginInfo.Password);
-            
         }
 
 
@@ -193,7 +184,6 @@ namespace MenuView
             loadDataAndLoadSoldierInfo _mother;
             try { _mother = (loadDataAndLoadSoldierInfo)mother; }
             catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
-            bool loadSuccess = true;
 
             Thread getDatabase = new Thread(new ParameterizedThreadStart(getFromDatabase_thread));
             getDatabase.Start((object)_mother.loadDataInfo);
@@ -214,10 +204,6 @@ namespace MenuView
             ////////////////////////////////////////////////////////////////////////////////////////////////////
 
             Dictionary<string,string> d = PF_Utils.FirebaseParser.SplitByBrace(_mother.loadDataInfo.output_string);
-            foreach(KeyValuePair<string,string> kvp in d)
-            {
-                Debug.Log("key: " + kvp.Key + " value: " + kvp.Value);
-            }
             _mother.loadDataInfo.output =  JsonUtility.FromJson<PlayerAccount>(d[""]);
 
             Dictionary<string, string> d_soldiers = PF_Utils.FirebaseParser.SplitByBrace(d["Soldiers"]);
@@ -226,22 +212,18 @@ namespace MenuView
                 if (kvp.Key != "")
                 {
                     _mother.loadDataInfo.output.soldiers[kvp.Key] = JsonUtility.FromJson<Soldier>(kvp.Value);
+                    _mother.loadDataInfo.output.soldiers[kvp.Key].uniqueId = kvp.Key;
                 }
             }
-            Debug.Log("checkpoint 1");
             soldierListClass soldierList = JsonUtility.FromJson<soldierListClass>(d["soldierList"]);
 
             foreach(string arrItem in soldierList.value.Split(','))
             {
-                Debug.Log("checkpoint2");
                 _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
             }
             currentPlayer = _mother.loadDataInfo.output;
-
-            Debug.Log("exited checkpoint 2");
-            Debug.Log(currentPlayer.dataLoaded);
+            
             currentPlayer.dataLoaded = true;
-            Debug.Log("finished loading:" + currentPlayer.dataLoaded);
             _mother.complete = true;
 
 
@@ -386,7 +368,6 @@ namespace MenuView
             };
             _loadDataInfo.output_string = qi.responseText;
             _loadDataInfo.output = JsonUtility.FromJson<PlayerAccount>(qi.responseText);
-            Debug.Log("responsetext" +qi.responseText);
             _loadDataInfo.complete = true;
         }
 
@@ -477,14 +458,14 @@ namespace MenuView
                 //Debug.Log("putting new soldier..");
                 counter += 1;
                 //Debug.Log("counter:" + counter);
-                soldier.index = counter.ToString();
-                soldierNameList.Add(soldier.index.ToString());
+                soldier.uniqueId = counter.ToString();
+                soldierNameList.Add(soldier.uniqueId.ToString());
                 //Debug.Log("soldiernamelist count:" + soldierNameList.Count);
-                RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier"+soldier.index+".json", soldier);
+                RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier"+soldier.uniqueId+".json", soldier);
             }
             else
             {
-                RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier" + soldier.index + ".json", soldier);
+                RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier" + soldier.uniqueId + ".json", soldier);
             }
         }
 

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Proyecto26;
+using System.Threading;
 
 public class Navigator : MonoBehaviour
 {
@@ -25,9 +27,50 @@ public class Navigator : MonoBehaviour
     // I'm commenting this just in case. This seems to be the culprit.
     // I want to make it so that there's only one singleton variable for the scene.
 
-    public void PlayGame()
+    public async void SearchForGame()
     {
-        SceneManager.LoadScene("Merrick");
+        if (!MenuView.PlayerAccount.currentPlayer.InMatch)
+        {
+            UserQueue new_queue = new UserQueue(MenuView.PlayerAccount.currentPlayer.userName);
+            RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + MenuView.PlayerAccount.currentPlayer.userName + ".json", new_queue);
+            //SceneManager.LoadScene("Merrick");
+        }
+
+        while (!MenuView.PlayerAccount.currentPlayer.InMatch)
+        {
+            MenuView.PlayerAccount.loadDataAndLoadSoldierInfo new_instance = new MenuView.PlayerAccount.loadDataAndLoadSoldierInfo();
+            new_instance.loadDataInfo.output = MenuView.PlayerAccount.currentPlayer;
+            new_instance.loadDataInfo.userID = MenuView.PlayerAccount.currentPlayer.userName;
+
+            Thread loadDataThread = new Thread(new ParameterizedThreadStart(MenuView.PlayerAccount.LoadData_Thread));
+            loadDataThread.Start(new_instance);
+
+            System.Threading.CancellationToken cancel3 = new CancellationToken();
+            for (int i = 0; i < 10; i++)
+            {
+                if (new_instance.complete) break;
+
+                await System.Threading.Tasks.Task.Delay(1000, cancel3);
+                if (cancel3.IsCancellationRequested) break;
+            };
+
+            if (new_instance.loadDataInfo.output == null)
+            {
+                Debug.Log("Load data unsuccessful");
+            }
+            else
+            {  
+                MenuView.PlayerAccount.currentPlayer = new_instance.loadDataInfo.output;
+            }
+        }
+        Debug.Log("found Game!, MatchID: "+ MenuView.PlayerAccount.currentPlayer.matchID);
+
+        if (MenuView.PlayerAccount.currentPlayer.matchID != -1)
+        {
+            SceneManager.LoadSceneAsync("Merrick");
+        }
+        
+
     }
 
     public void GoToRoster()

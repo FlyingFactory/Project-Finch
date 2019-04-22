@@ -8,7 +8,7 @@ namespace MenuView {
 
         public string name;
         public string owner;
-        public string index; //index is unique id
+        public string uniqueId; //index is unique id
         public int maxHealth;
         public int mobility;
         public int aim;
@@ -16,14 +16,14 @@ namespace MenuView {
         public float experience;
         public float fatigue;
         public bool complete;
-        public CharacterClass characterClass;
-        public Dictionary<string, Training> trainings = new Dictionary<string, Training>();
-        public Dictionary<string, Mutation> mutations = new Dictionary<string, Mutation>();
-        public Dictionary<string, Equipment> equipments = new Dictionary<string, Equipment>();
+        //public CharacterClass characterClass;
+        //public Dictionary<string, Training> trainings = new Dictionary<string, Training>();
+        //public Dictionary<string, Mutation> mutations = new Dictionary<string, Mutation>();
+        //public Dictionary<string, Equipment> equipments = new Dictionary<string, Equipment>();
 
         public Soldier() {
             
-            this.index = "";
+            this.uniqueId = "";
             this.name = "undefined";
             this.maxHealth = 6;
             this.mobility = 6;
@@ -31,7 +31,6 @@ namespace MenuView {
             this.level = 1;
             this.experience = 0;
             this.fatigue = 0;
-            this.characterClass = CharacterClass.Ranger;
             
         }
 
