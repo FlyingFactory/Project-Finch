@@ -432,8 +432,8 @@ namespace MenuView
         }
         public class loadDataAndLoadSoldierInfo
         {
-            public LoadDataInfo loadDataInfo;
-            public soldierList soldierList;
+            public LoadDataInfo loadDataInfo = new LoadDataInfo("default");
+            public soldierList soldierList = new soldierList("default");
             public bool complete;
         }
 
