@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Navigator : MonoBehaviour
 {
-    private static Navigator _instance;
+    /*private static Navigator _instance;
     public static Navigator Instance { get { return _instance; } }
 
     private void Awake()
@@ -19,34 +19,37 @@ public class Navigator : MonoBehaviour
             _instance = this;
 
             DontDestroyOnLoad(gameObject);
-        }
-    }
+        
+    }*/
+
+    // I'm commenting this just in case. This seems to be the culprit.
+    // I want to make it so that there's only one singleton variable for the scene.
 
     public void PlayGame()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Merrick");
     }
 
     public void GoToRoster()
     {
-        SceneManager.LoadScene(3);
+        SceneManager.LoadScene("Roster");
     }
 
     public void RostertoMenu()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("Main Menu");
     }
 
     public void Logout()
     {
-        SceneManager.LoadSceneAsync(5);
+        SceneManager.LoadSceneAsync("LoginMenu");
     }
 
     public void QuitGame()
     {
         Debug.Log("Game Quit!");
         Application.Quit();
-        SceneManager.LoadScene(2); // Might need to remove this after it's done.
+        SceneManager.LoadScene("Game Quit"); // Might need to remove this after it's done.
     }
 
     public void LoadScene(string name)
@@ -72,20 +75,16 @@ public class Navigator : MonoBehaviour
     }
 
 
-
-
-
-
     public void GoToStore()
     {
         Debug.Log("Going from Stats to Store...");
-        SceneManager.LoadScene(4);
+        SceneManager.LoadScene("Store");
     }
 
     public void BacktoStats()
     {
         Debug.Log("Going back to Stats...");
-        SceneManager.LoadScene(3);
+        SceneManager.LoadScene("Roster");
     }
 
 }
