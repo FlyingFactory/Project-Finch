@@ -10,13 +10,13 @@ namespace PF_Utils {
         /// Takes a json returned by firebase, and splits it according to its highest level children.
         /// The returned dictionary has "" as a key for the original string, minus the removed portions.
         /// Each individual removed string has its node name as the key.
-        /// All returns do NOT have surrounding braces.
+        /// All returns have surrounding braces.
         /// </summary>
         /// <param name="jsonInput">Firebase-formatted json text.</param>
         /// <returns></returns>
         public static Dictionary<string, string> SplitByBrace(string jsonInput) {
             Dictionary<string, string> r = new Dictionary<string, string>();
-            r.Add("", "");
+            r.Add("", "{");
             if (jsonInput[0] == '{') jsonInput= jsonInput.Substring(1, jsonInput.Length - 2);
 
             bool open = false;
@@ -40,7 +40,7 @@ namespace PF_Utils {
                     else if (jsonInput[i] == '{') {
                         open = true;
                         isBrace = true;
-                        openPos = i + 1;
+                        openPos = i;
                         braceCount = 1;
                     }
                 }
@@ -53,7 +53,7 @@ namespace PF_Utils {
                             braceCount--;
                             if (braceCount == 0) {
                                 //Debug.LogWarning(jsonInput.Substring(openPos, i - openPos));
-                                r.Add(lastQuote, jsonInput.Substring(openPos, i - openPos));
+                                r.Add(lastQuote, jsonInput.Substring(openPos, i - openPos + 1));
                                 open = false;
                                 if (i + 2 < jsonInput.Length && jsonInput[i + 1] == ',') cutPos = i + 2;
                                 else cutPos = i + 1;
@@ -72,6 +72,7 @@ namespace PF_Utils {
                 }
             }
             if (cutPos < jsonInput.Length) r[""] += jsonInput.Substring(cutPos, jsonInput.Length - cutPos);
+            r[""] += "}";
 
             return r;
         }
