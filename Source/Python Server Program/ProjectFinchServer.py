@@ -44,5 +44,9 @@ def checkPlayerMoves(matchid):
         player2move_old = player2move_new
         time.sleep(0.1)
 
+        if player2move_new and player1move_new == "leftMatch":
+            firebase.delete('/Match/' + str(matchid), "moveInfo")
+            firebase.delete('/Match/' + str(matchid), "matchDetails")
+
 
 print(checkPlayerMoves(68))
