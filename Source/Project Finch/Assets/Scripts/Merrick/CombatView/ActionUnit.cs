@@ -24,7 +24,7 @@ namespace CombatView {
                     move = false;
                 }
                 if (move) {
-                    numActions -= 1;
+                    numActions -= Mathf.CeilToInt(Tile.DistanceBetween(destination, tile) / mobility);
                     transform.position = new Vector3(destination.x, destination.h, destination.z);
                     tile.occupyingObjects.Remove(this);
                     tile = destination;
@@ -58,6 +58,12 @@ namespace CombatView {
 
         public void DrawMovableLocations() {
             //TODO
+        }
+
+        public override bool OnDeath() {
+            if (PlayerOrdersController.playerOrdersController.controllableUnits.Contains(this)) PlayerOrdersController.playerOrdersController.controllableUnits.Remove(this);
+            else if (PlayerOrdersController.playerOrdersController.otherPlayerUnits.Contains(this)) PlayerOrdersController.playerOrdersController.otherPlayerUnits.Remove(this);
+            return base.OnDeath();
         }
     }
 }

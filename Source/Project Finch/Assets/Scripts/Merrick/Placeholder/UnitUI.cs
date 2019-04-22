@@ -54,7 +54,7 @@ namespace CombatView {
                     Arrows[LitArrows].color = new Color(Arrows[LitArrows].color.r, Arrows[LitArrows].color.g, Arrows[LitArrows].color.b, 0.375f);
                     LitArrows++;
                 }
-                while (LitArrows > target.numActions) {
+                while (LitArrows > target.numActions && LitArrows > 0) {
                     LitArrows--;
                     Arrows[LitArrows].color = new Color(Arrows[LitArrows].color.r, Arrows[LitArrows].color.g, Arrows[LitArrows].color.b, 1);
                 }
