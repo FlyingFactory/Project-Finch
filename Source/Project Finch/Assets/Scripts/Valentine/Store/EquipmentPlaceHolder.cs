@@ -16,10 +16,17 @@ public class EquipmentPlaceHolder : MonoBehaviour
 
     public Button BuyButton;
 
-    public Text DamageModifier;
-    public Text AimModifier;
-    public Text MobilityModifier;
+    public Text Trait1Text;
+    public Text Trait2Text;
+    public Text Trait3Text;
+    public Text Trait4Text;
+    public Text Trait5Text;
 
-    public Text HealingDone;
+    public Text Trait1Value;
+    public Text Trait2Value;
+    public Text Trait3Value;
+    public Text Trait4Value;
+    public Text Trait5Value;
+
 }
 

@@ -324,7 +324,7 @@ GameObject:
   - component: {fileID: 1658625326321952916}
   - component: {fileID: 8127153354878034895}
   m_Layer: 5
-  m_Name: WeaponListItem
+  m_Name: EquipmentListItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -376,9 +376,12 @@ MonoBehaviour:
   Price: {fileID: 8692116871427451948}
   Type: {fileID: 5026128732602744797}
   BuyButton: {fileID: 1658625326964696073}
-  DamageModifier: {fileID: 7316309426581484175}
-  AimModifier: {fileID: 7557787176920464893}
-  MobilityModifier: {fileID: 8310126636877711492}
+  Trait1Text: {fileID: 5855977621026854224}
+  Trait2Text: {fileID: 8380233066607744695}
+  Trait3Text: {fileID: 8951939171268690113}
+  Trait1Value: {fileID: 7316309426581484175}
+  Trait2Value: {fileID: 8310126636877711492}
+  Trait3Value: {fileID: 7557787176920464893}
   HealingDone: {fileID: 0}
 --- !u!1 &1658625326880007238
 GameObject:
@@ -589,7 +592,7 @@ GameObject:
   - component: {fileID: 4467760665788201496}
   - component: {fileID: 7316309426581484175}
   m_Layer: 5
-  m_Name: DamageModifierValue
+  m_Name: Trait1Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -655,7 +658,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: null
+  m_Text: 
 --- !u!1 &2538418111717327729
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,7 +750,7 @@ GameObject:
   - component: {fileID: 7307496669026503821}
   - component: {fileID: 8310126636877711492}
   m_Layer: 5
-  m_Name: MobilityModifierValue
+  m_Name: Trait2Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -813,7 +816,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: null
+  m_Text: 
 --- !u!1 &2879591320973902364
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,7 +829,7 @@ GameObject:
   - component: {fileID: 1091399551848017798}
   - component: {fileID: 5855977621026854224}
   m_Layer: 5
-  m_Name: DamageModifierText
+  m_Name: Trait1Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -893,7 +896,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Damage Modifier:'
+  m_Text: 
 --- !u!1 &3272887666327514788
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,7 +909,7 @@ GameObject:
   - component: {fileID: 7544218564395036972}
   - component: {fileID: 8380233066607744695}
   m_Layer: 5
-  m_Name: MobilityModifierText
+  m_Name: Trait2Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -973,7 +976,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Mobility Modifier:'
+  m_Text: 
 --- !u!1 &4645432069279686860
 GameObject:
   m_ObjectHideFlags: 0
@@ -986,7 +989,7 @@ GameObject:
   - component: {fileID: 5885785247432819014}
   - component: {fileID: 7557787176920464893}
   m_Layer: 5
-  m_Name: AimModifierValue
+  m_Name: Trait3Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1052,7 +1055,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: null
+  m_Text: 
 --- !u!1 &5154121293926206039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1065,7 +1068,7 @@ GameObject:
   - component: {fileID: 5703730138607484630}
   - component: {fileID: 8951939171268690113}
   m_Layer: 5
-  m_Name: AimModifierText
+  m_Name: Trait3Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1132,7 +1135,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Aim Modifier:'
+  m_Text: 
 --- !u!1 &5606482366665738417
 GameObject:
   m_ObjectHideFlags: 0
