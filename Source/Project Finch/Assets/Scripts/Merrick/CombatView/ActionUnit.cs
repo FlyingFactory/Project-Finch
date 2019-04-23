@@ -6,11 +6,11 @@ namespace CombatView {
 
     public class ActionUnit : Unit {
         
-        public int numActions = 2;
-        public int actionsPerTurn = 2;
-        public int mobility = 7;
-        public int id = 0;
-        public string dict_id = "";
+        [System.NonSerialized] public int numActions = 2;
+        [System.NonSerialized] public int actionsPerTurn = 2;
+        [System.NonSerialized] public int mobility = 7;
+        [System.NonSerialized] public int id = 0;
+        [System.NonSerialized] public string dict_id = "";
 
         new public void Start() {
             base.Start();
