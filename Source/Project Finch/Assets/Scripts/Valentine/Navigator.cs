@@ -107,7 +107,7 @@ public class Navigator : MonoBehaviour
         MenuView.PlayerAccount.LoadDataInfo opponentDataInfo = new MenuView.PlayerAccount.LoadDataInfo(userName);
         opponentData.loadDataInfo = opponentDataInfo;
 
-        MenuView.PlayerAccount.LoadData_Thread(opponentData.loadDataInfo);
+        MenuView.PlayerAccount.LoadData_Thread(opponentData);
 
         while (loadingOpponent)
         {
@@ -125,6 +125,17 @@ public class Navigator : MonoBehaviour
         {
             opponentSoldiers.Add(opponentData.loadDataInfo.output.soldiers[soldierName]);
         }
+
+        for (int i = 0; i < 4; i++)
+        {
+            CombatView.MapGenerator.soldiers[i] = mySoldiers[i];
+        }
+        for (int i = 4; i < 8; i++)
+        {
+            CombatView.MapGenerator.soldiers[i] = opponentSoldiers[i - 4];
+        }
+        CombatView.GameFlowController.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
+        Runner_call.Coroutines.Add(loadMatchDetails(MenuView.PlayerAccount.currentPlayer.matchID));
     }
 
     public void startMatch(string opponentUser)
@@ -136,17 +147,7 @@ public class Navigator : MonoBehaviour
             mySoldiers.Add(MenuView.PlayerAccount.currentPlayer.soldiers[soldierName]);
         }
         Runner_call.Coroutines.Add(LoadOpponentData(opponentUser));
-        for (int i = 0; i < 4; i++)
-        {
-            CombatView.MapGenerator.soldiers[i] = mySoldiers[i];
-        }
-        for (int i = 4; i < 8; i++)
-        {
-            CombatView.MapGenerator.soldiers[i] = opponentSoldiers[i - 4];
-        }
-        CombatView.GameFlowController.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
-        Runner_call.Coroutines.Add(loadMatchDetails(MenuView.PlayerAccount.currentPlayer.matchID));
-        SceneManager.LoadSceneAsync("Merrick");
+
     }
 
     public IEnumerator loadMatchDetails(int matchID)
