@@ -145,6 +145,9 @@ namespace CombatView {
                     RegisterObjectTile(newCover, MapInfo.currentMapInfo.bottomLayer[x, z].top);
                 }
             }
+
+            if (player1) PlayerOrdersController.playerOrdersController.StartTurn();
+            else PlayerOrdersController.playerOrdersController.EndTurn();
         }
 
         private void MakePlaceholderTile(Tile tile) {

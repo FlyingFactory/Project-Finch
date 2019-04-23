@@ -332,7 +332,7 @@ namespace MenuView
                 //Debug.Log("putting new soldier..");
                 counter += 1;
                 //Debug.Log("counter:" + counter);
-                soldier.uniqueId = counter.ToString();
+                //soldier.uniqueId = counter.ToString();
                 soldierNameList.Add(soldier.uniqueId.ToString());
                 //Debug.Log("soldiernamelist count:" + soldierNameList.Count);
                 RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier"+soldier.uniqueId+".json", soldier);
