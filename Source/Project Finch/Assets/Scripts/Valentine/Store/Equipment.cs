@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum ItemType { Weapon, Food, Ammo, HealthKit };
+public enum ItemType { Weapon, Food, Ammo, Health };
 
 public class GameItem
 {
@@ -14,6 +14,7 @@ public class GameItem
     public string Description { get; set; }
     public string ImageName { get; set; }
     public int Cost { get; set; }
+
 }
 
 public class GameItemWeapon : GameItem
