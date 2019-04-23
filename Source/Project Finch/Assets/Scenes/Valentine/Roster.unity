@@ -288,7 +288,6 @@ MonoBehaviour:
   FatigueObject: {fileID: 1692024648}
   HPObject: {fileID: 1248528718}
   MobilityObject: {fileID: 1414379692}
-  NameObject: {fileID: 0}
 --- !u!1 &79827739
 GameObject:
   m_ObjectHideFlags: 0
@@ -2095,7 +2094,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1548765453}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1719095336}
