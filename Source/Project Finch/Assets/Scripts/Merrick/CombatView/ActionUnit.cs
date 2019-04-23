@@ -8,7 +8,7 @@ namespace CombatView {
         
         public int numActions = 2;
         public int actionsPerTurn = 2;
-        public int mobility = 6;
+        public int mobility = 7;
         public int id = 0;
         public string dict_id = "";
 
@@ -24,13 +24,17 @@ namespace CombatView {
                     move = false;
                 }
                 if (move) {
-                    numActions -= Mathf.CeilToInt(Tile.DistanceBetween(destination, tile) / mobility);
+                    numActions -= NumMovesToTile(destination);
                     transform.position = new Vector3(destination.x, destination.h, destination.z);
                     tile.occupyingObjects.Remove(this);
                     tile = destination;
                     tile.occupyingObjects.Add(this);
                 }
             }
+        }
+
+        public int NumMovesToTile(Tile destination) {
+            return Mathf.CeilToInt(Tile.DistanceBetween(destination, tile) - 0.1f / mobility);
         }
 
         public void OrderAttack(Tile destination, string outcome, int rawdamage) {

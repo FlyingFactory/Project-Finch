@@ -65,11 +65,13 @@ public class Navigator : MonoBehaviour
         }
         Debug.Log("found Game!, MatchID: "+ MenuView.PlayerAccount.currentPlayer.matchID);
 
-        if (MenuView.PlayerAccount.currentPlayer.matchID != -1)
-        {
+        if (MenuView.PlayerAccount.currentPlayer.matchID != -1) {
+            /* Information needed to start game properly
+             * 
+             */
             SceneManager.LoadSceneAsync("Merrick");
         }
-        
+
 
     }
 

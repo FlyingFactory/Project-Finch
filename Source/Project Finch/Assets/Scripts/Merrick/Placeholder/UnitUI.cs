@@ -51,12 +51,12 @@ namespace CombatView {
                 }
 
                 while (LitArrows < target.numActions) {
-                    Arrows[LitArrows].color = new Color(Arrows[LitArrows].color.r, Arrows[LitArrows].color.g, Arrows[LitArrows].color.b, 0.375f);
+                    Arrows[LitArrows].color = new Color(Arrows[LitArrows].color.r, Arrows[LitArrows].color.g, Arrows[LitArrows].color.b, 1);
                     LitArrows++;
                 }
                 while (LitArrows > target.numActions && LitArrows > 0) {
                     LitArrows--;
-                    Arrows[LitArrows].color = new Color(Arrows[LitArrows].color.r, Arrows[LitArrows].color.g, Arrows[LitArrows].color.b, 1);
+                    Arrows[LitArrows].color = new Color(Arrows[LitArrows].color.r, Arrows[LitArrows].color.g, Arrows[LitArrows].color.b, 0.5f);
                 }
             }
             else Destroy(gameObject);

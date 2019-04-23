@@ -26,13 +26,14 @@ namespace CombatView {
         // --- UI ---
 #pragma warning disable 649
         [SerializeField] private GameObject unitSelectionIndicator;
-        [SerializeField] private GameObject fireUI;
         [SerializeField] private GameObject endTurnUI;
         [SerializeField] private TMPro.TextMeshProUGUI hitChanceText;
         [SerializeField] private TMPro.TextMeshProUGUI coverText;
         [SerializeField] private Color lowCoverTextColor = new Color32(255, 255, 0, 255);
         [SerializeField] private Color highCoverTextColor = new Color32(100, 100, 255, 255);
 #pragma warning restore 649
+        private GameObject moveCircle1;
+        private GameObject moveCircle2;
 
         // networking
         [System.NonSerialized] public List<string> confirmedMoves = new List<string>();
@@ -53,6 +54,11 @@ namespace CombatView {
         private void Awake() {
             if (playerOrdersController != null) Destroy(playerOrdersController);
             playerOrdersController = this;
+        }
+
+        private void Start() {
+            moveCircle1 = unitSelectionIndicator.transform.Find("SingleMove").gameObject;
+            moveCircle2 = unitSelectionIndicator.transform.Find("DoubleMove").gameObject;
         }
 
         private void Update() {
@@ -145,7 +151,7 @@ namespace CombatView {
                                             }
                                             else if (selectedUnit != null) {
                                                 targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
-                                                fireUI.SetActive(true);
+                                                CanvasRefs.canvasRefs.fireUI.SetActive(true);
                                                 playerControlState = PlayerControlState.ActionSelect;
 
                                                 float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
@@ -174,6 +180,19 @@ namespace CombatView {
                                                 hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
 
                                                 hitChanceText.text = string.Format("Hit: {0:p}", hitChance);
+                                                switch (highestUnflankedCover) {
+                                                    case CoverType.None:
+                                                        coverText.text = "";
+                                                        break;
+                                                    case CoverType.Half:
+                                                        coverText.color = lowCoverTextColor;
+                                                        coverText.text = "LOW COVER";
+                                                        break;
+                                                    case CoverType.Full:
+                                                        coverText.color = highCoverTextColor;
+                                                        coverText.text = "HIGH COVER";
+                                                        break;
+                                                }
                                             }
                                             break;
                                         }
@@ -188,7 +207,7 @@ namespace CombatView {
 
                                 TileEffector hitTile = hit.collider.transform.parent.gameObject.GetComponent<TileEffector>();
                                 if (hitTile != null && selectedUnit != null && selectedUnit.numActions > 0) {
-                                    int movesTaken = Mathf.CeilToInt(Tile.DistanceBetween(hitTile.tile, selectedUnit.tile) / selectedUnit.mobility);
+                                    int movesTaken = selectedUnit.NumMovesToTile(hitTile.tile);
                                     bool move = movesTaken <= selectedUnit.numActions;
                                     if (selectedUnit.takesTile && hitTile.tile.ContainsBlockingAnything()) {
                                         move = false;
@@ -206,6 +225,8 @@ namespace CombatView {
 
                         if (selectedUnit != null && unitSelectionIndicator != null) {
                             unitSelectionIndicator.transform.position = selectedUnit.transform.position;
+                            moveCircle1.SetActive(selectedUnit.numActions >= 1);
+                            moveCircle2.SetActive(selectedUnit.numActions >= 2);
                         }
                         break;
 
@@ -310,6 +331,7 @@ namespace CombatView {
             endTurnUI.SetActive(false);
             unitSelectionIndicator.transform.position = new Vector3(1000, 0, 0);
             PostMove("endturn,voluntary");
+            CanvasRefs.canvasRefs.fireUI.SetActive(false);
         }
 
         public void EndTurn() {
@@ -358,10 +380,12 @@ namespace CombatView {
             matchEnded = true;
             GameFlowController.gameFlowController.addMove("leftmatch");
             MenuView.PlayerAccount player = MenuView.PlayerAccount.currentPlayer;
-            player.InMatch = false;
-            player.currency += 100;
-            RestClient.Put("https://project-finch-database.firebaseio.com/User/" + player.userName + ".json", player);
-            UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+            if (player != null) {
+                player.InMatch = false;
+                player.currency += 100;
+                RestClient.Put("https://project-finch-database.firebaseio.com/User/" + player.userName + ".json", player);
+            }
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
         }
     }
 }
