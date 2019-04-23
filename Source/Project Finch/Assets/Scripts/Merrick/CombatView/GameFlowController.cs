@@ -196,31 +196,20 @@ namespace CombatView
 
         //}
 
-        public void getMove(int moveNumber)
-        {
-            matchID = 68;
+        public void getMove(int moveNumber) {
 
-            while (moveHistory.Count <= moveNumber)
-            {
+            while (moveHistory.Count <= moveNumber) {
                 moveHistory.Add(new Queue<string>());
             }
-            try
-            {
-                RestClient.Get<acceptedMoves>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/moveHistory.json").Then(response =>
-                {
+            try {
+                RestClient.Get<acceptedMoves>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo/moveHistory.json").Then(response => {
 
-                    if (response.a_playersMoves.Count > moveNumber)
-                    {
+                    if (response.a_playersMoves.Count > moveNumber) {
                         moveHistory[moveNumber].Enqueue(response.a_playersMoves[moveNumber]);
                     }
-
                 });
-            }catch (Exception)
-            {
-
             }
-            
-
+            catch (Exception) { }
         }
 
         [Serializable]
@@ -257,7 +246,6 @@ namespace CombatView
         public void PostMatchDetails()
         {
             MatchDetails match_details = new MatchDetails();
-            matchID = 68;
             RestClient.Put("https://project-finch-database.firebaseio.com/Match/" + matchID + "/matchDetails.json", match_details);
         }
 
@@ -319,7 +307,6 @@ namespace CombatView
         public void OnAddMove()
         {
             string moveInfo = getMoveInfoFromInput();
-            matchID = 68;
             Debug.Log("default matchID:" +matchID);
             addMove(moveInfo);
         }
