@@ -84,7 +84,7 @@ namespace Proyecto26
 		{
 			return CreateRequestAndRetry(options, (RequestException err, ResponseHelper res) => {
 				var body = default(TResponse);
-				if (err == null && !string.IsNullOrEmpty(res.Text))
+				if (err == null && !string.IsNullOrEmpty(res.Text) && res.Text != "null")
 				{
 					body = JsonUtility.FromJson<TResponse>(res.Text);
 				}
