@@ -67,8 +67,12 @@ public class Navigator : MonoBehaviour
 
         if (MenuView.PlayerAccount.currentPlayer.matchID != -1) {
             /* Information needed to start game properly
-             * 
+             * matchID
+             * load opponent's 
+             * mapSeed - python server generate randint
+             * player1 or player2 identity 
              */
+
             SceneManager.LoadSceneAsync("Merrick");
         }
 
