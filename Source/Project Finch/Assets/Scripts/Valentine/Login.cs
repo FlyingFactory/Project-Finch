@@ -91,6 +91,7 @@ public class Login : MonoBehaviour
         }
         CombatView.GameFlowController.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
         Runner_call.Coroutines.Add(loadMatchDetails(MenuView.PlayerAccount.currentPlayer.matchID));
+        SceneManager.LoadSceneAsync("Merrick");
     }
 
     public IEnumerator loadMatchDetails(int matchID)
@@ -106,14 +107,16 @@ public class Login : MonoBehaviour
             {
                 waitingMatch = false;
             }
+            yield return new WaitForSeconds(0.25f);
         }
-        yield return new WaitForSeconds(0.25f);
+        
 
         if (_matchDetails.matchedPlayer1 == MenuView.PlayerAccount.currentPlayer.userName)
         {
             CombatView.GameFlowController.player1 = true;
         }
         else CombatView.GameFlowController.player1 = false;
+        Debug.Log(CombatView.GameFlowController.player1);
         SceneManager.LoadSceneAsync("Merrick");
     }
 

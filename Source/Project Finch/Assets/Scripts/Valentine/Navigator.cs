@@ -65,16 +65,34 @@ public class Navigator : MonoBehaviour
         }
         Debug.Log("found Game!, MatchID: "+ MenuView.PlayerAccount.currentPlayer.matchID);
 
-        if (MenuView.PlayerAccount.currentPlayer.matchID != -1) {
-            /* Information needed to start game properly
-             * matchID
-             * load opponent's 
-             * mapSeed - python server generate randint
-             * player1 or player2 identity 
-             */
+        MatchDetails found_match = new MatchDetails();
+        found_match.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
+        Thread loadMatchDetailThread = new Thread(new ParameterizedThreadStart(MenuView.PlayerAccount.getMatchDetails_thread));
+        loadMatchDetailThread.Start(found_match);
 
-            SceneManager.LoadSceneAsync("Merrick");
-        }
+        System.Threading.CancellationToken cancel3 = new CancellationToken();
+        for (int i = 0; i < 10; i++)
+        {
+            if (found_match.complete) break;
+
+            await System.Threading.Tasks.Task.Delay(1000, cancel3);
+            if (cancel3.IsCancellationRequested) break;
+        };
+
+        Login new_instance = new Login();
+        new_instance.startMatch(found_match.matchedPlayer2);
+        
+
+        //if (MenuView.PlayerAccount.currentPlayer.matchID != -1) {
+        //    /* Information needed to start game properly
+        //     * matchID
+        //     * load opponent's 
+        //     * mapSeed - python server generate randint
+        //     * player1 or player2 identity 
+        //     */
+
+        //    SceneManager.LoadSceneAsync("Merrick");
+        //}
 
 
     }
