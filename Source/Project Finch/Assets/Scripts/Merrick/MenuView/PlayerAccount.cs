@@ -118,7 +118,6 @@ namespace MenuView
                     await System.Threading.Tasks.Task.Delay(1000, cancel3);
                     if (cancel1.IsCancellationRequested) break;
                 };
-
                 if (loadDataInfo.output == null)
                 {
                     Debug.Log("Load data unsuccessful");
@@ -127,7 +126,8 @@ namespace MenuView
                 else
                 {
                     currentPlayer = loadDataInfo.output;
-                    
+                    currentPlayer = mother.loadDataInfo.output;
+                    currentPlayer.dataLoaded = true;
                 }
             }
             else
@@ -222,135 +222,8 @@ namespace MenuView
             {
                 _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
             }
-            currentPlayer = _mother.loadDataInfo.output;
-            
-            currentPlayer.dataLoaded = true;
             _mother.complete = true;
-
-
-            //Thread getSoldierList = new Thread(new ParameterizedThreadStart(getSoldierList_thread));
-            //getSoldierList.Start((object)_mother.soldierList);
-
-            //System.Threading.CancellationToken cancel2 = new CancellationToken();
-            //for (int i = 0; i < 30; i++)
-            //{
-            //    //Debug.Log(_loadDataInfo.complete);
-            //    if (_mother.soldierList.complete) break;
-
-            //    await System.Threading.Tasks.Task.Delay(1000, cancel2);
-            //    if (cancel2.IsCancellationRequested) break;
-            //};
-
-            //Debug.Log("soldierList:" + _mother.soldierList.value);
-
-            //try {_mother.loadDataInfo.output.numberOfSoldiers = _mother.soldierList.value.Split(',').Length; }
-            //catch (Exception)
-            //{
-            //    if (_mother.soldierList.value != null)
-            //    {
-            //        _mother.loadDataInfo.output.numberOfSoldiers = 1;
-            //    }
-            //    else _mother.loadDataInfo.output.numberOfSoldiers = 0;
-
-            //}
-
-            //string[] arr = new string[_mother.loadDataInfo.output.numberOfSoldiers];
-
-            //try
-            //{
-            //     arr = _mother.soldierList.value.Split(',');
-            //}
-            //catch (Exception)
-            //{
-            //    if (_mother.soldierList.value != null)
-            //    {
-            //        //arr = new string[1];
-            //        arr[0] = _mother.soldierList.value;
-            //    }
-            //    else
-            //    {
-            //        //arr = new string[1];
-            //        arr[0] = null;
-            //    }
-            //}
-
-
-            //foreach (string arrItem in arr)
-            //{
-            //    if (arrItem != null)
-            //    {
-            //        _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
-            //    }
-
-            //}
-
-            //Debug.Log("number of soldiers:"+_mother.loadDataInfo.output.soldierNameList.Count);
-
-            //foreach (string soldier_id in _mother.loadDataInfo.output.soldierNameList)
-            //{
-            //    MenuView.Soldier soldier = new MenuView.Soldier();
-            //    soldier.index = soldier_id;
-            //    soldier.owner = _mother.loadDataInfo.output.userId;
-            //    soldier.complete = false;
-            //    Thread getSoldier = new Thread(new ParameterizedThreadStart(getSoldier_thread));
-            //    getSoldier.Start(soldier);
-
-            //    System.Threading.CancellationToken cancel1 = new CancellationToken();
-            //    for (int i = 0; i < 30; i++)
-            //    {
-            //        //Debug.Log(_loadDataInfo.complete);
-            //        if (soldier.complete) break;
-
-            //        await System.Threading.Tasks.Task.Delay(1000, cancel1);
-            //        if (cancel1.IsCancellationRequested) break;
-            //    };
-
-            //    //Debug.Log("soldier aim:" + soldier.aim);
-            //    _mother.loadDataInfo.output.soldiers.Add(soldier);
-            //    Debug.Log("list of soldier class:"+ _mother.loadDataInfo.output.soldiers.Count);
-            //}
-            //currentPlayer.dataLoaded = true;
-            //if (!loadSuccess)
-            //{
-            //    _mother.loadDataInfo.output = null;
-            //}
-            //_mother.complete = true;
-
-
-
         }
-
-        //public async static void getSoldier_thread(object soldier)
-        //{
-
-        //    MenuView.Soldier _soldier = (MenuView.Soldier)soldier;
-        //    //Debug.Log("soldier owner:" + _soldier.owner);
-        //    //Debug.Log("soldier index:"+_soldier.index);
-        //    QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/User/" + _soldier.owner+ "/Soldiers/Soldier"+_soldier.index+".json");
-        //    Runner_call.Coroutines.Add(getFromDatabase_RestClientCall(qi));
-        //    System.Threading.CancellationToken cancel = new CancellationToken();
-        //    for (int i = 0; i < 30; i++)
-        //    {
-        //        if (!qi.inProgress) break;
-        //        await System.Threading.Tasks.Task.Delay(1000, cancel);
-        //        if (cancel.IsCancellationRequested) break;
-        //    };
-        //    //Debug.Log("started get");
-        //    MenuView.Soldier _soldier1 = JsonUtility.FromJson<MenuView.Soldier>(qi.responseText);
-        //    _soldier.aim = _soldier1.aim;
-        //    _soldier.characterClass = _soldier1.characterClass;
-        //    _soldier.equipments = _soldier1.equipments;
-        //    _soldier.experience = _soldier1.experience;
-        //    _soldier.fatigue = _soldier1.fatigue;
-        //    _soldier.level = _soldier1.level;
-        //    _soldier.maxHealth = _soldier1.maxHealth;
-        //    _soldier.mobility = _soldier1.mobility;
-        //    _soldier.mutations = _soldier1.mutations;
-        //    //Debug.Log("soldier aim from database:" + _soldier1.aim);
-        //    //Debug.Log("matchID:" +_loadDataInfo.output.matchID);
-        //    //Debug.Log("soldierlist:" +_loadDataInfo.output.soldierList);
-        //    _soldier.complete = true;
-        //}
 
 
         public async static void getFromDatabase_thread(object loadDataInfo)
@@ -498,6 +371,24 @@ namespace MenuView
         public class soldierListClass
         {
             public string value;
+        }
+
+        public async static void getMatchDetails_thread(object matchDetails)
+        {
+            MatchDetails _matchDetails = (MatchDetails)matchDetails;
+            QueryInfo qi = new QueryInfo("https://project-finch-database.firebaseio.com/Match/" + _matchDetails.matchID + "/matchDetails.json");
+            Runner_call.Coroutines.Add(getFromDatabase_RestClientCall(qi));
+            System.Threading.CancellationToken cancel = new CancellationToken();
+            for (int i = 0; i < 30; i++)
+            {
+                if (!qi.inProgress) break;
+                await System.Threading.Tasks.Task.Delay(1000, cancel);
+                if (cancel.IsCancellationRequested) break;
+            };
+            MatchDetails buffer = JsonUtility.FromJson<MatchDetails>(qi.responseText);
+            _matchDetails.mapSeed = buffer.mapSeed;
+            _matchDetails.matchedPlayer1 = buffer.matchedPlayer1;
+            _matchDetails.complete = true;
         }
     }
 }
