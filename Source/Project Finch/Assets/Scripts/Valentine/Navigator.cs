@@ -38,29 +38,29 @@ public class Navigator : MonoBehaviour
 
         while (!MenuView.PlayerAccount.currentPlayer.InMatch)
         {
-            MenuView.PlayerAccount.loadDataAndLoadSoldierInfo new_instance = new MenuView.PlayerAccount.loadDataAndLoadSoldierInfo();
-            new_instance.loadDataInfo.output = MenuView.PlayerAccount.currentPlayer;
-            new_instance.loadDataInfo.userID = MenuView.PlayerAccount.currentPlayer.userName;
+            MenuView.PlayerAccount.loadDataAndLoadSoldierInfo new_instance1 = new MenuView.PlayerAccount.loadDataAndLoadSoldierInfo();
+            new_instance1.loadDataInfo.output = MenuView.PlayerAccount.currentPlayer;
+            new_instance1.loadDataInfo.userID = MenuView.PlayerAccount.currentPlayer.userName;
 
             Thread loadDataThread = new Thread(new ParameterizedThreadStart(MenuView.PlayerAccount.LoadData_Thread));
-            loadDataThread.Start(new_instance);
+            loadDataThread.Start(new_instance1);
 
-            System.Threading.CancellationToken cancel3 = new CancellationToken();
+            System.Threading.CancellationToken cancel4 = new CancellationToken();
             for (int i = 0; i < 10; i++)
             {
-                if (new_instance.complete) break;
+                if (new_instance1.complete) break;
 
-                await System.Threading.Tasks.Task.Delay(1000, cancel3);
-                if (cancel3.IsCancellationRequested) break;
+                await System.Threading.Tasks.Task.Delay(1000, cancel4);
+                if (cancel4.IsCancellationRequested) break;
             };
 
-            if (new_instance.loadDataInfo.output == null)
+            if (new_instance1.loadDataInfo.output == null)
             {
                 Debug.Log("Load data unsuccessful");
             }
             else
             {  
-                MenuView.PlayerAccount.currentPlayer = new_instance.loadDataInfo.output;
+                MenuView.PlayerAccount.currentPlayer = new_instance1.loadDataInfo.output;
             }
         }
         Debug.Log("found Game!, MatchID: "+ MenuView.PlayerAccount.currentPlayer.matchID);
