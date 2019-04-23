@@ -32,8 +32,7 @@ namespace CombatView
 
         // === statics for cross-scene information passing
         public static int matchID = 68;
-        public static bool player1 = true;
-        public static int seed = -294;
+        public static bool player1 = false;
 
         public List<Queue<string>> moveHistory = new List<Queue<string>>();
         public string moveInformation = null;

@@ -12,7 +12,8 @@ namespace CombatView {
         }
 
         public Map map = Map.TestingRange;
-        public int seed = -294;
+        public static int mapSeed = -294;
+        public static List<MenuView.Soldier> soldiers = new List<MenuView.Soldier>();
         [System.NonSerialized] public int idBuffer = 0;
 
         public static Color allyColor = new Color32(127, 255, 255, 255);
@@ -24,7 +25,7 @@ namespace CombatView {
                     GenerateRandomTerrain();
                     break;
                 case Map.RandomMultiplayer:
-                    GenerateRandomCoordinated(GameFlowController.player1, seed);
+                    GenerateRandomCoordinated(GameFlowController.player1, mapSeed);
                     break;
             }
         }
