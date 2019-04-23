@@ -4,9 +4,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Proyecto26;
 using System.Threading;
+using System.Linq;
 
 public class Navigator : MonoBehaviour
 {
+    public static List<MenuView.Soldier> opponentSoldiers = new List<MenuView.Soldier>();
+    public static List<MenuView.Soldier> mySoldiers = new List<MenuView.Soldier>();
+    public static string opponentName;
+
     /*private static Navigator _instance;
     public static Navigator Instance { get { return _instance; } }
 
@@ -78,9 +83,7 @@ public class Navigator : MonoBehaviour
             await System.Threading.Tasks.Task.Delay(1000, cancel3);
             if (cancel3.IsCancellationRequested) break;
         };
-
-        Login new_instance = new Login();
-        new_instance.startMatch(found_match.matchedPlayer2);
+        startMatch(found_match.matchedPlayer2);
         
 
         //if (MenuView.PlayerAccount.currentPlayer.matchID != -1) {
@@ -96,6 +99,84 @@ public class Navigator : MonoBehaviour
 
 
     }
+
+    public IEnumerator LoadOpponentData(string userName)
+    {
+        bool loadingOpponent = true;
+        MenuView.PlayerAccount.loadDataAndLoadSoldierInfo opponentData = new MenuView.PlayerAccount.loadDataAndLoadSoldierInfo();
+        MenuView.PlayerAccount.LoadDataInfo opponentDataInfo = new MenuView.PlayerAccount.LoadDataInfo(userName);
+        opponentData.loadDataInfo = opponentDataInfo;
+
+        MenuView.PlayerAccount.LoadData_Thread(opponentData.loadDataInfo);
+
+        while (loadingOpponent)
+        {
+            if (opponentData.loadDataInfo.output != null && opponentData.loadDataInfo.output.dataLoaded)
+            {
+                loadingOpponent = false;
+            }
+            yield return new WaitForSeconds(0.25f);
+        }
+
+        List<string> tempKeys = opponentData.loadDataInfo.output.soldiers.Keys.ToList<string>();
+        tempKeys.Sort();
+
+        foreach (string soldierName in tempKeys)
+        {
+            opponentSoldiers.Add(opponentData.loadDataInfo.output.soldiers[soldierName]);
+        }
+    }
+
+    public void startMatch(string opponentUser)
+    {
+        List<string> tempKeys = MenuView.PlayerAccount.currentPlayer.soldiers.Keys.ToList<string>();
+        tempKeys.Sort();
+        foreach (string soldierName in tempKeys)
+        {
+            mySoldiers.Add(MenuView.PlayerAccount.currentPlayer.soldiers[soldierName]);
+        }
+        Runner_call.Coroutines.Add(LoadOpponentData(opponentUser));
+        for (int i = 0; i < 4; i++)
+        {
+            CombatView.MapGenerator.soldiers[i] = mySoldiers[i];
+        }
+        for (int i = 4; i < 8; i++)
+        {
+            CombatView.MapGenerator.soldiers[i] = opponentSoldiers[i - 4];
+        }
+        CombatView.GameFlowController.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
+        Runner_call.Coroutines.Add(loadMatchDetails(MenuView.PlayerAccount.currentPlayer.matchID));
+        SceneManager.LoadSceneAsync("Merrick");
+    }
+
+    public IEnumerator loadMatchDetails(int matchID)
+    {
+        bool waitingMatch = true;
+        MatchDetails _matchDetails = new MatchDetails();
+        _matchDetails.matchID = matchID;
+        MenuView.PlayerAccount.getMatchDetails_thread(_matchDetails);
+
+        while (waitingMatch)
+        {
+            if (_matchDetails.complete && _matchDetails != null)
+            {
+                waitingMatch = false;
+            }
+            yield return new WaitForSeconds(0.25f);
+        }
+
+
+        if (_matchDetails.matchedPlayer1 == MenuView.PlayerAccount.currentPlayer.userName)
+        {
+            CombatView.GameFlowController.player1 = true;
+        }
+        else CombatView.GameFlowController.player1 = false;
+        Debug.Log(CombatView.GameFlowController.player1);
+        SceneManager.LoadSceneAsync("Merrick");
+    }
+
+
+
 
     public void GoToRoster()
     {
