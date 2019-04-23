@@ -34,7 +34,7 @@ namespace CombatView {
         }
 
         public int NumMovesToTile(Tile destination) {
-            return Mathf.CeilToInt(Tile.DistanceBetween(destination, tile) - 0.1f / mobility);
+            return Mathf.CeilToInt((Tile.DistanceBetween(destination, tile) - 0.1f) / mobility);
         }
 
         public void OrderAttack(Tile destination, string outcome, int rawdamage) {
