@@ -385,9 +385,11 @@ namespace MenuView
                 await System.Threading.Tasks.Task.Delay(1000, cancel);
                 if (cancel.IsCancellationRequested) break;
             };
+
             MatchDetails buffer = JsonUtility.FromJson<MatchDetails>(qi.responseText);
             _matchDetails.mapSeed = buffer.mapSeed;
             _matchDetails.matchedPlayer1 = buffer.matchedPlayer1;
+            _matchDetails.matchedPlayer2 = buffer.matchedPlayer2;
             _matchDetails.complete = true;
         }
     }

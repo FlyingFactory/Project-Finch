@@ -83,8 +83,14 @@ public class Navigator : MonoBehaviour
             await System.Threading.Tasks.Task.Delay(1000, cancel3);
             if (cancel3.IsCancellationRequested) break;
         };
-        startMatch(found_match.matchedPlayer2);
-        
+
+        if(found_match.matchedPlayer1 != MenuView.PlayerAccount.currentPlayer.userName)
+        {
+            startMatch(found_match.matchedPlayer1);
+        }
+        else startMatch(found_match.matchedPlayer2);
+
+
 
         //if (MenuView.PlayerAccount.currentPlayer.matchID != -1) {
         //    /* Information needed to start game properly
