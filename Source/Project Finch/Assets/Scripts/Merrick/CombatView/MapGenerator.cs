@@ -98,36 +98,38 @@ namespace CombatView {
             ActionUnit unitPrefab = Resources.Load<ActionUnit>("Prefabs/Testing/Unit");
             ActionUnit unitEnemyPrefab = Resources.Load<ActionUnit>("Prefabs/Testing/UnitEnemy");
             UnitUI unitUIPrefab = Resources.Load<UnitUI>("Prefabs/UnitUI");
-            List<System.Tuple<int, int>> p1spawns = new List<System.Tuple<int, int>>() {
+            List<System.Tuple<int, int>> bottomSpawns = new List<System.Tuple<int, int>>() {
                 new System.Tuple<int, int>(0, 0),
                 new System.Tuple<int, int>(2, 0),
                 new System.Tuple<int, int>(2, 2),
                 new System.Tuple<int, int>(0, 2),
             };
-            List<System.Tuple<int, int>> p2spawns = new List<System.Tuple<int, int>>() {
+            List<System.Tuple<int, int>> topSpawns = new List<System.Tuple<int, int>>() {
                 new System.Tuple<int, int>(31, 31),
                 new System.Tuple<int, int>(29, 31),
                 new System.Tuple<int, int>(29, 29),
                 new System.Tuple<int, int>(31, 29),
             };
 
-            foreach (System.Tuple<int, int> pos in player1 ? p1spawns : p2spawns) {
+            foreach (System.Tuple<int, int> pos in player1 ? bottomSpawns : topSpawns) {
                 ActionUnit newUnit = Instantiate(unitPrefab);
                 newUnit.id += idBuffer++;
                 newUnit.dict_id = (player1 ? "1_" : "2_") + newUnit.id;
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
                 PlayerOrdersController.playerOrdersController.controllableUnits.Add(newUnit);
+                newUnit.transform.eulerAngles = new Vector3(0, player1 ? 45 : 225, 0);
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
                 u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = allyColor;
             }
             idBuffer = 0; // placeholder
-            foreach (System.Tuple<int, int> pos in player1 ? p2spawns : p1spawns) {
+            foreach (System.Tuple<int, int> pos in player1 ? topSpawns : bottomSpawns) {
                 ActionUnit newUnit = Instantiate(unitEnemyPrefab);
                 newUnit.id += idBuffer++;
                 newUnit.dict_id = (player1 ? "2_" : "1_") + newUnit.id;
                 RegisterObjectTile(newUnit, MapInfo.currentMapInfo.bottomLayer[pos.Item1, pos.Item2]);
                 PlayerOrdersController.playerOrdersController.otherPlayerUnits.Add(newUnit);
+                newUnit.transform.eulerAngles = new Vector3(0, player1 ? 225 : 45, 0);
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
                 u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = enemyColor;

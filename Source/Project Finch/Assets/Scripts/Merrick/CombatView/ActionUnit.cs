@@ -24,6 +24,7 @@ namespace CombatView {
                     move = false;
                 }
                 if (move) {
+                    FaceTowards(destination);
                     numActions -= NumMovesToTile(destination);
                     transform.position = new Vector3(destination.x, destination.h, destination.z);
                     tile.occupyingObjects.Remove(this);
@@ -47,6 +48,7 @@ namespace CombatView {
                 }
             }
             if (target != null) {
+                FaceTowards(destination);
                 if (outcome == "h") {
                     Debug.Log("hit!");
                     target.Damage(rawdamage);
@@ -68,6 +70,14 @@ namespace CombatView {
             if (PlayerOrdersController.playerOrdersController.controllableUnits.Contains(this)) PlayerOrdersController.playerOrdersController.controllableUnits.Remove(this);
             else if (PlayerOrdersController.playerOrdersController.otherPlayerUnits.Contains(this)) PlayerOrdersController.playerOrdersController.otherPlayerUnits.Remove(this);
             return base.OnDeath();
+        }
+
+        public void FaceTowards(Tile t) {
+            float d = Tile.DistanceBetween(t, tile);
+            if (d < 0.5) return;
+
+            if (t.x - tile.x >= 0) transform.eulerAngles = new Vector3(0, Mathf.Acos((t.z - tile.z) * Mathf.Rad2Deg / d), 0);
+            else transform.eulerAngles = new Vector3(0, -Mathf.Acos((t.z - tile.z) / d) * Mathf.Rad2Deg, 0);
         }
     }
 }

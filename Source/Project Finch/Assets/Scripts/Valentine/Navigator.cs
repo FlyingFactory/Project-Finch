@@ -130,11 +130,11 @@ public class Navigator : MonoBehaviour
         }
         for (int i = 0; i < 4; i++)
         {
-            CombatView.MapGenerator.soldiers.Add(mySoldiers[i]);
+            if (mySoldiers.Count > i) CombatView.MapGenerator.soldiers.Add(mySoldiers[i]);
         }
         for (int i = 4; i < 8; i++)
         {
-            CombatView.MapGenerator.soldiers.Add(opponentSoldiers[i - 4]);
+            if (opponentSoldiers.Count > i) CombatView.MapGenerator.soldiers.Add(opponentSoldiers[i - 4]);
         }
         CombatView.GameFlowController.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
         Runner_call.Coroutines.Add(loadMatchDetails(MenuView.PlayerAccount.currentPlayer.matchID));

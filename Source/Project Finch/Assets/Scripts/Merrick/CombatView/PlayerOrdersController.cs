@@ -152,6 +152,7 @@ namespace CombatView {
                                             else if (selectedUnit != null) {
                                                 targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
                                                 CanvasRefs.canvasRefs.fireUI.SetActive(true);
+                                                selectedUnit.FaceTowards(hitTile.tile);
                                                 playerControlState = PlayerControlState.ActionSelect;
 
                                                 float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
@@ -179,7 +180,7 @@ namespace CombatView {
                                                 }
                                                 hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
 
-                                                hitChanceText.text = string.Format("Hit: {0:p}", hitChance);
+                                                hitChanceText.text = string.Format("Hit: {0:p}", Mathf.Clamp01(hitChance));
                                                 switch (highestUnflankedCover) {
                                                     case CoverType.None:
                                                         coverText.text = "";
