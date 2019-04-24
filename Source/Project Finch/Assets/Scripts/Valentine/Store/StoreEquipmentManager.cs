@@ -6,9 +6,15 @@ using UnityEngine.UI;
 public class StoreEquipmentManager : MonoBehaviour
 {
     public GameObject ContentPanel;
+    public Text CreditsLeftText;
+
+
 #pragma warning disable 0649
     [SerializeField] private GameObject EquipmentItemPrefab;
 #pragma warning restore 0649
+
+    private double _creditsLeft = 2000; // To be replaced with user's own credit values soon.
+
 
     private List<GameItemWeapon> _weapons = new List<GameItemWeapon>
             {
@@ -49,7 +55,7 @@ public class StoreEquipmentManager : MonoBehaviour
 
     private void Awake()
     {
-
+        CreditsLeftText.text = _creditsLeft.ToString("#,##0");
         StartCoroutine(GenerateList());
     }
 
@@ -76,6 +82,9 @@ public class StoreEquipmentManager : MonoBehaviour
 
             placeHolder.Trait3Text.text = "Mobility Modifier:";
             placeHolder.Trait3Value.text = (weapon.MobilityModifier*100).ToString() + "%";
+            
+            // Attach the listener
+            placeHolder.BuyButton.onClick.AddListener(() => Purchase(placeHolder, weapon.Cost));
 
             storeItem.transform.parent = ContentPanel.transform;
             storeItem.transform.localScale = Vector3.one;
@@ -97,6 +106,9 @@ public class StoreEquipmentManager : MonoBehaviour
             placeHolder.Trait1Text.text = "Healing Done:";
             placeHolder.Trait1Value.text = healthkit.HealingDone.ToString();
 
+            // Attach the listener
+            placeHolder.BuyButton.onClick.AddListener(() => Purchase(placeHolder, healthkit.Cost));
+
             storeItem.transform.parent = ContentPanel.transform;
             storeItem.transform.localScale = Vector3.one;
             storeItem.SetActive(true);
@@ -107,8 +119,10 @@ public class StoreEquipmentManager : MonoBehaviour
         {
             GameObject storeItem = Instantiate(EquipmentItemPrefab) as GameObject;
             EquipmentPlaceHolder placeHolder = storeItem.GetComponent<EquipmentPlaceHolder>();
+
             placeHolder.Id = armor.Id;
             placeHolder.ItemImage.sprite = Resources.Load<Sprite>(armor.ImageName);
+
 
             placeHolder.Name.text = armor.Name;
             placeHolder.Price.text = armor.Cost.ToString();
@@ -121,9 +135,30 @@ public class StoreEquipmentManager : MonoBehaviour
             placeHolder.Trait2Text.text = "Defense Modifier:";
             placeHolder.Trait2Value.text = (armor.DefenseModifier * 100).ToString() + "%";
 
+            // Attach the listener
+            placeHolder.BuyButton.onClick.AddListener(() => Purchase(placeHolder, armor.Cost));
+
             storeItem.transform.parent = ContentPanel.transform;
             storeItem.transform.localScale = Vector3.one;
             storeItem.SetActive(true);
         }
     }
+
+
+
+    public void Purchase(EquipmentPlaceHolder placeHolder, float cost)
+    {
+        if (_creditsLeft >= cost)
+        {
+            _creditsLeft -= cost;
+            CreditsLeftText.text = _creditsLeft.ToString("#,##0");
+            placeHolder.BuyButton.interactable = false;
+        }
+
+        else
+        {
+            Debug.Log("Unable to buy! Insufficient funds.");
+        }
+    }
+
 }

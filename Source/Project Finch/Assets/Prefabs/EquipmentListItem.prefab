@@ -379,10 +379,13 @@ MonoBehaviour:
   Trait1Text: {fileID: 5855977621026854224}
   Trait2Text: {fileID: 8380233066607744695}
   Trait3Text: {fileID: 8951939171268690113}
+  Trait4Text: {fileID: 0}
+  Trait5Text: {fileID: 0}
   Trait1Value: {fileID: 7316309426581484175}
   Trait2Value: {fileID: 8310126636877711492}
   Trait3Value: {fileID: 7557787176920464893}
-  HealingDone: {fileID: 0}
+  Trait4Value: {fileID: 0}
+  Trait5Value: {fileID: 0}
 --- !u!1 &1658625326880007238
 GameObject:
   m_ObjectHideFlags: 0
