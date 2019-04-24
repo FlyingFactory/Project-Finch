@@ -223,6 +223,7 @@ namespace MenuView
                 _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
             }
             _mother.complete = true;
+            _mother.loadDataInfo.output.dataLoaded = true;
         }
 
 

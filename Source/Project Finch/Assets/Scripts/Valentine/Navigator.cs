@@ -74,7 +74,6 @@ public class Navigator : MonoBehaviour
         found_match.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
         Thread loadMatchDetailThread = new Thread(new ParameterizedThreadStart(MenuView.PlayerAccount.getMatchDetails_thread));
         loadMatchDetailThread.Start(found_match);
-
         System.Threading.CancellationToken cancel3 = new CancellationToken();
         for (int i = 0; i < 10; i++)
         {
@@ -83,7 +82,6 @@ public class Navigator : MonoBehaviour
             await System.Threading.Tasks.Task.Delay(1000, cancel3);
             if (cancel3.IsCancellationRequested) break;
         };
-
         if(found_match.matchedPlayer1 != MenuView.PlayerAccount.currentPlayer.userName)
         {
             startMatch(found_match.matchedPlayer1);
@@ -112,9 +110,9 @@ public class Navigator : MonoBehaviour
         MenuView.PlayerAccount.loadDataAndLoadSoldierInfo opponentData = new MenuView.PlayerAccount.loadDataAndLoadSoldierInfo();
         MenuView.PlayerAccount.LoadDataInfo opponentDataInfo = new MenuView.PlayerAccount.LoadDataInfo(userName);
         opponentData.loadDataInfo = opponentDataInfo;
-
-        MenuView.PlayerAccount.LoadData_Thread(opponentData);
-
+        Thread loadOpponentDataThread = new Thread(new ParameterizedThreadStart( MenuView.PlayerAccount.LoadData_Thread));
+        loadOpponentDataThread.Start(opponentData);
+        Debug.Log("Loading Opponent data...");
         while (loadingOpponent)
         {
             if (opponentData.loadDataInfo.output != null && opponentData.loadDataInfo.output.dataLoaded)
@@ -123,7 +121,6 @@ public class Navigator : MonoBehaviour
             }
             yield return new WaitForSeconds(0.25f);
         }
-
         List<string> tempKeys = opponentData.loadDataInfo.output.soldiers.Keys.ToList<string>();
         tempKeys.Sort();
 
@@ -131,14 +128,13 @@ public class Navigator : MonoBehaviour
         {
             opponentSoldiers.Add(opponentData.loadDataInfo.output.soldiers[soldierName]);
         }
-
         for (int i = 0; i < 4; i++)
         {
-            CombatView.MapGenerator.soldiers[i] = mySoldiers[i];
+            CombatView.MapGenerator.soldiers.Add(mySoldiers[i]);
         }
         for (int i = 4; i < 8; i++)
         {
-            CombatView.MapGenerator.soldiers[i] = opponentSoldiers[i - 4];
+            CombatView.MapGenerator.soldiers.Add(opponentSoldiers[i - 4]);
         }
         CombatView.GameFlowController.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
         Runner_call.Coroutines.Add(loadMatchDetails(MenuView.PlayerAccount.currentPlayer.matchID));
@@ -153,7 +149,6 @@ public class Navigator : MonoBehaviour
             mySoldiers.Add(MenuView.PlayerAccount.currentPlayer.soldiers[soldierName]);
         }
         Runner_call.Coroutines.Add(LoadOpponentData(opponentUser));
-
     }
 
     public IEnumerator loadMatchDetails(int matchID)
