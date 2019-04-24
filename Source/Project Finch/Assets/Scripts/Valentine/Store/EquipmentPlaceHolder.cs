@@ -16,6 +16,8 @@ public class EquipmentPlaceHolder : MonoBehaviour
 
     public Button BuyButton;
 
+    public Text InventoryCountValue;
+
     public Text Trait1Text;
     public Text Trait2Text;
     public Text Trait3Text;

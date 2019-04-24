@@ -14,6 +14,7 @@ public class GameItem
     public string Description { get; set; }
     public string ImageName { get; set; }
     public int Cost { get; set; }
+    public int InventoryCount { get; set; }
 
 }
 
