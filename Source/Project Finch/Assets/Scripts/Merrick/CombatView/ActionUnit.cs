@@ -76,7 +76,7 @@ namespace CombatView {
             float d = Tile.DistanceBetween(t, tile);
             if (d < 0.5) return;
 
-            if (t.x - tile.x >= 0) transform.eulerAngles = new Vector3(0, Mathf.Acos((t.z - tile.z) * Mathf.Rad2Deg / d), 0);
+            if (t.x - tile.x >= 0) transform.eulerAngles = new Vector3(0, Mathf.Acos((t.z - tile.z) / d) * Mathf.Rad2Deg, 0);
             else transform.eulerAngles = new Vector3(0, -Mathf.Acos((t.z - tile.z) / d) * Mathf.Rad2Deg, 0);
         }
     }
