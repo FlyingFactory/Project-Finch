@@ -139,11 +139,11 @@ namespace CombatView {
             EnvObject halfCoverPrefab = Resources.Load<EnvObject>("Prefabs/HalfCoverCube");
             EnvObject fullCoverPrefab = Resources.Load<EnvObject>("Prefabs/FullCoverCube");
 
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 40; i++) {
                 int x = r.Next(32);
                 int z = r.Next(32);
                 if (MapInfo.currentMapInfo.bottomLayer[x, z].top.occupyingObjects.Count == 0) {
-                    EnvObject newCover = Instantiate((r.Next(2) == 0) ? halfCoverPrefab : fullCoverPrefab);
+                    EnvObject newCover = Instantiate((r.Next(3) > 0) ? halfCoverPrefab : fullCoverPrefab);
                     RegisterObjectTile(newCover, MapInfo.currentMapInfo.bottomLayer[x, z].top);
                 }
             }

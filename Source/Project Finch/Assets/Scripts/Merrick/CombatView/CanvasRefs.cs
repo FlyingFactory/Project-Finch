@@ -12,6 +12,7 @@ namespace CombatView {
         public GameObject fireUI;
         public GameObject EnemyTurnIndicator;
         public GameObject EndTurnButton;
+        public GameObject ExitMatchPanel;
         public TMPro.TextMeshProUGUI hitChanceText;
         public TMPro.TextMeshProUGUI coverText;
         public Color lowCoverTextColor = new Color32(255, 255, 0, 255);

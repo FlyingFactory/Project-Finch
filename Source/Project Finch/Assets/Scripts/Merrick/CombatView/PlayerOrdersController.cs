@@ -30,7 +30,9 @@ namespace CombatView {
         [SerializeField] private TMPro.TextMeshProUGUI hitChanceText;
         [SerializeField] private TMPro.TextMeshProUGUI coverText;
         [SerializeField] private Color lowCoverTextColor = new Color32(255, 255, 0, 255);
-        [SerializeField] private Color highCoverTextColor = new Color32(100, 100, 255, 255);
+        [SerializeField] private Color highCoverTextColor = new Color32(120, 180, 255, 255);
+        [SerializeField] private Color victoryTextColor = new Color32(120, 120, 255, 255);
+        [SerializeField] private Color defeatTextColor = new Color32(255, 60, 60, 255);
 #pragma warning restore 649
         private GameObject moveCircle1;
         private GameObject moveCircle2;
@@ -378,13 +380,13 @@ namespace CombatView {
 
         public void EndMatch(bool win = false) {
             matchEnded = true;
-            GameFlowController.gameFlowController.addMove("leftmatch");
-            MenuView.PlayerAccount player = MenuView.PlayerAccount.currentPlayer;
-            if (player != null) {
-                player.InMatch = false;
-                player.currency += 100;
-                RestClient.Put("https://project-finch-database.firebaseio.com/User/" + player.userName + ".json", player);
-            }
+            GameFlowController.gameFlowController.addMove(win ? "victory" : "defeat");
+            CanvasRefs.canvasRefs.ExitMatchPanel.SetActive(true);
+            CanvasRefs.canvasRefs.ExitMatchPanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = win ? "VICTORY!" : "DEFEAT!";
+            CanvasRefs.canvasRefs.ExitMatchPanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().color = win ? victoryTextColor : defeatTextColor;
+        }
+
+        public void EndMatchSwitchScene() {
             UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
         }
     }
