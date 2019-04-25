@@ -4,6 +4,7 @@ using UnityEngine;
 using Proyecto26;
 using System.Threading;
 using System;
+using UnityEngine.SceneManagement;
 
 namespace MenuView
 {
@@ -133,6 +134,7 @@ namespace MenuView
             else
             {
                 Debug.Log("Login not successful");
+                SceneManager.LoadSceneAsync("LoginMenu");
             }
         }
 
