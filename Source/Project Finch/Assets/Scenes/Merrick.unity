@@ -416,7 +416,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &96012445
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1734,6 +1734,8 @@ MonoBehaviour:
   coverText: {fileID: 1338365230}
   lowCoverTextColor: {r: 1, g: 1, b: 0, a: 1}
   highCoverTextColor: {r: 0.39215687, g: 0.39215687, b: 1, a: 1}
+  victoryTextColor: {r: 0.47058824, g: 0.47058824, b: 1, a: 1}
+  defeatTextColor: {r: 1, g: 0.23529412, b: 0.23529412, a: 1}
 --- !u!4 &1608539226
 Transform:
   m_ObjectHideFlags: 0

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Valentine/LoginMenu.unity
+    guid: 9359d41aac7485b46a09cd95d7344451
+  - enabled: 1
     path: Assets/Scenes/Merrick.unity
     guid: 6e6a8b2aa6e5d9f4fad18807e901ae6c
   - enabled: 1
@@ -14,18 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Valentine/Game Quit.unity
     guid: f039f74920655eb468022a349615a71a
-  - enabled: 0
-    path: 
-    guid: 417c21fdcd459394a939e6ccb5a9c3a7
   - enabled: 1
     path: Assets/Scenes/Valentine/Store.unity
     guid: 21a779597da1e364fbf72bf156bb000c
-  - enabled: 0
-    path: 
-    guid: 31b3de7e24914e94dbb8d4950a3fb297
-  - enabled: 1
-    path: Assets/Scenes/Valentine/LoginMenu.unity
-    guid: 9359d41aac7485b46a09cd95d7344451
   - enabled: 1
     path: Assets/Scenes/Valentine/Roster.unity
     guid: 1913210b10ee57c448297fff9f5a0a6a
