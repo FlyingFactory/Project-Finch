@@ -359,15 +359,8 @@ namespace MenuView
             string top_dict_data = filtered_first + filtered_second;
 
             string list_of_soldier_class = json.Substring(start_index_soldiers, end_index_soldiers - start_index_soldiers + 2);
-
-            //soldierListClass list_of_soldiers = JsonUtility.FromJson<soldierListClass>(list_of_soldier_class);
-
-            //Debug.Log(list_of_soldiers.list_of_soldier_class.Count);
             Debug.Log(list_of_soldier_class);
             currentPlayer = JsonUtility.FromJson<MenuView.PlayerAccount>(top_dict_data);
-            //currentPlayer.soldiers = JsonUtility.FromJson<Object>()
-            //Debug.Log(currentPlayer.matchID);
-            //Debug.Log(currentPlayer.soldiers.Count);
         }
 
         public class soldierListClass

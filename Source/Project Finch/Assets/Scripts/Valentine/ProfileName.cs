@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class ProfileName : MonoBehaviour
 {
-    private Text username;
+    public Text username;
 
 
-    void Start()
+    void Awake()
     {
-
+        username.text = MenuView.PlayerAccount.currentPlayer.userName;
     }
 
     
