@@ -16,7 +16,7 @@ public class userDetails : MonoBehaviour
     [SerializeField] private Text userNameObject = null;
 
 
-    private void Awake()
+    private void Update()
     {
         StatsGroup = StatsGroupObject;
         currency = currencyObject;

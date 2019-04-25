@@ -172,6 +172,7 @@ public class Navigator : MonoBehaviour
         CombatView.MapGenerator.mapSeed = _matchDetails.mapSeed;
         Debug.Log(CombatView.GameFlowController.player1);
         SceneManager.LoadSceneAsync("Merrick");
+        MenuView.PlayerAccount.currentPlayer.dataLoaded = false;
     }
 
 

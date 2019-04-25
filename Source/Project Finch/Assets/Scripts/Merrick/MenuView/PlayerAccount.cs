@@ -123,6 +123,7 @@ namespace MenuView
                 {
                     Debug.Log("Load data unsuccessful");
                     loginSuccess = false;
+                    SceneManager.LoadSceneAsync("LoginMenu");
                 }
                 else
                 {
@@ -187,7 +188,6 @@ namespace MenuView
             loadDataAndLoadSoldierInfo _mother;
             try { _mother = (loadDataAndLoadSoldierInfo)mother; }
             catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
-
             Thread getDatabase = new Thread(new ParameterizedThreadStart(getFromDatabase_thread));
             getDatabase.Start((object)_mother.loadDataInfo);
 
@@ -327,7 +327,6 @@ namespace MenuView
             new_account.matchID = -1;
             RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + ".json", new_account);
         }
-
         public void putSoldier(Soldier soldier, bool itIsNew)
         {
             if (itIsNew)

@@ -21,7 +21,6 @@ public class Login : MonoBehaviour
         gameObject.SetActive(false);
         bool waitingForLogin = true;
         MenuView.PlayerAccount.LoginInfo loginInfo = new MenuView.PlayerAccount.LoginInfo(user,password);
-
         MenuView.PlayerAccount.LoginAndLoadAllData_Thread(loginInfo);
 
         while (waitingForLogin) {
@@ -35,6 +34,7 @@ public class Login : MonoBehaviour
             yield return new WaitForSeconds(0.25f);
         }
         SceneManager.LoadSceneAsync("Main Menu");
+        MenuView.PlayerAccount.currentPlayer.dataLoaded = false;
         yield return null;
     }
 }

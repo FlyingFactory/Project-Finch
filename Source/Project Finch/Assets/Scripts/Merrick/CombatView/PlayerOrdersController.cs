@@ -388,10 +388,10 @@ namespace CombatView {
         }
 
         public async void EndMatchSwitchScene() {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
             MenuView.PlayerAccount.loadDataAndLoadSoldierInfo new_instance1 = new MenuView.PlayerAccount.loadDataAndLoadSoldierInfo();
             new_instance1.loadDataInfo.output = MenuView.PlayerAccount.currentPlayer;
             new_instance1.loadDataInfo.userID = MenuView.PlayerAccount.currentPlayer.userName;
+            MenuView.PlayerAccount.currentPlayer.dataLoaded = false;
             Thread loadDataThread = new Thread(new ParameterizedThreadStart(MenuView.PlayerAccount.LoadData_Thread));
             loadDataThread.Start(new_instance1);
             System.Threading.CancellationToken cancel4 = new CancellationToken();
@@ -410,6 +410,7 @@ namespace CombatView {
             {
                 MenuView.PlayerAccount.currentPlayer = new_instance1.loadDataInfo.output;
             }
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
         }
     }
 }
