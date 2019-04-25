@@ -2782,6 +2782,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1450576855}
   - component: {fileID: 1450576856}
+  - component: {fileID: 1450576857}
   m_Layer: 5
   m_Name: Login Menu
   m_TagString: Untagged
@@ -2829,6 +2830,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   userName: {fileID: 539010575}
   password: {fileID: 670384138}
+--- !u!114 &1450576857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450576854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97e3baaf044497e418a19c94a3863239, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Fields:
+  - {fileID: 539010575}
+  - {fileID: 670384138}
+  EnterRequiresFocus: 0
+  EnterButton: {fileID: 83833359}
 --- !u!1 &1545477976
 GameObject:
   m_ObjectHideFlags: 0
