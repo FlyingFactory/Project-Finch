@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Proyecto26;
+using System.Threading;
 
 namespace CombatView {
 
@@ -386,8 +387,29 @@ namespace CombatView {
             CanvasRefs.canvasRefs.ExitMatchPanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().color = win ? victoryTextColor : defeatTextColor;
         }
 
-        public void EndMatchSwitchScene() {
+        public async void EndMatchSwitchScene() {
             UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
+            MenuView.PlayerAccount.loadDataAndLoadSoldierInfo new_instance1 = new MenuView.PlayerAccount.loadDataAndLoadSoldierInfo();
+            new_instance1.loadDataInfo.output = MenuView.PlayerAccount.currentPlayer;
+            new_instance1.loadDataInfo.userID = MenuView.PlayerAccount.currentPlayer.userName;
+            Thread loadDataThread = new Thread(new ParameterizedThreadStart(MenuView.PlayerAccount.LoadData_Thread));
+            loadDataThread.Start(new_instance1);
+            System.Threading.CancellationToken cancel4 = new CancellationToken();
+            for (int i = 0; i < 10; i++)
+            {
+                if (new_instance1.complete) break;
+
+                await System.Threading.Tasks.Task.Delay(1000, cancel4);
+                if (cancel4.IsCancellationRequested) break;
+            };
+            if (new_instance1.loadDataInfo.output == null)
+            {
+                Debug.Log("Load new data unsuccessful");
+            }
+            else
+            {
+                MenuView.PlayerAccount.currentPlayer = new_instance1.loadDataInfo.output;
+            }
         }
     }
 }
