@@ -271,7 +271,6 @@ namespace CombatView {
         public void FireButton() {
             if (targetedUnit.status != Unit.Status.Dead
                 && selectedUnit.numActions > 0) {
-                selectedUnit.numActions = 0;
 
                 float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
                 float hitChance;

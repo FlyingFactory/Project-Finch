@@ -49,6 +49,7 @@ namespace CombatView {
             }
             if (target != null) {
                 FaceTowards(destination);
+                numActions = 0;
                 if (outcome == "h") {
                     Debug.Log("hit!");
                     target.Damage(rawdamage);
