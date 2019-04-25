@@ -88,8 +88,6 @@ public class Navigator : MonoBehaviour
         }
         else startMatch(found_match.matchedPlayer2);
 
-
-
         //if (MenuView.PlayerAccount.currentPlayer.matchID != -1) {
         //    /* Information needed to start game properly
         //     * matchID
@@ -100,8 +98,6 @@ public class Navigator : MonoBehaviour
 
         //    SceneManager.LoadSceneAsync("Merrick");
         //}
-
-
     }
 
     public IEnumerator LoadOpponentData(string userName)
@@ -173,6 +169,7 @@ public class Navigator : MonoBehaviour
             CombatView.GameFlowController.player1 = true;
         }
         else CombatView.GameFlowController.player1 = false;
+        CombatView.MapGenerator.mapSeed = _matchDetails.mapSeed;
         Debug.Log(CombatView.GameFlowController.player1);
         SceneManager.LoadSceneAsync("Merrick");
     }
