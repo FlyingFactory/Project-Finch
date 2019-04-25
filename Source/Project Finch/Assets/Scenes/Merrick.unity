@@ -1046,7 +1046,7 @@ MonoBehaviour:
   fireUI: {fileID: 925882574}
   EnemyTurnIndicator: {fileID: 1280772079}
   EndTurnButton: {fileID: 591014727}
-  ExitMatchPanel: {fileID: 0}
+  ExitMatchPanel: {fileID: 96012444}
   hitChanceText: {fileID: 1139790156}
   coverText: {fileID: 1338365230}
   lowCoverTextColor: {r: 1, g: 1, b: 0, a: 1}
