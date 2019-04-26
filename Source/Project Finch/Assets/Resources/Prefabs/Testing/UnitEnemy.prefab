@@ -127,6 +127,9 @@ MonoBehaviour:
   takesMultipleTiles: 0
   status: 0
   maxHealth: 10
+  standardWeapon: {fileID: 3536732806068167574}
+  sniperWeapon: {fileID: 3536732806068158120}
+  meleeWeapon: {fileID: 3536732806068187148}
 --- !u!1001 &3536732806068066262
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -196,15 +199,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 125310, guid: 6f2835e86c272f0448ea648dc089755a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 111680, guid: 6f2835e86c272f0448ea648dc089755a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 157658, guid: 6f2835e86c272f0448ea648dc089755a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 136130, guid: 6f2835e86c272f0448ea648dc089755a, type: 3}
       propertyPath: m_IsActive
@@ -215,6 +218,24 @@ PrefabInstance:
 --- !u!4 &3536732806068522360 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 465582, guid: 6f2835e86c272f0448ea648dc089755a,
+    type: 3}
+  m_PrefabInstance: {fileID: 3536732806068066262}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3536732806068158120 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 125310, guid: 6f2835e86c272f0448ea648dc089755a,
+    type: 3}
+  m_PrefabInstance: {fileID: 3536732806068066262}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3536732806068167574 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 111680, guid: 6f2835e86c272f0448ea648dc089755a,
+    type: 3}
+  m_PrefabInstance: {fileID: 3536732806068066262}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3536732806068187148 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 157658, guid: 6f2835e86c272f0448ea648dc089755a,
     type: 3}
   m_PrefabInstance: {fileID: 3536732806068066262}
   m_PrefabAsset: {fileID: 0}

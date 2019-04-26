@@ -127,6 +127,9 @@ MonoBehaviour:
   takesMultipleTiles: 0
   status: 0
   maxHealth: 10
+  standardWeapon: {fileID: 3503642158898755487}
+  sniperWeapon: {fileID: 3503642158898795531}
+  meleeWeapon: {fileID: 3503642158898774053}
 --- !u!1001 &3503642158898616125
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -200,21 +203,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 139426, guid: b0675276395d0e14e912656f14084f4f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 169752, guid: b0675276395d0e14e912656f14084f4f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 181046, guid: b0675276395d0e14e912656f14084f4f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0675276395d0e14e912656f14084f4f, type: 3}
 --- !u!4 &3503642158898571719 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 491258, guid: b0675276395d0e14e912656f14084f4f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3503642158898616125}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3503642158898795531 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 181046, guid: b0675276395d0e14e912656f14084f4f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3503642158898616125}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3503642158898755487 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 139426, guid: b0675276395d0e14e912656f14084f4f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3503642158898616125}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3503642158898774053 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 169752, guid: b0675276395d0e14e912656f14084f4f,
     type: 3}
   m_PrefabInstance: {fileID: 3503642158898616125}
   m_PrefabAsset: {fileID: 0}

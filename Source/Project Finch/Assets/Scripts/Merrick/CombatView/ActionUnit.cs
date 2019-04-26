@@ -15,21 +15,23 @@ namespace CombatView {
         [System.NonSerialized] public string dict_id = "";
         [System.NonSerialized] public CharacterClass characterClass = CharacterClass.Standard;
 
+        // visuals
+        [SerializeField] private GameObject standardWeapon = null;
+        [SerializeField] private GameObject sniperWeapon = null;
+        [SerializeField] private GameObject meleeWeapon = null;
+
         new public void Start() {
             base.Start();
             switch (characterClass) {
                 case CharacterClass.Standard:
-                    transform.Find("FireGun").gameObject.SetActive(false);
-                    transform.Find("SwordPunisher").gameObject.SetActive(false);
+                    standardWeapon.SetActive(true);
                     break;
                 case CharacterClass.Sniper:
-                    transform.Find("PoliceGun").gameObject.SetActive(false);
-                    transform.Find("SwordPunisher").gameObject.SetActive(false);
+                    sniperWeapon.SetActive(true);
                     aim += 0.1f;
                     break;
                 case CharacterClass.Melee:
-                    transform.Find("FireGun").gameObject.SetActive(false);
-                    transform.Find("PoliceGun").gameObject.SetActive(false);
+                    meleeWeapon.SetActive(true);
                     actionsPerTurn++;
                     if (numActions != 0) numActions++;
                     break;
