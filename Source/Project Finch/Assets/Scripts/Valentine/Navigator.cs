@@ -12,33 +12,13 @@ public class Navigator : MonoBehaviour
     public static List<MenuView.Soldier> mySoldiers = new List<MenuView.Soldier>();
     public static string opponentName;
 
-    /*private static Navigator _instance;
-    public static Navigator Instance { get { return _instance; } }
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            _instance = this;
-
-            DontDestroyOnLoad(gameObject);
-        
-    }*/
-
-    // I'm commenting this just in case. This seems to be the culprit.
-    // I want to make it so that there's only one singleton variable for the scene.
-
     public async void SearchForGame()
     {
         if (!MenuView.PlayerAccount.currentPlayer.InMatch)
         {
             UserQueue new_queue = new UserQueue(MenuView.PlayerAccount.currentPlayer.userName);
             RestClient.Put("https://project-finch-database.firebaseio.com/queuingForMatch/" + MenuView.PlayerAccount.currentPlayer.userName + ".json", new_queue);
-            //SceneManager.LoadScene("Merrick");
+
         }
 
         while (!MenuView.PlayerAccount.currentPlayer.InMatch)
@@ -82,22 +62,14 @@ public class Navigator : MonoBehaviour
             await System.Threading.Tasks.Task.Delay(1000, cancel3);
             if (cancel3.IsCancellationRequested) break;
         };
-        if(found_match.matchedPlayer1 != MenuView.PlayerAccount.currentPlayer.userName)
+        if (found_match.matchedPlayer1 != MenuView.PlayerAccount.currentPlayer.userName)
         {
             startMatch(found_match.matchedPlayer1);
         }
-        else startMatch(found_match.matchedPlayer2);
-
-        //if (MenuView.PlayerAccount.currentPlayer.matchID != -1) {
-        //    /* Information needed to start game properly
-        //     * matchID
-        //     * load opponent's 
-        //     * mapSeed - python server generate randint
-        //     * player1 or player2 identity 
-        //     */
-
-        //    SceneManager.LoadSceneAsync("Merrick");
-        //}
+        else
+        {
+            startMatch(found_match.matchedPlayer2);
+        }
     }
 
     public IEnumerator LoadOpponentData(string userName)
@@ -111,27 +83,35 @@ public class Navigator : MonoBehaviour
         Debug.Log("Loading Opponent data...");
         while (loadingOpponent)
         {
-            if (opponentData.loadDataInfo.output != null && opponentData.loadDataInfo.output.dataLoaded)
+            Debug.Log("opponent data loaded?" + opponentData.complete);
+            if (opponentData.loadDataInfo.output != null && opponentData.complete == true)
             {
+                Debug.Log("soldiers?" + opponentData.loadDataInfo.output.soldiers);
                 loadingOpponent = false;
             }
             yield return new WaitForSeconds(0.25f);
         }
+
+        Debug.Log("opp soldiers:" +opponentData.loadDataInfo.output.soldiers.Count);
         List<string> tempKeys = opponentData.loadDataInfo.output.soldiers.Keys.ToList<string>();
         tempKeys.Sort();
 
         foreach (string soldierName in tempKeys)
         {
+            
             opponentSoldiers.Add(opponentData.loadDataInfo.output.soldiers[soldierName]);
         }
+        CombatView.MapGenerator.soldiers.Clear();
         for (int i = 0; i < 4; i++)
         {
             if (mySoldiers.Count > i) CombatView.MapGenerator.soldiers.Add(mySoldiers[i]);
         }
-        for (int i = 4; i < 8; i++)
+        for (int i = 0; i < 4; i++)
         {
-            if (opponentSoldiers.Count > i) CombatView.MapGenerator.soldiers.Add(opponentSoldiers[i - 4]);
+            Debug.Log("number of opponent soldiers:" + opponentSoldiers.Count);
+            if (opponentSoldiers.Count > i) CombatView.MapGenerator.soldiers.Add(opponentSoldiers[i]);
         }
+        Debug.Log("total number of soldiers:" + CombatView.MapGenerator.soldiers.Count);
         CombatView.GameFlowController.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
         Runner_call.Coroutines.Add(loadMatchDetails(MenuView.PlayerAccount.currentPlayer.matchID));
     }
@@ -174,9 +154,6 @@ public class Navigator : MonoBehaviour
         SceneManager.LoadSceneAsync("Merrick");
         MenuView.PlayerAccount.currentPlayer.dataLoaded = false;
     }
-
-
-
 
     public void GoToRoster()
     {

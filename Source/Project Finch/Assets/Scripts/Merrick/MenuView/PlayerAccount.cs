@@ -113,7 +113,6 @@ namespace MenuView
                 System.Threading.CancellationToken cancel3 = new CancellationToken();
                 for (int i = 0; i < 10; i++)
                 {
-                    //Debug.Log(_loginInfo.complete);
                     if (mother.complete) break;
 
                     await System.Threading.Tasks.Task.Delay(1000, cancel3);
@@ -168,14 +167,12 @@ namespace MenuView
             System.Threading.CancellationToken cancel = new CancellationToken();
             for (int i = 0; i < 30; i++)
             {
-                //Debug.Log(_loadDataInfo.complete);
                 if (loadDataInfo.complete) break;
 
                 await System.Threading.Tasks.Task.Delay(1000, cancel);
                 if (cancel.IsCancellationRequested) break;
             };
             player.matchID = loadDataInfo.output.matchID;
-            //Debug.Log("matchID:" + player.matchID);
         }
 
 
@@ -194,17 +191,11 @@ namespace MenuView
             System.Threading.CancellationToken cancel = new CancellationToken();
             for (int i = 0; i < 30; i++)
             {
-                //Debug.Log(_loadDataInfo.complete);
                 if (_mother.loadDataInfo.complete) break;
 
                 await System.Threading.Tasks.Task.Delay(1000, cancel);
                 if (cancel.IsCancellationRequested) break;
             };
-
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////
-            //TO DO: DO THE STRING FORMATTING HERE.
-            //USING _mother.loadDataInfo.output_string <- this is the full string that we pulled from database.
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
 
             Dictionary<string,string> d = PF_Utils.FirebaseParser.SplitByBrace(_mother.loadDataInfo.output_string);
             _mother.loadDataInfo.output =  JsonUtility.FromJson<PlayerAccount>(d[""]);
@@ -212,20 +203,14 @@ namespace MenuView
             Dictionary<string, string> d_soldiers = PF_Utils.FirebaseParser.SplitByBrace(d["Soldiers"]);
             foreach (KeyValuePair<string,string> kvp in d_soldiers)
             {
+                Debug.Log("key:" + kvp.Key);
                 if (kvp.Key != "")
                 {
                     _mother.loadDataInfo.output.soldiers[kvp.Key] = JsonUtility.FromJson<Soldier>(kvp.Value);
                     _mother.loadDataInfo.output.soldiers[kvp.Key].uniqueId = kvp.Key;
                 }
             }
-            soldierListClass soldierList = JsonUtility.FromJson<soldierListClass>(d["soldierList"]);
-
-            foreach(string arrItem in soldierList.value.Split(','))
-            {
-                _mother.loadDataInfo.output.soldierNameList.Add(arrItem);
-            }
             _mother.complete = true;
-            _mother.loadDataInfo.output.dataLoaded = true;
         }
 
 
@@ -262,7 +247,6 @@ namespace MenuView
             };
             soldierList buffer = JsonUtility.FromJson<soldierList>(qi.responseText);
             _soldierList.value = buffer.value;
-            Debug.Log("soldierList:" + _soldierList.value);
         }
 
         public class LoadDataInfo
@@ -297,7 +281,6 @@ namespace MenuView
 
         public static IEnumerator getFromDatabase_RestClientCall(QueryInfo qi)
         {
-            //Debug.Log("started coroutine");
             RestClient.Get(qi.query).Then(response =>
             {
                 qi.responseText = response.Text;
@@ -331,41 +314,14 @@ namespace MenuView
         {
             if (itIsNew)
             {
-                //Debug.Log("putting new soldier..");
                 counter += 1;
-                //Debug.Log("counter:" + counter);
-                //soldier.uniqueId = counter.ToString();
                 soldierNameList.Add(soldier.uniqueId.ToString());
-                //Debug.Log("soldiernamelist count:" + soldierNameList.Count);
                 RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier"+soldier.uniqueId+".json", soldier);
             }
             else
             {
                 RestClient.Put("https://project-finch-database.firebaseio.com/User/" + userName + "/Soldiers/Soldier" + soldier.uniqueId + ".json", soldier);
             }
-        }
-
-        public static void stringToClass(string json)
-        {
-            int start_index_soldiers = json.IndexOf("\"Soldiers\":");
-            int end_index_soldiers = json.LastIndexOf("}},");
-            string filtered_first = json.Substring(0, start_index_soldiers);
-
-            string second_sub_string = json.Substring(end_index_soldiers + 3, json.Length - (end_index_soldiers + 3));
-            int start_index_soldierList = second_sub_string.IndexOf("\"soldierList\":");
-            int end_index_soldierList = second_sub_string.LastIndexOf("},");
-
-            string filtered_second = second_sub_string.Substring(0, start_index_soldierList) +second_sub_string.Substring(end_index_soldierList+2, second_sub_string.Length - (end_index_soldierList+2));
-            string top_dict_data = filtered_first + filtered_second;
-
-            string list_of_soldier_class = json.Substring(start_index_soldiers, end_index_soldiers - start_index_soldiers + 2);
-            Debug.Log(list_of_soldier_class);
-            currentPlayer = JsonUtility.FromJson<MenuView.PlayerAccount>(top_dict_data);
-        }
-
-        public class soldierListClass
-        {
-            public string value;
         }
 
         public async static void getMatchDetails_thread(object matchDetails)
