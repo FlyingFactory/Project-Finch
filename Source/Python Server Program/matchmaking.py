@@ -13,7 +13,6 @@ def checkPlayerMoves(matchid):
     endturn_counter = 0
     player1move_old = ''
     player2move_old = ''
-
     #for constantly checking database
 
     while True:
@@ -46,18 +45,20 @@ def checkPlayerMoves(matchid):
         player2move_old = player2move_new
         time.sleep(0.1)
 
-        if player2move_new and player1move_new == "leftmatch":
+        if player2move_new == "defeat" and player1move_new == "victory":
+            game_winner = firebase.get('/Match/' + str(matchid)+ '/matchDetails', 'matchedPlayer1')
+            game_loser = firebase.get('/Match/' + str(matchid)+ '/matchDetails', 'matchedPlayer2')
+            creditRewards(game_winner, game_loser)
             firebase.delete('/Match/' + str(matchid), "moveInfo")
             firebase.delete('/Match/' + str(matchid), "matchDetails")
-            game_winner = firebase.get('/Match/' + str(matchid)+ '/matchResult', 'value')
-            player1Name = firebase.get('/Match/' + str(matchid)+ '/matchDetails', 'matchedPlayer1')
-            player2Name = firebase.get('/Match/' + str(matchid)+ '/matchDetails', 'matchedPlayer2')
+            sys.exit()
 
-            if game_winner == player1Name:
-                game_loser = player2Name
-            else:
-                game_loser = player1Name
+        if player2move_new == "victory" and player1move_new == "defeat":
+            game_loser = firebase.get('/Match/' + str(matchid) + '/matchDetails', 'matchedPlayer1')
+            game_winner = firebase.get('/Match/' + str(matchid) + '/matchDetails', 'matchedPlayer2')
             creditRewards(game_winner, game_loser)
+            firebase.delete('/Match/' + str(matchid), "moveInfo")
+            firebase.delete('/Match/' + str(matchid), "matchDetails")
             sys.exit()
 
 
@@ -66,11 +67,15 @@ def creditRewards(winner, loser):
     winner_current_currency = firebase.get('/User/' + winner, 'currency')
     winner_current_currency += 500
     firebase.put('/User/' + winner, 'currency', winner_current_currency)
+    firebase.put('/User/' + winner, 'InMatch', False)
+    firebase.put('/User/'+ winner, 'matchID', -1)
 
     #Creditting loser
     loser_current_currency = firebase.get('/User/' + loser, 'currency')
     loser_current_currency += 100
     firebase.put('/User/' + loser, 'currency', loser_current_currency)
+    firebase.put('/User/' + loser, 'InMatch', False)
+    firebase.put('/User/' + loser, 'matchID', -1)
 
 
 def matchmaking(initial_matchId):
@@ -93,7 +98,7 @@ def matchmaking(initial_matchId):
                 firebase.put('/User/'+listOfPlayers[1], "InMatch", True)
 
                 create_match(initial_matchId, listOfPlayers[0], listOfPlayers[1])
-                threading.Thread(target= checkPlayerMoves(initial_matchId), daemon=True).start()
+                threading.Thread(target= checkPlayerMoves, args=(initial_matchId,) , daemon=True).start()
 
                 #can try testing later. start the thread, stop the main program see if the thread still looks out for game moves.
 
@@ -101,24 +106,22 @@ def matchmaking(initial_matchId):
 def create_match(matchId, player1, player2):
     mapSeed = random.randint(0,2147483647)
 
-    for i in range(100):
-        randint = bool(random.getrandbits(1))
-        if randint:
-            firebase.put('/Match/' + str(matchId), 'matchDetails', {'matchID': matchId, 'map': 'default',
-                                                                    'matchInProgress': True, 'matchedPlayer1': player1,
-                                                                    'matchedPlayer2': player2, 'mapSeed': mapSeed })
-        else:
-            firebase.put('/Match/' + str(matchId), 'matchDetails', {'matchID': matchId, 'map': 'default',
-                                                                    'matchInProgress': True, 'matchedPlayer1': player2,
-                                                                    'matchedPlayer2': player1, 'mapSeed': mapSeed})
-        time.sleep(5)
+    randint = bool(random.getrandbits(1))
+    if randint:
+        firebase.put('/Match/' + str(matchId), 'matchDetails', {'matchID': matchId, 'map': 'default',
+                                                                'matchInProgress': True, 'matchedPlayer1': player1,
+                                                                'matchedPlayer2': player2, 'mapSeed': mapSeed})
+    else:
+        firebase.put('/Match/' + str(matchId), 'matchDetails', {'matchID': matchId, 'map': 'default',
+                                                                'matchInProgress': True, 'matchedPlayer1': player2,
+                                                                'matchedPlayer2': player1, 'mapSeed': mapSeed})
+    time.sleep(5)
 
     firebase.put('/Match/'+str(matchId)+'/moveInfo/moveHistory', 'a_playersMoves', {0: ""})
     firebase.put('/Match/'+str(matchId)+'/moveInfo/', 'p1move', {"value":""})
     firebase.put('/Match/'+str(matchId)+'/moveInfo/', 'p2move', {"value":""})
 
 
-#initial_matchId = random.randint(0,2147483647)
-#matchmaking(initial_matchId)
-create_match(0, "player1", "player2")
+initial_matchId = random.randint(0,2147483647)
+matchmaking(initial_matchId)
 
