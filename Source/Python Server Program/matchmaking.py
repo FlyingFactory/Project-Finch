@@ -104,7 +104,8 @@ def matchmaking(initial_matchId):
 
 
 def create_match(matchId, player1, player2):
-    mapSeed = random.randint(0,2147483647)
+    #mapSeed = random.randint(0,2147483647)
+    mapSeed = 1029301
 
     randint = bool(random.getrandbits(1))
     if randint:
