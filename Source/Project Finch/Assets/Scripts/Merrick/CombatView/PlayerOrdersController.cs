@@ -152,39 +152,16 @@ namespace CombatView {
                                                 && controllableUnits.Contains(hitTile.tile.occupyingObjects[i] as ActionUnit)) {
                                                 selectedUnit = hitTile.tile.occupyingObjects[i] as ActionUnit;
                                             }
-                                            else if (selectedUnit != null) {
+                                            else if (selectedUnit != null && selectedUnit.numActions >= (selectedUnit.characterClass != MenuView.Soldier.CharacterClass.Sniper ? 1 : 2)) {
                                                 targetedUnit = hitTile.tile.occupyingObjects[i] as Unit;
                                                 CanvasRefs.canvasRefs.fireUI.SetActive(true);
                                                 selectedUnit.FaceTowards(hitTile.tile);
                                                 playerControlState = PlayerControlState.ActionSelect;
 
-                                                float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
-                                                float hitChance;
-                                                if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
-                                                else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
-                                                else hitChance = BASE_AIM;
+                                                ActionUnit.HitChanceInfo hitChanceInfo = selectedUnit.CalculateHitChance(targetedUnit);
 
-                                                CoverType highestUnflankedCover = CoverType.None;
-                                                if (selectedUnit.tile.x < targetedUnit.tile.x) {
-                                                    CoverType directionCover = targetedUnit.tile.getCover(Direction.minusX);
-                                                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                                                }
-                                                else if (selectedUnit.tile.x > targetedUnit.tile.x) {
-                                                    CoverType directionCover = targetedUnit.tile.getCover(Direction.X);
-                                                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                                                }
-                                                if (selectedUnit.tile.z < targetedUnit.tile.z) {
-                                                    CoverType directionCover = targetedUnit.tile.getCover(Direction.minusZ);
-                                                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                                                }
-                                                else if (selectedUnit.tile.z > targetedUnit.tile.z) {
-                                                    CoverType directionCover = targetedUnit.tile.getCover(Direction.Z);
-                                                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                                                }
-                                                hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
-
-                                                hitChanceText.text = string.Format("Hit: {0:p}", Mathf.Clamp01(hitChance));
-                                                switch (highestUnflankedCover) {
+                                                hitChanceText.text = string.Format("Hit: {0:p}", hitChanceInfo.hitChance);
+                                                switch (hitChanceInfo.highestUnflankedCover) {
                                                     case CoverType.None:
                                                         coverText.text = "";
                                                         break;
@@ -275,37 +252,13 @@ namespace CombatView {
             if (targetedUnit.status != Unit.Status.Dead
                 && selectedUnit.numActions > 0) {
 
-                float d = Tile.DistanceBetween(selectedUnit.tile, targetedUnit.tile);
-                float hitChance;
-                if (d > 8) hitChance = Mathf.Clamp01(BASE_AIM - (d - 8) / 10f);
-                else if (d < 5) hitChance = Mathf.Clamp01(BASE_AIM + (5 - d) / 10f);
-                else hitChance = BASE_AIM;
+                ActionUnit.HitChanceInfo hitChanceInfo = selectedUnit.CalculateHitChance(targetedUnit);
 
-                CoverType highestUnflankedCover = CoverType.None;
-                if (selectedUnit.tile.x < targetedUnit.tile.x) {
-                    CoverType directionCover = targetedUnit.tile.getCover(Direction.minusX);
-                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                }
-                else if (selectedUnit.tile.x > targetedUnit.tile.x) {
-                    CoverType directionCover = targetedUnit.tile.getCover(Direction.X);
-                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                }
-                if (selectedUnit.tile.z < targetedUnit.tile.z) {
-                    CoverType directionCover = targetedUnit.tile.getCover(Direction.minusZ);
-                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                }
-                else if (selectedUnit.tile.z > targetedUnit.tile.z) {
-                    CoverType directionCover = targetedUnit.tile.getCover(Direction.Z);
-                    if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
-                }
-                hitChance -= (int)highestUnflankedCover * HALFCOVER_PENALTY;
-
-                bool hit = Random.Range(0f, 1) < hitChance;
+                bool hit = Random.Range(0f, 1) < hitChanceInfo.hitChance;
                 int damage = 0;
                 if (hit) {
                     Debug.Log("Hit!");
                     damage = 5; // TODO: fill with real damage calculation
-                    // targetedUnit.Damage(5);
                 }
                 else {
                     Debug.Log("Missed!");

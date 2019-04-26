@@ -1,19 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CharacterClass = MenuView.Soldier.CharacterClass;
 
 namespace CombatView {
 
     public class ActionUnit : Unit {
-        
+
+        [System.NonSerialized] public int aim = 65;
         [System.NonSerialized] public int numActions = 2;
         [System.NonSerialized] public int actionsPerTurn = 2;
         [System.NonSerialized] public int mobility = 7;
         [System.NonSerialized] public int id = 0;
         [System.NonSerialized] public string dict_id = "";
+        [System.NonSerialized] public CharacterClass characterClass = CharacterClass.Standard;
 
         new public void Start() {
             base.Start();
+            switch (characterClass) {
+                case CharacterClass.Sniper:
+                    aim += 10;
+                    break;
+                case CharacterClass.Melee:
+                    actionsPerTurn++;
+                    break;
+            }
         }
 
         public void OrderMove(Tile destination) {
@@ -61,6 +72,54 @@ namespace CombatView {
             else {
                 Debug.LogWarning("No target!");
             }
+        }
+
+        public struct HitChanceInfo {
+            public float hitChance;
+            public CoverType highestUnflankedCover;
+            public HitChanceInfo(float hitChance, CoverType highestUnflankedCover) {
+                this.hitChance = Mathf.Clamp01(hitChance);
+                this.highestUnflankedCover = highestUnflankedCover;
+            }
+        }
+        public HitChanceInfo CalculateHitChance(Unit target) {
+            float d = Tile.DistanceBetween(tile, target.tile);
+            float hitChance = aim;
+            switch (characterClass) {
+                case CharacterClass.Standard:
+                    if (d > 10) hitChance = Mathf.Clamp01(aim - (d - 10) / 12.5f);
+                    else if (d < 6) hitChance = Mathf.Clamp01(aim + (6 - d) / 12.5f);
+                    break;
+                case CharacterClass.Sniper:
+                    if (d > 16) hitChance = Mathf.Clamp01(aim - (d - 16) / 12.5f);
+                    else if (d < 8) hitChance = Mathf.Clamp01(aim - (8 - d) / 16f);
+                    break;
+                case CharacterClass.Melee:
+                    if (d < 1.6f) hitChance = 0.95f;
+                    else hitChance = 0;
+                    break;
+            }
+
+            CoverType highestUnflankedCover = CoverType.None;
+            if (tile.x < target.tile.x) {
+                CoverType directionCover = target.tile.getCover(Direction.minusX);
+                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+            }
+            else if (tile.x > target.tile.x) {
+                CoverType directionCover = target.tile.getCover(Direction.X);
+                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+            }
+            if (tile.z < target.tile.z) {
+                CoverType directionCover = target.tile.getCover(Direction.minusZ);
+                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+            }
+            else if (tile.z > target.tile.z) {
+                CoverType directionCover = target.tile.getCover(Direction.Z);
+                if (directionCover > highestUnflankedCover) highestUnflankedCover = directionCover;
+            }
+            hitChance -= (int)highestUnflankedCover * PlayerOrdersController.HALFCOVER_PENALTY;
+
+            return new HitChanceInfo(hitChance, highestUnflankedCover);
         }
 
         public void DrawMovableLocations() {

@@ -16,7 +16,7 @@ namespace MenuView {
         public float experience;
         public float fatigue;
         public bool complete;
-        //public CharacterClass characterClass;
+        public CharacterClass characterClass = CharacterClass.Standard;
         //public Dictionary<string, Training> trainings = new Dictionary<string, Training>();
         //public Dictionary<string, Mutation> mutations = new Dictionary<string, Mutation>();
         //public Dictionary<string, Equipment> equipments = new Dictionary<string, Equipment>();
@@ -31,10 +31,9 @@ namespace MenuView {
             this.level = 1;
             this.experience = 0;
             this.fatigue = 0;
-            
         }
 
-        // Mutator methods
+        // Mutator methods (yet unused)
         public Soldier setName(string value) {
             // TODO: input sanitisation
             this.name = value;
@@ -70,11 +69,6 @@ namespace MenuView {
             this.fatigue = value;
             return this;
         }
-
-        //public static Soldier fromCSV(string csvData) {
-        //    // TODO: read csv and fill values
-        //    return new Soldier();
-        //}
         
         public CombatView.ActionUnit ToActionUnit() {
             // TODO
@@ -83,10 +77,13 @@ namespace MenuView {
         }
 
         public enum CharacterClass {
-            Ranger,
-            Vanguard,
-            Gunslinger,
-            Technician,
+            //Ranger, //Lol no time for this
+            //Vanguard,
+            //Gunslinger,
+            //Technician,
+            Standard,
+            Sniper,
+            Melee,
         }
     }
 }

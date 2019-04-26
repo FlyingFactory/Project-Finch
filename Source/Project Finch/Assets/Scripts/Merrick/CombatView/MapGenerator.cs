@@ -123,7 +123,10 @@ namespace CombatView {
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
                 u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = allyColor;
-                if (soldiers.Count == 8) u.transform.Find("NameText").GetComponent<TMPro.TextMeshProUGUI>().text = soldiers[unitIndex++].name;
+                if (soldiers.Count == 8) {
+                    newUnit.characterClass = soldiers[unitIndex].characterClass;
+                    u.transform.Find("NameText").GetComponent<TMPro.TextMeshProUGUI>().text = soldiers[unitIndex++].name;
+                }
             }
             idBuffer = 0; // placeholder
             foreach (System.Tuple<int, int> pos in player1 ? topSpawns : bottomSpawns) {
@@ -136,7 +139,10 @@ namespace CombatView {
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
                 u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = enemyColor;
-                if (soldiers.Count == 8) u.transform.Find("NameText").GetComponent<TMPro.TextMeshProUGUI>().text = soldiers[unitIndex++].name;
+                if (soldiers.Count == 8) {
+                    newUnit.characterClass = soldiers[unitIndex].characterClass;
+                    u.transform.Find("NameText").GetComponent<TMPro.TextMeshProUGUI>().text = soldiers[unitIndex++].name;
+                }
             }
             if (soldiers.Count != 8) Debug.LogWarning("Soldiers not matching expected number!");
 
