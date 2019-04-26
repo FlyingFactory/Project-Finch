@@ -23,6 +23,7 @@ namespace CombatView {
                     break;
                 case CharacterClass.Melee:
                     actionsPerTurn++;
+                    if (numActions != 0) numActions++;
                     break;
             }
         }
