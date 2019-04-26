@@ -22,6 +22,7 @@ namespace CombatView {
         public static Color enemyColor = new Color32(255, 165, 165, 255);
 
         private void Start() {
+            mapSkin = mapSeed % 2;
             switch (map) {
                 case Map.TestingRange:
                     GenerateRandomTerrain();
@@ -30,7 +31,6 @@ namespace CombatView {
                     GenerateRandomCoordinated(GameFlowController.player1, mapSeed);
                     break;
             }
-            mapSkin = mapSeed % 2;
         }
 
         private void GenerateRandomTerrain() {
