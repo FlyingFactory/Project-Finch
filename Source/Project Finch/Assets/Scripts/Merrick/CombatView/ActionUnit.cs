@@ -18,10 +18,18 @@ namespace CombatView {
         new public void Start() {
             base.Start();
             switch (characterClass) {
+                case CharacterClass.Standard:
+                    transform.Find("FireGun").gameObject.SetActive(false);
+                    transform.Find("SwordPunisher").gameObject.SetActive(false);
+                    break;
                 case CharacterClass.Sniper:
+                    transform.Find("PoliceGun").gameObject.SetActive(false);
+                    transform.Find("SwordPunisher").gameObject.SetActive(false);
                     aim += 0.1f;
                     break;
                 case CharacterClass.Melee:
+                    transform.Find("FireGun").gameObject.SetActive(false);
+                    transform.Find("PoliceGun").gameObject.SetActive(false);
                     actionsPerTurn++;
                     if (numActions != 0) numActions++;
                     break;
