@@ -14,6 +14,8 @@ namespace CombatView {
         public Map map = Map.TestingRange;
         public static int mapSeed = -294;
         public static List<MenuView.Soldier> soldiers = new List<MenuView.Soldier>();
+        public static int mapSkin = 0;
+        public const int NUM_MAPS = 2;
         [System.NonSerialized] public int idBuffer = 0;
 
         public static Color allyColor = new Color32(127, 255, 255, 255);
@@ -28,6 +30,7 @@ namespace CombatView {
                     GenerateRandomCoordinated(GameFlowController.player1, mapSeed);
                     break;
             }
+            mapSkin = mapSeed % 2;
         }
 
         private void GenerateRandomTerrain() {
@@ -35,10 +38,14 @@ namespace CombatView {
             new MapInfo().tiles = new List<Tile>();
             MapInfo.currentMapInfo.bottomLayer = new Tile[32, 32];
 
+            TileEffector tilePrefab;
+            if (mapSkin == 0) tilePrefab = Resources.Load<TileEffector>("Prefabs/Testing/Tile");
+            else tilePrefab = Resources.Load<TileEffector>("Prefabs/Testing/Tile 2");
+
             for (int x = 0; x < 32; x++) {
                 for (int z = 0; z < 32; z++) {
                     Tile newTile = new Tile(x, z);
-                    MakePlaceholderTile(newTile);
+                    MakePlaceholderTile(newTile, tilePrefab);
                     MapInfo.currentMapInfo.tiles.Add(newTile);
                     MapInfo.currentMapInfo.bottomLayer[x, z] = newTile;
                 }
@@ -85,11 +92,14 @@ namespace CombatView {
             MapInfo.currentMapInfo.bottomLayer = new Tile[32, 32];
             System.Random r = new System.Random(seed);
             GameFlowController.gameFlowController.isMyTurn = player1;
-            
+
+            TileEffector tilePrefab;
+            if (mapSkin == 0) tilePrefab = Resources.Load<TileEffector>("Prefabs/Testing/Tile");
+            else tilePrefab = Resources.Load<TileEffector>("Prefabs/Testing/Tile 2");
             for (int x = 0; x < 32; x++) {
                 for (int z = 0; z < 32; z++) {
                     Tile newTile = new Tile(x, z);
-                    MakePlaceholderTile(newTile);
+                    MakePlaceholderTile(newTile, tilePrefab);
                     MapInfo.currentMapInfo.tiles.Add(newTile);
                     MapInfo.currentMapInfo.bottomLayer[x, z] = newTile;
                 }
@@ -146,9 +156,16 @@ namespace CombatView {
             }
             if (soldiers.Count != 8) Debug.LogWarning("Soldiers not matching expected number!");
 
-            PassiveUnit unitPrefab2 = Resources.Load<PassiveUnit>("Prefabs/Testing/Testdummy");
-            EnvObject halfCoverPrefab = Resources.Load<EnvObject>("Prefabs/HalfCoverCube");
-            EnvObject fullCoverPrefab = Resources.Load<EnvObject>("Prefabs/FullCoverCube");
+            EnvObject halfCoverPrefab;
+            EnvObject fullCoverPrefab;
+            if (mapSkin == 0) {
+                halfCoverPrefab = Resources.Load<EnvObject>("Prefabs/HalfCoverCube");
+                fullCoverPrefab = Resources.Load<EnvObject>("Prefabs/FullCoverCube");
+            }
+            else {
+                halfCoverPrefab = Resources.Load<EnvObject>("Prefabs/HalfCoverCube 2");
+                fullCoverPrefab = Resources.Load<EnvObject>("Prefabs/FullCoverCube 2");
+            }
 
             for (int i = 0; i < 60; i++) {
                 int x = r.Next(32);
@@ -163,8 +180,8 @@ namespace CombatView {
             else PlayerOrdersController.playerOrdersController.EndTurn();
         }
 
-        private void MakePlaceholderTile(Tile tile) {
-            TileEffector te = Instantiate(Resources.Load<TileEffector>("Prefabs/Testing/Tile"));
+        private void MakePlaceholderTile(Tile tile, TileEffector tilePrefab) {
+            TileEffector te = Instantiate(tilePrefab);
             te.tile = tile;
             te.transform.position = new Vector3(tile.x, tile.h, tile.z);
             te.gameObject.name = "Tile " + tile.x + ", " + tile.z;
