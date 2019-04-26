@@ -111,6 +111,8 @@ namespace CombatView {
                 new System.Tuple<int, int>(31, 29),
             };
 
+            Debug.Log(soldiers.Count);
+            int unitIndex = 0;
             foreach (System.Tuple<int, int> pos in player1 ? bottomSpawns : topSpawns) {
                 ActionUnit newUnit = Instantiate(unitPrefab);
                 newUnit.id += idBuffer++;
@@ -121,6 +123,7 @@ namespace CombatView {
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
                 u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = allyColor;
+                if (soldiers.Count == 8) u.transform.Find("NameText").GetComponent<TMPro.TextMeshProUGUI>().text = soldiers[unitIndex++].name;
             }
             idBuffer = 0; // placeholder
             foreach (System.Tuple<int, int> pos in player1 ? topSpawns : bottomSpawns) {
@@ -133,13 +136,15 @@ namespace CombatView {
                 UnitUI u = Instantiate(unitUIPrefab, CanvasRefs.canvasRefs.transform);
                 u.target = newUnit;
                 u.transform.Find("Healthbar").GetComponent<UnityEngine.UI.Image>().color = enemyColor;
+                if (soldiers.Count == 8) u.transform.Find("NameText").GetComponent<TMPro.TextMeshProUGUI>().text = soldiers[unitIndex++].name;
             }
-            
+            if (soldiers.Count != 8) Debug.LogWarning("Soldiers not matching expected number!");
+
             PassiveUnit unitPrefab2 = Resources.Load<PassiveUnit>("Prefabs/Testing/Testdummy");
             EnvObject halfCoverPrefab = Resources.Load<EnvObject>("Prefabs/HalfCoverCube");
             EnvObject fullCoverPrefab = Resources.Load<EnvObject>("Prefabs/FullCoverCube");
 
-            for (int i = 0; i < 40; i++) {
+            for (int i = 0; i < 60; i++) {
                 int x = r.Next(32);
                 int z = r.Next(32);
                 if (MapInfo.currentMapInfo.bottomLayer[x, z].top.occupyingObjects.Count == 0) {
