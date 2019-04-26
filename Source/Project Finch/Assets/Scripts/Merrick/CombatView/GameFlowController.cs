@@ -71,7 +71,6 @@ namespace CombatView
         /// <param name="cancel">If true, the user is cancelling the request instead.</param>
         public void requestMatchmaking(string userID, bool cancel = false)
         {
-            //Debug.Log("entered request Matchmaking");
             StartCoroutine(requestMatchMakingCoroutine(userID, cancel));
 
         }
@@ -87,7 +86,6 @@ namespace CombatView
 
             if (!cancel)
             {
-                //Debug.Log(cancel);
                 PostUserLFMtoDatabase(userId);
             }
 
@@ -145,56 +143,6 @@ namespace CombatView
             //add more data that is going to be stored on database here
             public string value = "";
         }
-
-
-        /// <summary>
-        /// Checks if a new move has been accepted by the server.
-        /// If there is a new move, moveNumber should be incremented.
-        /// If there are multiple unread moves, returns the earliest unread.
-        /// </summary>
-        /// <param name="matchID">The match's unique ID</param>
-        /// <returns>Returns the move information, or null if there is no new move.</returns>
-        //public void checkNextMove(int matchID)
-        //{
-        //    //check if match exists before we grab moveInfo
-
-        //    StartCoroutine(checkNextMoveCoroutine(matchID));
-        //}
-
-        //public IEnumerator checkNextMoveCoroutine(int matchID)
-        //{
-        //    yield return StartCoroutine(getMoveInfo(matchID));
-        //    if (match_exists)
-        //    {
-        //        Debug.Log(move_info_exists.a_playersMoves);
-        //    }
-        //}
-
-        //public IEnumerator getMoveInfo(int matchID)
-        //{
-        //    bool inProgress = true;
-        //    try
-        //    {
-
-        //        RestClient.Get<MoveInfoAll>("https://project-finch-database.firebaseio.com/Match/" + matchID + "/moveInfo.json").Then(response =>
-        //        {
-        //            move_info_exists = response;
-        //            inProgress = false;
-        //            if (move_info_exists.a_playersMoves != null)
-        //            {
-        //                match_exists = true;
-        //            }
-        //        });
-
-        //    }
-        //    catch (NullReferenceException)
-        //    {
-        //        match_exists = false;
-        //    }
-
-        //    while (inProgress) yield return new WaitForSeconds(0.25f);
-
-        //}
 
         public void getMove(int moveNumber) {
 

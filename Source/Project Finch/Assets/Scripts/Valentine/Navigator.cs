@@ -83,16 +83,12 @@ public class Navigator : MonoBehaviour
         Debug.Log("Loading Opponent data...");
         while (loadingOpponent)
         {
-            Debug.Log("opponent data loaded?" + opponentData.complete);
             if (opponentData.loadDataInfo.output != null && opponentData.complete == true)
             {
-                Debug.Log("soldiers?" + opponentData.loadDataInfo.output.soldiers);
                 loadingOpponent = false;
             }
             yield return new WaitForSeconds(0.25f);
         }
-
-        Debug.Log("opp soldiers:" +opponentData.loadDataInfo.output.soldiers.Count);
         List<string> tempKeys = opponentData.loadDataInfo.output.soldiers.Keys.ToList<string>();
         tempKeys.Sort();
 
@@ -108,10 +104,8 @@ public class Navigator : MonoBehaviour
         }
         for (int i = 0; i < 4; i++)
         {
-            Debug.Log("number of opponent soldiers:" + opponentSoldiers.Count);
             if (opponentSoldiers.Count > i) CombatView.MapGenerator.soldiers.Add(opponentSoldiers[i]);
         }
-        Debug.Log("total number of soldiers:" + CombatView.MapGenerator.soldiers.Count);
         CombatView.GameFlowController.matchID = MenuView.PlayerAccount.currentPlayer.matchID;
         Runner_call.Coroutines.Add(loadMatchDetails(MenuView.PlayerAccount.currentPlayer.matchID));
     }
@@ -150,7 +144,6 @@ public class Navigator : MonoBehaviour
         }
         else CombatView.GameFlowController.player1 = false;
         CombatView.MapGenerator.mapSeed = _matchDetails.mapSeed;
-        Debug.Log(CombatView.GameFlowController.player1);
         SceneManager.LoadSceneAsync("Merrick");
         MenuView.PlayerAccount.currentPlayer.dataLoaded = false;
     }
@@ -202,13 +195,11 @@ public class Navigator : MonoBehaviour
 
     public void GoToStore()
     {
-        Debug.Log("Going from Stats to Store...");
         SceneManager.LoadScene("Store");
     }
 
     public void BacktoStats()
     {
-        Debug.Log("Going back to Stats...");
         SceneManager.LoadScene("Roster");
     }
 

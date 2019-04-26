@@ -73,8 +73,7 @@ namespace MenuView
             catch (System.InvalidCastException) { Debug.Log("Invalid Cast"); return; }
 
             string userID = _loginInfo.userId;
-            string passwordHash = Hash128.Compute(_loginInfo.Password).ToString(); // Not sure if this works, can try
-            //Debug.Log("passwordHash: " + passwordHash);
+            string passwordHash = Hash128.Compute(_loginInfo.Password).ToString(); 
             bool loginSuccess = false;
             
             // TODO: attempt to login, Fixed
@@ -203,7 +202,6 @@ namespace MenuView
             Dictionary<string, string> d_soldiers = PF_Utils.FirebaseParser.SplitByBrace(d["Soldiers"]);
             foreach (KeyValuePair<string,string> kvp in d_soldiers)
             {
-                Debug.Log("key:" + kvp.Key);
                 if (kvp.Key != "")
                 {
                     _mother.loadDataInfo.output.soldiers[kvp.Key] = JsonUtility.FromJson<Soldier>(kvp.Value);

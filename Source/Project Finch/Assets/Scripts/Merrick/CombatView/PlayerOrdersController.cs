@@ -344,7 +344,7 @@ namespace CombatView {
             MenuView.PlayerAccount.loadDataAndLoadSoldierInfo new_instance1 = new MenuView.PlayerAccount.loadDataAndLoadSoldierInfo();
             new_instance1.loadDataInfo.output = MenuView.PlayerAccount.currentPlayer;
             new_instance1.loadDataInfo.userID = MenuView.PlayerAccount.currentPlayer.userName;
-            MenuView.PlayerAccount.currentPlayer.dataLoaded = false;
+            new_instance1.complete = false;
             Thread loadDataThread = new Thread(new ParameterizedThreadStart(MenuView.PlayerAccount.LoadData_Thread));
             loadDataThread.Start(new_instance1);
             System.Threading.CancellationToken cancel4 = new CancellationToken();
@@ -355,15 +355,16 @@ namespace CombatView {
                 await System.Threading.Tasks.Task.Delay(1000, cancel4);
                 if (cancel4.IsCancellationRequested) break;
             };
-            if (new_instance1.loadDataInfo.output == null)
+            if (new_instance1.loadDataInfo.output != null && new_instance1.loadDataInfo.complete == true)
             {
-                Debug.Log("Load new data unsuccessful");
+                MenuView.PlayerAccount.currentPlayer = new_instance1.loadDataInfo.output;
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
             }
             else
             {
-                MenuView.PlayerAccount.currentPlayer = new_instance1.loadDataInfo.output;
+                Debug.Log("Load new data unsuccessful");
             }
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
+            
         }
     }
 }
