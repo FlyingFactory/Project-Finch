@@ -7,7 +7,7 @@ namespace CombatView {
 
     public class ActionUnit : Unit {
 
-        [System.NonSerialized] public int aim = 65;
+        [System.NonSerialized] public float aim = 0.65f;
         [System.NonSerialized] public int numActions = 2;
         [System.NonSerialized] public int actionsPerTurn = 2;
         [System.NonSerialized] public int mobility = 7;
@@ -19,7 +19,7 @@ namespace CombatView {
             base.Start();
             switch (characterClass) {
                 case CharacterClass.Sniper:
-                    aim += 10;
+                    aim += 0.1f;
                     break;
                 case CharacterClass.Melee:
                     actionsPerTurn++;
@@ -87,12 +87,12 @@ namespace CombatView {
             float hitChance = aim;
             switch (characterClass) {
                 case CharacterClass.Standard:
-                    if (d > 10) hitChance = Mathf.Clamp01(aim - (d - 10) / 12.5f);
-                    else if (d < 6) hitChance = Mathf.Clamp01(aim + (6 - d) / 12.5f);
+                    if (d > 10) hitChance = aim - (d - 10) / 12.5f;
+                    else if (d < 6) hitChance = aim + (6 - d) / 12.5f;
                     break;
                 case CharacterClass.Sniper:
-                    if (d > 16) hitChance = Mathf.Clamp01(aim - (d - 16) / 12.5f);
-                    else if (d < 8) hitChance = Mathf.Clamp01(aim - (8 - d) / 16f);
+                    if (d > 16) hitChance = aim - (d - 16) / 12.5f;
+                    else if (d < 8) hitChance = aim - (8 - d) / 16f;
                     break;
                 case CharacterClass.Melee:
                     if (d < 1.6f) hitChance = 0.95f;
